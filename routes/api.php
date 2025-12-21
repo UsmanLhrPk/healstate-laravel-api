@@ -13,7 +13,7 @@ Route::get('/forums/{id}', [ForumController::class, 'show']);
 Route::get('/comments', [CommentController::class, 'index']);
 
 // Protected routes (auth required)
-// Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     // Forums
     Route::post('/forums', [ForumController::class, 'store']);
     Route::delete('/forums/{id}', [ForumController::class, 'destroy']);
@@ -23,8 +23,8 @@ Route::get('/comments', [CommentController::class, 'index']);
     Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 
     // Likes
-    Route::post('/likes', [LikeController::class, 'toggle']);
+    Route::post('/likes', [LikeController::class, 'store']);
 
     // Flags
     Route::post('/flags', [FlagController::class, 'store']);
-// });
+});

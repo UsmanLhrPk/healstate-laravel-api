@@ -75,21 +75,21 @@ class ForumController extends Controller
     /**
      * Soft delete a forum (author only)
      */
-    public function destroy(int $id): JsonResponse
-    {
-        $forum = Forum::findOrFail($id);
+    public function destroy(Request $request, int $id): JsonResponse
+{
+    $forum = Forum::findOrFail($id);
 
-        // Check if user is the author
-        if ($forum->author_id !== auth()->id()) {
-            return response()->json([
-                'message' => 'Unauthorized. You can only delete your own forums.',
-            ], 403);
-        }
-
-        $this->forumService->deleteForum($forum);
-
+    if ($forum->author_id !== $request->user()->id) {
         return response()->json([
-            'message' => 'Forum deleted successfully',
-        ], 200);
+            'message' => 'Unauthorized. You can only delete your own forums.',
+        ], 403);
     }
+
+    $this->forumService->deleteForum($forum->id, $request->user()->id);
+
+    return response()->json([
+        'message' => 'Forum deleted successfully',
+    ], 200);
+}
+
 }
