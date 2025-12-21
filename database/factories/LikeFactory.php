@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\Flag;
+use App\Models\Like;
 use App\Models\User;
 use App\Models\Forum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Flag>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Like>
  */
-class FlagFactory extends Factory
+class LikeFactory extends Factory
 {
-    protected $model = Flag::class;
+    protected $model = Like::class;
 
     /**
      * Define the model's default state.
@@ -23,20 +23,20 @@ class FlagFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'flaggable_type' => 'App\\Models\\Forum',
-            'flaggable_id' => Forum::factory(),
+            'likeable_type' => 'App\\Models\\Forum',
+            'likeable_id' => Forum::factory(),
         ];
     }
 
     /**
-     * Set the flaggable (polymorphic).
+     * Set the likeable (polymorphic).
      * Renamed from 'for' to 'forModel' to avoid conflict with parent Factory::for()
      */
-    public function forModel($flaggable): static
+    public function forModel($likeable): static
     {
         return $this->state(fn (array $attributes) => [
-            'flaggable_type' => get_class($flaggable),
-            'flaggable_id' => $flaggable->id,
+            'likeable_type' => get_class($likeable),
+            'likeable_id' => $likeable->id,
         ]);
     }
 
