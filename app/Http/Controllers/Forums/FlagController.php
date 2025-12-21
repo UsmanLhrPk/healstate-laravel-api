@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Forums;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FlagContentRequest;
+use App\Http\Requests\Forums\FlagContentRequest;
 use App\Services\FlagService;
 use Illuminate\Http\JsonResponse;
 
