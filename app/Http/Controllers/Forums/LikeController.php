@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Forums;
 
-use App\Http\Requests\ToggleLikeRequest;
+use App\Http\Requests\Forums\ToggleLikeRequest;
 use App\Services\LikeService;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class LikeController extends Controller
 {
@@ -13,7 +14,7 @@ class LikeController extends Controller
     public function __construct(LikeService $likeService)
     {
         $this->likeService = $likeService;
-        $this->middleware('auth:sanctum');
+        // $this->middleware('auth:sanctum');
     }
 
     /**

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Forums;
 
-use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\Forums\StoreCommentRequest;
 use App\Models\Comment;
 use App\Services\CommentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class CommentController extends Controller
 {
@@ -15,7 +16,7 @@ class CommentController extends Controller
     public function __construct(CommentService $commentService)
     {
         $this->commentService = $commentService;
-        $this->middleware('auth:sanctum')->except(['index']);
+        // $this->middleware('auth:sanctum')->except(['index']);
     }
 
     /**
