@@ -9,6 +9,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+/**
+ * @group Comment Management
+ *
+ * APIs for managing comments on forums
+ */
 class CommentController extends Controller
 {
     protected CommentService $commentService;
@@ -16,16 +21,70 @@ class CommentController extends Controller
     public function __construct(CommentService $commentService)
     {
         $this->commentService = $commentService;
-        // $this->middleware('auth:sanctum')->except(['index']);
+        $this->middleware('auth:sanctum')->except(['index']);
     }
 
     /**
-     * Get comments for a commentable entity
+     * Get comments
      * 
-     * Query params:
-     * - commentable_type: required
-     * - commentable_id: required
-     * - parent_id: nullable (if null, returns top-level comments with 3 most recent replies each)
+     * Retrieve comments for a commentable entity (e.g., Forum). 
+     * If parent_id is null, returns top-level comments with 3 most recent replies each (paginated 10 per page).
+     * If parent_id is provided, returns all replies for that comment (paginated 10 per page).
+     *
+     * @queryParam commentable_type string required The type of entity being commented on. Example: App\Models\Forum
+     * @queryParam commentable_id integer required The ID of the entity being commented on. Example: 1
+     * @queryParam parent_id integer optional The parent comment ID (for fetching replies). Example: 5
+     * @queryParam page integer optional The page number for pagination. Example: 1
+     * 
+     * @response 200 {
+     *   "data": [
+     *     {
+     *       "id": 1,
+     *       "comment": "Great post! I've been researching this topic too.",
+     *       "author_id": 2,
+     *       "commentable_type": "App\\Models\\Forum",
+     *       "commentable_id": 1,
+     *       "parent_id": null,
+     *       "created_at": "2024-01-15T11:00:00.000000Z",
+     *       "updated_at": "2024-01-15T11:00:00.000000Z",
+     *       "deleted_at": null,
+     *       "author": {
+     *         "id": 2,
+     *         "name": "Jane Smith",
+     *         "email": "jane@example.com"
+     *       },
+     *       "likes_count": 3,
+     *       "is_liked": false,
+     *       "is_flagged": false,
+     *       "replies_count": 2,
+     *       "replies": [
+     *         {
+     *           "id": 3,
+     *           "comment": "Thanks for sharing!",
+     *           "author_id": 1,
+     *           "parent_id": 1,
+     *           "created_at": "2024-01-15T11:30:00.000000Z",
+     *           "author": {
+     *             "id": 1,
+     *             "name": "John Doe"
+     *           },
+     *           "likes_count": 1
+     *         }
+     *       ]
+     *     }
+     *   ],
+     *   "current_page": 1,
+     *   "last_page": 1,
+     *   "per_page": 10,
+     *   "total": 5
+     * }
+     * 
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "commentable_type": ["The commentable type field is required."]
+     *   }
+     * }
      */
     public function index(Request $request): JsonResponse
     {
@@ -51,7 +110,49 @@ class CommentController extends Controller
     }
 
     /**
-     * Store a new comment
+     * Create a comment
+     * 
+     * Post a new comment on a forum or reply to an existing comment. Requires authentication.
+     *
+     * @authenticated
+     * 
+     * @bodyParam comment string required The comment text. Example: I completely agree with this approach!
+     * @bodyParam commentable_type string required The type of entity being commented on. Example: App\Models\Forum
+     * @bodyParam commentable_id integer required The ID of the entity being commented on. Example: 1
+     * @bodyParam parent_id integer optional The parent comment ID if this is a reply. Example: 5
+     * 
+     * @response 201 {
+     *   "message": "Comment created successfully",
+     *   "comment": {
+     *     "id": 10,
+     *     "comment": "I completely agree with this approach!",
+     *     "author_id": 2,
+     *     "commentable_type": "App\\Models\\Forum",
+     *     "commentable_id": 1,
+     *     "parent_id": null,
+     *     "created_at": "2024-01-15T12:00:00.000000Z",
+     *     "updated_at": "2024-01-15T12:00:00.000000Z",
+     *     "deleted_at": null,
+     *     "author": {
+     *       "id": 2,
+     *       "name": "Jane Smith",
+     *       "email": "jane@example.com"
+     *     },
+     *     "likes": [],
+     *     "flags": []
+     *   }
+     * }
+     * 
+     * @response 422 {
+     *   "message": "The given data was invalid.",
+     *   "errors": {
+     *     "comment": ["The comment field is required."]
+     *   }
+     * }
+     * 
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
      */
     public function store(StoreCommentRequest $request): JsonResponse
     {
@@ -67,7 +168,29 @@ class CommentController extends Controller
     }
 
     /**
-     * Soft delete a comment (author only)
+     * Delete a comment
+     * 
+     * Soft delete a comment. Only the comment author can delete their own comment.
+     *
+     * @authenticated
+     * 
+     * @urlParam id integer required The ID of the comment to delete. Example: 10
+     * 
+     * @response 200 {
+     *   "message": "Comment deleted successfully"
+     * }
+     * 
+     * @response 403 {
+     *   "message": "Unauthorized. You can only delete your own comments."
+     * }
+     * 
+     * @response 404 {
+     *   "message": "Comment not found"
+     * }
+     * 
+     * @response 401 {
+     *   "message": "Unauthenticated."
+     * }
      */
     public function destroy(int $id): JsonResponse
     {
