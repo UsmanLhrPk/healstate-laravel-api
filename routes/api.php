@@ -5,6 +5,9 @@ use App\Http\Controllers\Forums\ForumController;
 use App\Http\Controllers\Forums\CommentController;
 use App\Http\Controllers\Forums\LikeController;
 use App\Http\Controllers\Forums\FlagController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
+
 
 
 // Public routes (no auth required)
@@ -28,3 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Flags
     Route::post('/flags', [FlagController::class, 'store']);
 });
+
+Route::get('/user', [AuthenticatedSessionController::class, 'user'])
+    ->middleware('auth:sanctum')
+    ->name('user.info');
