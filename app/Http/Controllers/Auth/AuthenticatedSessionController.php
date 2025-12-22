@@ -30,6 +30,16 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Get the authenticated user's data.
+     */
+    public function user(Request $request): JsonResponse
+    {
+        return response()->json([
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): JsonResponse
