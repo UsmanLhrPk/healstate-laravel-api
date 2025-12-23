@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Models\View;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Forum extends Model
 {
@@ -26,6 +25,19 @@ class Forum extends Model
     protected $casts = [
         'views' => 'integer',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically set status to 'flagged' when flags reach 10
+        static::updated(function ($forum) {
+            if ($forum->flags_count >= 10 && $forum->status === 'approved') {
+                $forum->status = 'flagged';
+                $forum->saveQuietly(); // Save without triggering events again
+            }
+        });
+    }
 
     // Relationships
     public function author(): BelongsTo
@@ -63,38 +75,55 @@ class Forum extends Model
     // NEW: Add this method
     public function hasBeenViewedBy(?int $userId): bool
     {
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
-        
+
         return $this->views()->where('user_id', $userId)->exists();
     }
 
     // NEW: Add this method
-    public function recordView(?int $userId): bool
+    public function recordView(int $userId): bool
     {
-        if (!$userId || $this->hasBeenViewedBy($userId)) {
-            return false;
-        }
+        $cacheKey = "forum_{$this->id}_user_{$userId}_last_view";
+        $lastView = cache()->get($cacheKey);
 
-        try {
-            $this->views()->create([
-                'user_id' => $userId,
-                'created_at' => now(),
+        \Log::info('🔍 Checking view cooldown', [
+            'forum_id' => $this->id,
+            'user_id' => $userId,
+            'cache_key' => $cacheKey,
+            'last_view' => $lastView,
+            'has_cached_view' => ! is_null($lastView),
+        ]);
+
+        // Only record if no view in the last 2 hours
+        if ($lastView) {
+            \Log::info('❌ View blocked - still in cooldown', [
+                'last_view_time' => $lastView,
+                'minutes_since_last_view' => now()->diffInMinutes($lastView),
             ]);
 
-            $this->increment('views');
-            
-            return true;
-        } catch (\Exception $e) {
-            // Handle race condition (duplicate entry)
-            return false;
+            return false; // Return false to indicate view was not recorded
         }
+
+        // Increment views
+        $this->increment('views');
+
+        // Cache for 2 hours (120 minutes)
+        cache()->put($cacheKey, now(), now()->addHours(2));
+
+        \Log::info('✅ View recorded successfully', [
+            'forum_id' => $this->id,
+            'new_view_count' => $this->views + 1,
+            'cooldown_until' => now()->addHours(2),
+        ]);
+
+        return true; // Return true to indicate view was recorded
     }
 
     public function isLikedBy(?int $userId): bool
     {
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
 
@@ -103,7 +132,7 @@ class Forum extends Model
 
     public function isFlaggedBy(?int $userId): bool
     {
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
 

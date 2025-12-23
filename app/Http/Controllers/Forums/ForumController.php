@@ -138,16 +138,16 @@ class ForumController extends Controller
      * }
      */
     public function show(string $id): JsonResponse
-{
-    // Use optional() to handle both authenticated and guest users
-    $userId = optional(auth('sanctum')->user())->id;
-    
-    $forumId = (int) $id;
-    
-    $result = $this->forumService->getForumWithComments($forumId, $userId);
+    {
+        // Use optional() to handle both authenticated and guest users
+        $userId = optional(auth('sanctum')->user())->id;
 
-    return response()->json($result);
-}
+        $forumId = (int) $id;
+
+        $result = $this->forumService->getForumWithComments($forumId, $userId);
+
+        return response()->json($result);
+    }
 
     /**
      * Create a new forum
@@ -242,5 +242,30 @@ class ForumController extends Controller
         return response()->json([
             'message' => 'Forum deleted successfully',
         ], 200);
+    }
+
+    /**
+     * Record a view for a forum
+     *
+     * @authenticated
+     */
+    public function recordView(Request $request, int $id): JsonResponse
+    {
+        $userId = $request->user()->id;
+
+        $forum = Forum::findOrFail($id);
+        $recorded = $forum->recordView($userId);
+
+        if ($recorded) {
+            return response()->json([
+                'message' => 'View recorded successfully',
+                'views' => $forum->fresh()->views,
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'View not recorded - cooldown active',
+                'views' => $forum->views,
+            ], 429); // 429 Too Many Requests
+        }
     }
 }

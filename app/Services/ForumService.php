@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Forum;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ForumService
 {
@@ -15,11 +14,11 @@ class ForumService
         ?string $category = null,
         ?string $subCategory = null,
         string $sort = 'latest',
-        int $perPage = 20
+        int $perPage = 10
     ): LengthAwarePaginator {
         $query = Forum::with(['author:id,name,email'])
             ->withCount(['comments', 'likes', 'flags'])
-            ->approved();
+            ->where('status', 'approved'); // Only show approved forums
 
         if ($category) {
             $query->byCategory($category);
@@ -40,24 +39,17 @@ class ForumService
 
     /**
      * Get single forum with comments
-     * UPDATED: Now uses proper view tracking
+     * UPDATED: No longer auto-records views - frontend handles this after 30 seconds
      */
     public function getForumWithComments(int $forumId, ?int $userId = null): array
     {
-        \Log::info('=== getForumWithComments ===', [
-        'forum_id' => $forumId,
-        'user_id' => $userId,
-        'auth_check' => auth()->check(),
-        'auth_id' => auth()->id(),
-    ]);
         $forum = Forum::with(['author:id,name,email'])
             ->withCount(['comments', 'likes', 'flags'])
             ->findOrFail($forumId);
 
-        // UPDATED: Record view only once per user (permanent)
-        if ($userId) {
-            $forum->recordView($userId);
-        }
+        // REMOVED: Don't auto-record views anymore
+        // Views are now recorded by the frontend after 30 seconds of active viewing
+        // via the /forums/{id}/view endpoint
 
         $comments = $forum->comments()
             ->with(['author:id,name,email'])
@@ -75,6 +67,7 @@ class ForumService
                 ->map(function ($reply) use ($userId) {
                     $reply->is_liked = $reply->isLikedBy($userId);
                     $reply->is_flagged = $reply->isFlaggedBy($userId);
+
                     return $reply;
                 });
 
