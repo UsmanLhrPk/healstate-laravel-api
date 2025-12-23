@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Forums;
 
-use App\Models\Forum;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Forums\StoreForumRequest;
+use App\Models\Forum;
 use App\Services\ForumService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 /**
  * @group Forum Management
@@ -26,14 +26,14 @@ class ForumController extends Controller
 
     /**
      * List all forums
-     * 
+     *
      * Get a paginated list of all forums. Results can be filtered by category, sub-category, and sorted by latest or popularity.
      *
      * @queryParam category string Filter forums by category. Example: Mind
      * @queryParam sub_category string Filter forums by sub-category. Example: Mental Health
      * @queryParam sort string Sort forums by 'latest' or 'popular'. Defaults to 'latest'. Example: popular
      * @queryParam page integer The page number for pagination. Example: 1
-     * 
+     *
      * @response 200 {
      *   "data": [
      *     {
@@ -84,12 +84,12 @@ class ForumController extends Controller
 
     /**
      * Get a single forum
-     * 
-     * Retrieve detailed information about a specific forum including its comments. 
+     *
+     * Retrieve detailed information about a specific forum including its comments.
      * View count is automatically incremented for non-authors.
      *
      * @urlParam id integer required The ID of the forum. Example: 1
-     * 
+     *
      * @response 200 {
      *   "id": 1,
      *   "title": "How to improve mental clarity?",
@@ -133,32 +133,34 @@ class ForumController extends Controller
      *   "is_liked": false,
      *   "is_flagged": false
      * }
-     * 
      * @response 404 {
      *   "message": "Forum not found"
      * }
      */
-    public function show(int $id): JsonResponse
-    {
-        $userId = auth()->id();
+    public function show(string $id): JsonResponse
+{
+    // Use optional() to handle both authenticated and guest users
+    $userId = optional(auth('sanctum')->user())->id;
+    
+    $forumId = (int) $id;
+    
+    $result = $this->forumService->getForumWithComments($forumId, $userId);
 
-        $result = $this->forumService->getForumWithComments($id, $userId);
-
-        return response()->json($result);
-    }
+    return response()->json($result);
+}
 
     /**
      * Create a new forum
-     * 
+     *
      * Create a new forum post. Requires authentication.
      *
      * @authenticated
-     * 
+     *
      * @bodyParam title string required The forum title (max 400 characters). Example: How to improve mental clarity?
      * @bodyParam content string required The forum content/description. Example: I've been struggling with focus lately...
      * @bodyParam category string required The forum category. Must be one of: Mind, Body, Spirit, Biohacking, Frequency Healing, Holistic Health. Example: Mind
      * @bodyParam sub_category string required The forum sub-category. Example: Mental Health
-     * 
+     *
      * @response 201 {
      *   "message": "Forum created successfully",
      *   "forum": {
@@ -179,7 +181,6 @@ class ForumController extends Controller
      *     }
      *   }
      * }
-     * 
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
@@ -187,7 +188,6 @@ class ForumController extends Controller
      *     "category": ["The selected category is invalid."]
      *   }
      * }
-     * 
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
@@ -207,25 +207,22 @@ class ForumController extends Controller
 
     /**
      * Delete a forum
-     * 
+     *
      * Soft delete a forum. Only the forum author can delete their own forum.
      *
      * @authenticated
-     * 
+     *
      * @urlParam id integer required The ID of the forum to delete. Example: 1
-     * 
+     *
      * @response 200 {
      *   "message": "Forum deleted successfully"
      * }
-     * 
      * @response 403 {
      *   "message": "Unauthorized. You can only delete your own forums."
      * }
-     * 
      * @response 404 {
      *   "message": "Forum not found"
      * }
-     * 
      * @response 401 {
      *   "message": "Unauthenticated."
      * }

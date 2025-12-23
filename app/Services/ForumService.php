@@ -21,7 +21,6 @@ class ForumService
             ->withCount(['comments', 'likes', 'flags'])
             ->approved();
 
-        // Apply filters
         if ($category) {
             $query->byCategory($category);
         }
@@ -30,7 +29,6 @@ class ForumService
             $query->bySubCategory($subCategory);
         }
 
-        // Apply sorting
         if ($sort === 'popular') {
             $query->popular();
         } else {
@@ -42,19 +40,25 @@ class ForumService
 
     /**
      * Get single forum with comments
+     * UPDATED: Now uses proper view tracking
      */
     public function getForumWithComments(int $forumId, ?int $userId = null): array
     {
+        \Log::info('=== getForumWithComments ===', [
+        'forum_id' => $forumId,
+        'user_id' => $userId,
+        'auth_check' => auth()->check(),
+        'auth_id' => auth()->id(),
+    ]);
         $forum = Forum::with(['author:id,name,email'])
             ->withCount(['comments', 'likes', 'flags'])
             ->findOrFail($forumId);
 
-        // Increment views if user is not the author
-        if (!$userId || $forum->author_id !== $userId) {
-            $forum->incrementViews();
+        // UPDATED: Record view only once per user (permanent)
+        if ($userId) {
+            $forum->recordView($userId);
         }
 
-        // Get top-level comments with their 3 most recent replies
         $comments = $forum->comments()
             ->with(['author:id,name,email'])
             ->withCount(['likes', 'flags', 'replies'])
@@ -62,7 +66,6 @@ class ForumService
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // Load 3 most recent replies for each top-level comment
         $comments->getCollection()->transform(function ($comment) use ($userId) {
             $comment->recent_replies = $comment->replies()
                 ->with(['author:id,name,email'])
@@ -81,7 +84,6 @@ class ForumService
             return $comment;
         });
 
-        // Add like/flag status for the forum
         $forum->is_liked = $forum->isLikedBy($userId);
         $forum->is_flagged = $forum->isFlaggedBy($userId);
 
@@ -114,7 +116,6 @@ class ForumService
     {
         $forum = Forum::findOrFail($forumId);
 
-        // Check if user is the author
         if ($forum->author_id !== $userId) {
             throw new \Exception('Unauthorized to delete this forum');
         }

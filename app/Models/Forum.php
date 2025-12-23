@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Models\View;
 
 class Forum extends Model
 {
@@ -47,10 +48,48 @@ class Forum extends Model
         return $this->morphMany(Flag::class, 'flaggable');
     }
 
+    // NEW: Add this relationship
+    public function views(): MorphMany
+    {
+        return $this->morphMany(View::class, 'viewable');
+    }
+
     // Helper methods
     public function incrementViews(): void
     {
         $this->increment('views');
+    }
+
+    // NEW: Add this method
+    public function hasBeenViewedBy(?int $userId): bool
+    {
+        if (!$userId) {
+            return false;
+        }
+        
+        return $this->views()->where('user_id', $userId)->exists();
+    }
+
+    // NEW: Add this method
+    public function recordView(?int $userId): bool
+    {
+        if (!$userId || $this->hasBeenViewedBy($userId)) {
+            return false;
+        }
+
+        try {
+            $this->views()->create([
+                'user_id' => $userId,
+                'created_at' => now(),
+            ]);
+
+            $this->increment('views');
+            
+            return true;
+        } catch (\Exception $e) {
+            // Handle race condition (duplicate entry)
+            return false;
+        }
     }
 
     public function isLikedBy(?int $userId): bool

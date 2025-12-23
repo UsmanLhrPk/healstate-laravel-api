@@ -1,0 +1,26 @@
+[90m= [39m[34;4mApp\Models\Forum[39;24m {#6137
+    [34mid[39m: [35m25[39m,
+    [34mtitle[39m: "[32mEt fuga et deleniti.[39m",
+    [34mcontent[39m: """
+      [32mFacilis est tempore sapiente et consequatur. Mollitia fugit labore accusamus illo expedita. Autem omnis facilis dolorem consequuntur qui. Officiis odio beatae id ipsam.[39m\n
+      \n
+      [32mQuaerat cumque exercitationem et natus nemo. Voluptatem qui eaque similique ex. Autem at eligendi voluptas. Id corporis eius sit corrupti facere ducimus.[39m\n
+      \n
+      [32mQuisquam itaque maiores voluptas eum quo vitae sapiente. Aut et voluptatum quo quia porro voluptatem. Sit dolorem quasi laudantium eum impedit omnis. Neque qui enim praesentium a.[39m\n
+      \n
+      [32mError eaque quisquam est nemo eaque excepturi. Animi id magni reiciendis ut explicabo rerum. Ipsa sunt sed omnis expedita perferendis iste quo culpa.[39m\n
+      \n
+      [32mQuam saepe et aliquid ullam minus odio. Voluptatum rerum officiis at quod laboriosam quos magnam. Porro et ipsum doloremque. Magnam dolor ducimus consequatur aut.[39m\n
+      \n
+      [32mExcepturi sit aut illo excepturi praesentium. Minus debitis repellat quia omnis omnis architecto. Deserunt occaecati sint dolores error pariatur sed sit. Perspiciatis asperiores facere quo et illo voluptatibus quaerat.[39m
+      """,
+    [34mcategory[39m: "[32mFrequency Healing[39m",
+    [34msub_category[39m: "[32mResonance[39m",
+    [34mauthor_id[39m: [35m319[39m,
+    [34mstatus[39m: "[32mapproved[39m",
+    [34mviews[39m: [35m862[39m,
+    [34mcreated_at[39m: "[32m2025-12-21 13:10:45[39m",
+    [34mupdated_at[39m: "[32m2025-12-21 13:10:45[39m",
+    [34mdeleted_at[39m: [36mnull[39m,
+  }
+

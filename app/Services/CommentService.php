@@ -28,7 +28,7 @@ class CommentService
                             'likes',
                             'flags'
                         ])
-                        ->withCount('likes')
+                        ->withCount(['likes','replies'])
                         ->when($userId, function ($q) use ($userId) {
                             $q->addSelect([
                                 'is_liked' => function ($subQuery) use ($userId) {
