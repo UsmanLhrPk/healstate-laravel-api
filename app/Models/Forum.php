@@ -60,7 +60,6 @@ class Forum extends Model
         return $this->morphMany(Flag::class, 'flaggable');
     }
 
-    // NEW: Add this relationship
     public function views(): MorphMany
     {
         return $this->morphMany(View::class, 'viewable');
@@ -72,7 +71,6 @@ class Forum extends Model
         $this->increment('views');
     }
 
-    // NEW: Add this method
     public function hasBeenViewedBy(?int $userId): bool
     {
         if (! $userId) {
@@ -82,7 +80,6 @@ class Forum extends Model
         return $this->views()->where('user_id', $userId)->exists();
     }
 
-    // NEW: Add this method
     public function recordView(int $userId): bool
     {
         $cacheKey = "forum_{$this->id}_user_{$userId}_last_view";
@@ -103,7 +100,7 @@ class Forum extends Model
                 'minutes_since_last_view' => now()->diffInMinutes($lastView),
             ]);
 
-            return false; // Return false to indicate view was not recorded
+            return false;
         }
 
         // Increment views
@@ -118,7 +115,7 @@ class Forum extends Model
             'cooldown_until' => now()->addHours(2),
         ]);
 
-        return true; // Return true to indicate view was recorded
+        return true;
     }
 
     public function isLikedBy(?int $userId): bool
@@ -128,6 +125,38 @@ class Forum extends Model
         }
 
         return $this->likes()->where('user_id', $userId)->exists();
+    }
+
+    /**
+     * Toggle like for a user
+     * Creates a like record if not exists, deletes if exists
+     * 
+     * @param int $userId
+     * @return array ['liked' => bool, 'likes_count' => int]
+     */
+    public function toggleLike(int $userId): array
+    {
+        $like = $this->likes()
+            ->where('user_id', $userId)
+            ->first();
+        
+        if ($like) {
+            // Unlike - delete the record
+            $like->delete();
+            return [
+                'liked' => false,
+                'likes_count' => $this->likes()->count(),
+            ];
+        } else {
+            // Like - create a record
+            $this->likes()->create([
+                'user_id' => $userId,
+            ]);
+            return [
+                'liked' => true,
+                'likes_count' => $this->likes()->count(),
+            ];
+        }
     }
 
     public function isFlaggedBy(?int $userId): bool

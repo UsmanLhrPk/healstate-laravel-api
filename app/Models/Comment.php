@@ -71,6 +71,38 @@ class Comment extends Model
         return $this->likes()->where('user_id', $userId)->exists();
     }
 
+    /**
+     * Toggle like for a user
+     * Creates a like record if not exists, deletes if exists
+     * 
+     * @param int $userId
+     * @return array ['liked' => bool, 'likes_count' => int]
+     */
+    public function toggleLike(int $userId): array
+    {
+        $like = $this->likes()
+            ->where('user_id', $userId)
+            ->first();
+        
+        if ($like) {
+            // Unlike - delete the record
+            $like->delete();
+            return [
+                'liked' => false,
+                'likes_count' => $this->likes()->count(),
+            ];
+        } else {
+            // Like - create a record
+            $this->likes()->create([
+                'user_id' => $userId,
+            ]);
+            return [
+                'liked' => true,
+                'likes_count' => $this->likes()->count(),
+            ];
+        }
+    }
+
     public function isFlaggedBy(?int $userId): bool
     {
         if (!$userId) {
