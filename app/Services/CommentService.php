@@ -13,49 +13,45 @@ class CommentService
      */
     public function getTopLevelComments(string $commentableType, int $commentableId): LengthAwarePaginator
     {
-        $userId = auth()->id();
+        // Use optional() to get user ID even if not authenticated
+        $userId = optional(auth('sanctum')->user())->id;
 
-        return Comment::where('commentable_type', $commentableType)
+        \Log::info('Loading comments', ['user_id' => $userId, 'auth_check' => auth('sanctum')->check()]);
+
+        $comments = Comment::where('commentable_type', $commentableType)
             ->where('commentable_id', $commentableId)
             ->whereNull('parent_id')
             ->with([
                 'author:id,name,email',
-                'replies' => function ($query) use ($userId) {
+                'replies' => function ($query) {
                     $query->latest()
                         ->limit(3)
-                        ->with([
-                            'author:id,name,email',
-                            'likes',
-                            'flags'
-                        ])
-                        ->withCount(['likes','replies'])
-                        ->when($userId, function ($q) use ($userId) {
-                            $q->addSelect([
-                                'is_liked' => function ($subQuery) use ($userId) {
-                                    $subQuery->selectRaw('EXISTS(SELECT 1 FROM likes WHERE likeable_type = ? AND likeable_id = comments.id AND user_id = ?)', ['App\Models\Comment', $userId]);
-                                },
-                                'is_flagged' => function ($subQuery) use ($userId) {
-                                    $subQuery->selectRaw('EXISTS(SELECT 1 FROM flags WHERE flaggable_type = ? AND flaggable_id = comments.id AND user_id = ?)', ['App\Models\Comment', $userId]);
-                                }
-                            ]);
-                        });
-                },
-                'likes',
-                'flags'
+                        ->with('author:id,name,email')
+                        ->withCount(['likes', 'flags', 'replies']);
+                }
             ])
-            ->withCount(['likes', 'replies'])
-            ->when($userId, function ($query) use ($userId) {
-                $query->addSelect([
-                    'is_liked' => function ($subQuery) use ($userId) {
-                        $subQuery->selectRaw('EXISTS(SELECT 1 FROM likes WHERE likeable_type = ? AND likeable_id = comments.id AND user_id = ?)', ['App\Models\Comment', $userId]);
-                    },
-                    'is_flagged' => function ($subQuery) use ($userId) {
-                        $subQuery->selectRaw('EXISTS(SELECT 1 FROM flags WHERE flaggable_type = ? AND flaggable_id = comments.id AND user_id = ?)', ['App\Models\Comment', $userId]);
-                    }
-                ]);
-            })
+            ->withCount(['likes', 'flags', 'replies'])
             ->latest()
             ->paginate(10);
+
+        // Transform the collection to add is_liked and is_flagged
+        $comments->getCollection()->transform(function ($comment) use ($userId) {
+            $comment->is_liked = $comment->isLikedBy($userId);
+            $comment->is_flagged = $comment->isFlaggedBy($userId);
+            
+            // Also set is_liked and is_flagged for replies
+            if ($comment->replies) {
+                $comment->replies->transform(function ($reply) use ($userId) {
+                    $reply->is_liked = $reply->isLikedBy($userId);
+                    $reply->is_flagged = $reply->isFlaggedBy($userId);
+                    return $reply;
+                });
+            }
+            
+            return $comment;
+        });
+
+        return $comments;
     }
 
     /**
@@ -64,27 +60,23 @@ class CommentService
      */
     public function getReplies(int $parentId): LengthAwarePaginator
     {
-        $userId = auth()->id();
+        // Use optional() to get user ID even if not authenticated
+        $userId = optional(auth('sanctum')->user())->id;
 
-        return Comment::where('parent_id', $parentId)
-            ->with([
-                'author:id,name,email',
-                'likes',
-                'flags'
-            ])
-            ->withCount('likes')
-            ->when($userId, function ($query) use ($userId) {
-                $query->addSelect([
-                    'is_liked' => function ($subQuery) use ($userId) {
-                        $subQuery->selectRaw('EXISTS(SELECT 1 FROM likes WHERE likeable_type = ? AND likeable_id = comments.id AND user_id = ?)', ['App\Models\Comment', $userId]);
-                    },
-                    'is_flagged' => function ($subQuery) use ($userId) {
-                        $subQuery->selectRaw('EXISTS(SELECT 1 FROM flags WHERE flaggable_type = ? AND flaggable_id = comments.id AND user_id = ?)', ['App\Models\Comment', $userId]);
-                    }
-                ]);
-            })
+        $replies = Comment::where('parent_id', $parentId)
+            ->with('author:id,name,email')
+            ->withCount(['likes', 'flags', 'replies'])
             ->latest()
             ->paginate(10);
+
+        // Transform the collection to add is_liked and is_flagged
+        $replies->getCollection()->transform(function ($reply) use ($userId) {
+            $reply->is_liked = $reply->isLikedBy($userId);
+            $reply->is_flagged = $reply->isFlaggedBy($userId);
+            return $reply;
+        });
+
+        return $replies;
     }
 
     /**
@@ -101,7 +93,7 @@ class CommentService
         ]);
 
         return $comment;
-    }
+    }   
 
     /**
      * Soft delete a comment
