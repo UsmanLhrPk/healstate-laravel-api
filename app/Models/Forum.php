@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Forum extends Model
 {
@@ -26,15 +27,23 @@ class Forum extends Model
         'views' => 'integer',
     ];
 
+    // Append dynamic attributes to JSON
+    protected $appends = [
+        'comments_count',
+        'likes_count',
+        'flags_count',
+    ];
+
     protected static function boot()
     {
         parent::boot();
 
         // Automatically set status to 'flagged' when flags reach 10
         static::updated(function ($forum) {
-            if ($forum->flags_count >= 10 && $forum->status === 'approved') {
+            $flagsCount = $forum->flags()->count();
+            if ($flagsCount >= 10 && $forum->status === 'approved') {
                 $forum->status = 'flagged';
-                $forum->saveQuietly(); // Save without triggering events again
+                $forum->saveQuietly();
             }
         });
     }
@@ -63,6 +72,46 @@ class Forum extends Model
     public function views(): MorphMany
     {
         return $this->morphMany(View::class, 'viewable');
+    }
+
+    // Dynamic Count Accessors - Always return real counts from database
+    
+    /**
+     * Get comments count (handles both single and double backslashes)
+     */
+    public function getCommentsCountAttribute(): int
+    {
+        return DB::table('comments')
+            ->where('commentable_id', $this->id)
+            ->where(function($query) {
+                $query->where('commentable_type', 'App\Models\Forum')
+                      ->orWhere('commentable_type', 'App\\Models\\Forum');
+            })
+            ->whereNull('parent_id')  // Only count top-level comments
+            ->whereNull('deleted_at')
+            ->count();
+    }
+
+    /**
+     * Get likes count
+     */
+    public function getLikesCountAttribute(): int
+    {
+        return DB::table('likes')
+            ->where('likeable_id', $this->id)
+            ->where('likeable_type', 'App\Models\Forum')
+            ->count();
+    }
+
+    /**
+     * Get flags count
+     */
+    public function getFlagsCountAttribute(): int
+    {
+        return DB::table('flags')
+            ->where('flaggable_id', $this->id)
+            ->where('flaggable_type', 'App\Models\Forum')
+            ->count();
     }
 
     // Helper methods
@@ -132,7 +181,7 @@ class Forum extends Model
      * Creates a like record if not exists, deletes if exists
      * 
      * @param int $userId
-     * @return array ['liked' => bool, 'likes_count' => int]
+     * @return array ['liked' => bool, 'like_count' => int]
      */
     public function toggleLike(int $userId): array
     {
@@ -145,7 +194,7 @@ class Forum extends Model
             $like->delete();
             return [
                 'liked' => false,
-                'likes_count' => $this->likes()->count(),
+                'like_count' => $this->likes_count, // Uses accessor
             ];
         } else {
             // Like - create a record
@@ -154,7 +203,7 @@ class Forum extends Model
             ]);
             return [
                 'liked' => true,
-                'likes_count' => $this->likes()->count(),
+                'like_count' => $this->likes_count, // Uses accessor
             ];
         }
     }

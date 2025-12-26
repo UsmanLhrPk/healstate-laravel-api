@@ -11,7 +11,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Models\Forum;
 use App\Models\Comment;
-use App\Observers\CommentObserver;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -35,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         //     'comment' => Comment::class,
         // ]);
 
-        Comment::observe(CommentObserver::class);
+
 
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";

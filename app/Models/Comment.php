@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Comment extends Model
 {
@@ -28,6 +29,13 @@ class Comment extends Model
         'deleted_at' => 'datetime',
     ];
 
+    // Append dynamic attributes to JSON
+    protected $appends = [
+        'likes_count',
+        'flags_count',
+        'replies_count',
+    ];
+
     /**
      * Scope to query by commentable, handling both slash formats
      */
@@ -38,14 +46,17 @@ class Comment extends Model
             'id' => $commentableId,
         ]);
 
-        // Just match by ID and check if it contains "Forum" anywhere
+        // Match by ID and handle both single and double backslashes for Forum
         return $query->where('commentable_id', $commentableId)
             ->where(function ($q) {
-                $q->where('commentable_type', 'LIKE', '%Forum%')
-                    ->orWhere('commentable_type', 'LIKE', '%forum%');
+                $q->where('commentable_type', 'App\Models\Forum')
+                  ->orWhere('commentable_type', 'App\\Models\\Forum')
+                  ->orWhere('commentable_type', 'LIKE', '%Forum%')
+                  ->orWhere('commentable_type', 'LIKE', '%forum%');
             });
     }
 
+    // Relationships
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -76,11 +87,57 @@ class Comment extends Model
         return $this->morphMany(Flag::class, 'flaggable');
     }
 
-    public function getLikeCountAttribute(): int
+    // Dynamic Count Accessors - Always return real counts from database
+
+    /**
+     * Get likes count (real-time from database)
+     */
+    public function getLikesCountAttribute(): int
     {
-        return $this->likes()->count();
+        return DB::table('likes')
+            ->where('likeable_id', $this->id)
+            ->where(function($query) {
+                $query->where('likeable_type', 'App\Models\Comment')
+                      ->orWhere('likeable_type', 'App\\Models\\Comment');
+            })
+            ->count();
     }
 
+    /**
+     * Get flags count (real-time from database)
+     */
+    public function getFlagsCountAttribute(): int
+    {
+        return DB::table('flags')
+            ->where('flaggable_id', $this->id)
+            ->where(function($query) {
+                $query->where('flaggable_type', 'App\Models\Comment')
+                      ->orWhere('flaggable_type', 'App\\Models\\Comment');
+            })
+            ->count();
+    }
+
+    /**
+     * Get replies count (real-time from database)
+     */
+    public function getRepliesCountAttribute(): int
+    {
+        return DB::table('comments')
+            ->where('parent_id', $this->id)
+            ->whereNull('deleted_at')
+            ->count();
+    }
+
+    /**
+     * Legacy support - alias for likes_count
+     * @deprecated Use likes_count instead
+     */
+    public function getLikeCountAttribute(): int
+    {
+        return $this->likes_count;
+    }
+
+    // Helper Methods
     public function isLikedBy(?int $userId): bool
     {
         if (! $userId) {
@@ -94,7 +151,7 @@ class Comment extends Model
      * Toggle like for a user
      * Creates a like record if not exists, deletes if exists
      *
-     * @return array ['liked' => bool, 'likes_count' => int]
+     * @return array ['liked' => bool, 'like_count' => int]
      */
     public function toggleLike(int $userId): array
     {
@@ -108,7 +165,7 @@ class Comment extends Model
 
             return [
                 'liked' => false,
-                'likes_count' => $this->likes()->count(),
+                'like_count' => $this->likes_count, // Uses dynamic accessor
             ];
         } else {
             // Like - create a record
@@ -118,7 +175,7 @@ class Comment extends Model
 
             return [
                 'liked' => true,
-                'likes_count' => $this->likes()->count(),
+                'like_count' => $this->likes_count, // Uses dynamic accessor
             ];
         }
     }
