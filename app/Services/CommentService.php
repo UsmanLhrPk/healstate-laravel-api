@@ -12,47 +12,44 @@ class CommentService
      * Paginated 10 per page
      */
     public function getTopLevelComments(string $commentableType, int $commentableId): LengthAwarePaginator
-    {
-        // Use optional() to get user ID even if not authenticated
-        $userId = optional(auth('sanctum')->user())->id;
+{
+    $userId = optional(auth('sanctum')->user())->id;
 
-        \Log::info('Loading comments', ['user_id' => $userId, 'auth_check' => auth('sanctum')->check()]);
+    \Log::info('Loading comments', ['user_id' => $userId, 'auth_check' => auth('sanctum')->check()]);
 
-        $comments = Comment::where('commentable_type', $commentableType)
-            ->where('commentable_id', $commentableId)
-            ->whereNull('parent_id')
-            ->with([
-                'author:id,name,email',
-                'replies' => function ($query) {
-                    $query->latest()
-                        ->limit(3)
-                        ->with('author:id,name,email')
-                        ->withCount(['likes', 'flags', 'replies']);
-                }
-            ])
-            ->withCount(['likes', 'flags', 'replies'])
-            ->latest()
-            ->paginate(10);
-
-        // Transform the collection to add is_liked and is_flagged
-        $comments->getCollection()->transform(function ($comment) use ($userId) {
-            $comment->is_liked = $comment->isLikedBy($userId);
-            $comment->is_flagged = $comment->isFlaggedBy($userId);
-            
-            // Also set is_liked and is_flagged for replies
-            if ($comment->replies) {
-                $comment->replies->transform(function ($reply) use ($userId) {
-                    $reply->is_liked = $reply->isLikedBy($userId);
-                    $reply->is_flagged = $reply->isFlaggedBy($userId);
-                    return $reply;
-                });
+    $comments = Comment::forCommentable($commentableType, $commentableId)
+        ->whereNull('parent_id')
+        ->with([
+            'author:id,name,email',
+            'replies' => function ($query) {
+                $query->latest()
+                    ->limit(3)
+                    ->with('author:id,name,email')
+                    ->withCount(['likes', 'flags', 'replies']);
             }
-            
-            return $comment;
-        });
+        ])
+        ->withCount(['likes', 'flags', 'replies'])
+        ->latest()
+        ->paginate(10);
 
-        return $comments;
-    }
+    // Transform the collection to add is_liked and is_flagged
+    $comments->getCollection()->transform(function ($comment) use ($userId) {
+        $comment->is_liked = $comment->isLikedBy($userId);
+        $comment->is_flagged = $comment->isFlaggedBy($userId);
+        
+        if ($comment->replies) {
+            $comment->replies->transform(function ($reply) use ($userId) {
+                $reply->is_liked = $reply->isLikedBy($userId);
+                $reply->is_flagged = $reply->isFlaggedBy($userId);
+                return $reply;
+            });
+        }
+        
+        return $comment;
+    });
+
+    return $comments;
+}
 
     /**
      * Get paginated replies for a specific comment

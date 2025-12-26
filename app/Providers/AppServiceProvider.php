@@ -8,6 +8,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Models\Forum;
+use App\Models\Comment;
+use App\Observers\CommentObserver;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +29,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Enforce morph map for polymorphic relationships
+        // Relation::enforceMorphMap([
+        //     'forum' => Forum::class,
+        //     'comment' => Comment::class,
+        // ]);
+
+        Comment::observe(CommentObserver::class);
+
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });

@@ -28,6 +28,24 @@ class Comment extends Model
         'deleted_at' => 'datetime',
     ];
 
+    /**
+     * Scope to query by commentable, handling both slash formats
+     */
+    public function scopeForCommentable($query, string $commentableType, int $commentableId)
+    {
+        \Log::info('scopeForCommentable called', [
+            'type' => $commentableType,
+            'id' => $commentableId,
+        ]);
+
+        // Just match by ID and check if it contains "Forum" anywhere
+        return $query->where('commentable_id', $commentableId)
+            ->where(function ($q) {
+                $q->where('commentable_type', 'LIKE', '%Forum%')
+                    ->orWhere('commentable_type', 'LIKE', '%forum%');
+            });
+    }
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -65,17 +83,17 @@ class Comment extends Model
 
     public function isLikedBy(?int $userId): bool
     {
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
+
         return $this->likes()->where('user_id', $userId)->exists();
     }
 
     /**
      * Toggle like for a user
      * Creates a like record if not exists, deletes if exists
-     * 
-     * @param int $userId
+     *
      * @return array ['liked' => bool, 'likes_count' => int]
      */
     public function toggleLike(int $userId): array
@@ -83,10 +101,11 @@ class Comment extends Model
         $like = $this->likes()
             ->where('user_id', $userId)
             ->first();
-        
+
         if ($like) {
             // Unlike - delete the record
             $like->delete();
+
             return [
                 'liked' => false,
                 'likes_count' => $this->likes()->count(),
@@ -96,6 +115,7 @@ class Comment extends Model
             $this->likes()->create([
                 'user_id' => $userId,
             ]);
+
             return [
                 'liked' => true,
                 'likes_count' => $this->likes()->count(),
@@ -105,9 +125,10 @@ class Comment extends Model
 
     public function isFlaggedBy(?int $userId): bool
     {
-        if (!$userId) {
+        if (! $userId) {
             return false;
         }
+
         return $this->flags()->where('user_id', $userId)->exists();
     }
 }

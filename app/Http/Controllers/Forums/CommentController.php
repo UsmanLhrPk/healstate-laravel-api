@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Forums;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Forums\StoreCommentRequest;
 use App\Models\Comment;
 use App\Services\CommentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 /**
  * @group Comment Management
@@ -26,8 +26,8 @@ class CommentController extends Controller
 
     /**
      * Get comments
-     * 
-     * Retrieve comments for a commentable entity (e.g., Forum). 
+     *
+     * Retrieve comments for a commentable entity (e.g., Forum).
      * If parent_id is null, returns top-level comments with 3 most recent replies each (paginated 10 per page).
      * If parent_id is provided, returns all replies for that comment (paginated 10 per page).
      *
@@ -35,7 +35,7 @@ class CommentController extends Controller
      * @queryParam commentable_id integer required The ID of the entity being commented on. Example: 1
      * @queryParam parent_id integer optional The parent comment ID (for fetching replies). Example: 5
      * @queryParam page integer optional The page number for pagination. Example: 1
-     * 
+     *
      * @response 200 {
      *   "data": [
      *     {
@@ -78,7 +78,6 @@ class CommentController extends Controller
      *   "per_page": 10,
      *   "total": 5
      * }
-     * 
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
@@ -98,29 +97,54 @@ class CommentController extends Controller
         $commentableId = $request->input('commentable_id');
         $parentId = $request->input('parent_id');
 
+        // DEBUG: Log what the client sent
+        \Log::info('Comment Index Request', [
+            'commentable_type_raw' => $commentableType,
+            'commentable_type_length' => strlen($commentableType),
+            'commentable_type_hex' => bin2hex($commentableType),
+            'commentable_id' => $commentableId,
+        ]);
+
+        // DEBUG: Check what's actually in the database for this ID
+        $dbCheck = \DB::table('comments')
+            ->where('commentable_id', $commentableId)
+            ->whereNull('parent_id')
+            ->select('commentable_type')
+            ->distinct()
+            ->get();
+
+        \Log::info('Database has these types for ID '.$commentableId, [
+            'types' => $dbCheck->pluck('commentable_type')->toArray(),
+        ]);
+
         if ($parentId) {
-            // Return paginated replies for a specific comment (10 per page)
             $replies = $this->commentService->getReplies($parentId);
+
             return response()->json($replies);
         }
 
-        // Return top-level comments with 3 most recent replies each (10 per page)
         $comments = $this->commentService->getTopLevelComments($commentableType, $commentableId);
+
+        // DEBUG: Log what we got back
+        \Log::info('Comments returned', [
+            'count' => $comments->total(),
+        ]);
+
         return response()->json($comments);
     }
 
     /**
      * Create a comment
-     * 
+     *
      * Post a new comment on a forum or reply to an existing comment. Requires authentication.
      *
      * @authenticated
-     * 
+     *
      * @bodyParam comment string required The comment text. Example: I completely agree with this approach!
      * @bodyParam commentable_type string required The type of entity being commented on. Example: App\Models\Forum
      * @bodyParam commentable_id integer required The ID of the entity being commented on. Example: 1
      * @bodyParam parent_id integer optional The parent comment ID if this is a reply. Example: 5
-     * 
+     *
      * @response 201 {
      *   "message": "Comment created successfully",
      *   "comment": {
@@ -142,14 +166,12 @@ class CommentController extends Controller
      *     "flags": []
      *   }
      * }
-     * 
      * @response 422 {
      *   "message": "The given data was invalid.",
      *   "errors": {
      *     "comment": ["The comment field is required."]
      *   }
      * }
-     * 
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
@@ -169,25 +191,22 @@ class CommentController extends Controller
 
     /**
      * Delete a comment
-     * 
+     *
      * Soft delete a comment. Only the comment author can delete their own comment.
      *
      * @authenticated
-     * 
+     *
      * @urlParam id integer required The ID of the comment to delete. Example: 10
-     * 
+     *
      * @response 200 {
      *   "message": "Comment deleted successfully"
      * }
-     * 
      * @response 403 {
      *   "message": "Unauthorized. You can only delete your own comments."
      * }
-     * 
      * @response 404 {
      *   "message": "Comment not found"
      * }
-     * 
      * @response 401 {
      *   "message": "Unauthenticated."
      * }
