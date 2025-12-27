@@ -11,10 +11,33 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Models\Forum;
 use App\Models\Comment;
-
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\ServiceBooking;
+use App\Models\ServiceSlot;
+use App\Models\Vendor;
+use App\Policies\ProductPolicy;
+use App\Policies\ProductVariantPolicy;
+use App\Policies\ServiceBookingPolicy;
+use App\Policies\ServiceSlotPolicy;
+use App\Policies\VendorPolicy;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * The policy mappings for the application.
+     *
+     * @var array<class-string, class-string>
+     */
+    protected $policies = [
+        Vendor::class => VendorPolicy::class,
+        Product::class => ProductPolicy::class,
+        ProductVariant::class => ProductVariantPolicy::class,
+        ServiceSlot::class => ServiceSlotPolicy::class,
+        ServiceBooking::class => ServiceBookingPolicy::class,
+    ];
+
     /**
      * Register any application services.
      */
@@ -28,15 +51,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register policies
+        foreach ($this->policies as $model => $policy) {
+            Gate::policy($model, $policy);
+        }
+
         // Enforce morph map for polymorphic relationships
         // Relation::enforceMorphMap([
         //     'forum' => Forum::class,
         //     'comment' => Comment::class,
         // ]);
 
-
-
-        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
+        ResetPassword::createUrlUsing(function (object $notifiable, string $token)  {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
 
