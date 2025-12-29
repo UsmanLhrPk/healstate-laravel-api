@@ -19,13 +19,24 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+        
+        // Load vendor relationship
+        $user->load('vendor');
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful',
             'token' => $token,
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'email_verified_at' => $user->email_verified_at,
+                'vendor_id' => $user->vendor?->id,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ],
         ]);
     }
 
@@ -34,8 +45,21 @@ class AuthenticatedSessionController extends Controller
      */
     public function user(Request $request): JsonResponse
     {
+        $user = $request->user();
+        
+        // Load vendor relationship
+        $user->load('vendor');
+        
         return response()->json([
-            'user' => $request->user(),
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'email_verified_at' => $user->email_verified_at,
+                'vendor_id' => $user->vendor?->id,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ],
         ]);
     }
 
