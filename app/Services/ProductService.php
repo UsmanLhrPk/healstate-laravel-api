@@ -20,7 +20,9 @@ class ProductService
     public function updateProduct(Product $product, array $data): Product
     {
         DB::transaction(function () use ($product, $data) {
-            $product->update($data);
+            // Only update fillable fields
+            $fillableData = array_intersect_key($data, array_flip($product->getFillable()));
+            $product->update($fillableData);
         });
 
         return $product->fresh();

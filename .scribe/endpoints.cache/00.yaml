@@ -105,7 +105,7 @@ endpoints:
         name: sort
         description: ''
         required: false
-        example: latest
+        example: popular
         type: string
         enumValues:
           - latest
@@ -116,7 +116,7 @@ endpoints:
     cleanBodyParameters:
       category: architecto
       sub_category: architecto
-      sort: latest
+      sort: popular
     fileParameters: []
     responses:
       -
@@ -470,6 +470,51 @@ endpoints:
           }
         headers: []
         description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/forums/{id}/view'
+    metadata:
+      custom: []
+      groupName: 'Forum Management'
+      groupDescription: |-
+
+        APIs for managing community forums
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Record a view for a forum'
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the forum.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
     responseFields: []
     auth: []
     controller: null

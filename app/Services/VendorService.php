@@ -19,7 +19,9 @@ class VendorService
     public function updateVendor(Vendor $vendor, array $data): Vendor
     {
         DB::transaction(function () use ($vendor, $data) {
-            $vendor->update($data);
+            // Only update fillable fields
+            $fillableData = array_intersect_key($data, array_flip($vendor->getFillable()));
+            $vendor->update($fillableData);
         });
 
         return $vendor->fresh();

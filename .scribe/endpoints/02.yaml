@@ -1,25 +1,99 @@
-name: 'Like Management'
+name: 'Vendor Management'
 description: |-
 
-  APIs for liking/unliking forums and comments
+  APIs for managing vendors
 endpoints:
   -
     custom: []
     httpMethods:
-      - POST
-    uri: api/likes
+      - GET
+    uri: 'api/vendors/{vendor_id}'
     metadata:
       custom: []
-      groupName: 'Like Management'
+      groupName: 'Vendor Management'
       groupDescription: |-
 
-        APIs for liking/unliking forums and comments
+        APIs for managing vendors
       subgroup: ''
       subgroupDescription: ''
-      title: 'Toggle like'
-      description: |-
-        Like or unlike a forum or comment. If the user has already liked the content, it will be unliked.
-        If the user hasn't liked it yet, a like will be created. Requires authentication.
+      title: 'Get Vendor Details'
+      description: 'Retrieve detailed information about a specific vendor.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vendor_id:
+        custom: []
+        name: vendor_id
+        description: 'The ID of the vendor.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      vendor:
+        custom: []
+        name: vendor
+        description: 'The vendor ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      vendor_id: 1
+      vendor: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "user_id": 1,
+              "business_name": "Tech Solutions Inc",
+              "brief": "We provide IT consulting services",
+              "category": ["IT", "Consulting"],
+              "average_rating": 4.5,
+              "review_count": 20,
+              "is_verified": true,
+              "products": []
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/vendors
+    metadata:
+      custom: []
+      groupName: 'Vendor Management'
+      groupDescription: |-
+
+        APIs for managing vendors
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create Vendor'
+      description: 'Register a new vendor with business details.'
       authenticated: true
       deprecated: false
     headers:
@@ -30,21 +104,169 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      likeable_type:
+      business_name:
         custom: []
-        name: likeable_type
-        description: 'The type of entity to like.'
+        name: business_name
+        description: 'The business name.'
         required: true
-        example: App\Models\Forum
+        example: 'Tech Solutions Inc'
         type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      likeable_id:
+      brief:
         custom: []
-        name: likeable_id
-        description: 'The ID of the entity to like.'
+        name: brief
+        description: 'Brief description of the business.'
+        required: true
+        example: 'We provide IT consulting services'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: 'Array of business categories.'
+        required: true
+        example:
+          - IT
+          - Consulting
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      website:
+        custom: []
+        name: website
+        description: 'optional Business website URL.'
+        required: false
+        example: 'https://techsolutions.com'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      street_address:
+        custom: []
+        name: street_address
+        description: 'optional Street address.'
+        required: false
+        example: '123 Main St'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      city:
+        custom: []
+        name: city
+        description: 'City (required if street_address is provided).'
+        required: false
+        example: 'New York'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      state_province:
+        custom: []
+        name: state_province
+        description: 'State/Province (required if street_address is provided).'
+        required: false
+        example: NY
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      postal_code:
+        custom: []
+        name: postal_code
+        description: 'optional Postal/ZIP code.'
+        required: false
+        example: '10001'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      business_name: 'Tech Solutions Inc'
+      brief: 'We provide IT consulting services'
+      category:
+        - IT
+        - Consulting
+      website: 'https://techsolutions.com'
+      street_address: '123 Main St'
+      city: 'New York'
+      state_province: NY
+      postal_code: '10001'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "message": "Vendor created successfully",
+            "data": {
+              "id": 1,
+              "user_id": 1,
+              "business_name": "Tech Solutions Inc",
+              "brief": "We provide IT consulting services",
+              "category": ["IT", "Consulting"],
+              "website": "https://techsolutions.com",
+              "verified_at": null,
+              "created_at": "2024-01-01T00:00:00.000000Z"
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/vendors/{vendor_id}'
+    metadata:
+      custom: []
+      groupName: 'Vendor Management'
+      groupDescription: |-
+
+        APIs for managing vendors
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update Vendor'
+      description: 'Update vendor information. Only the vendor owner can update.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vendor_id:
+        custom: []
+        name: vendor_id
+        description: 'The ID of the vendor.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      vendor:
+        custom: []
+        name: vendor
+        description: 'The vendor ID.'
         required: true
         example: 1
         type: integer
@@ -52,9 +274,113 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         deprecated: false
+    cleanUrlParameters:
+      vendor_id: 1
+      vendor: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      business_name:
+        custom: []
+        name: business_name
+        description: 'optional The business name.'
+        required: false
+        example: 'Tech Solutions Inc'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      brief:
+        custom: []
+        name: brief
+        description: 'optional Brief description.'
+        required: false
+        example: 'Updated description'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: 'optional Array of categories.'
+        required: false
+        example:
+          - IT
+          - Software
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      website:
+        custom: []
+        name: website
+        description: 'optional Business website.'
+        required: false
+        example: 'https://newtechsolutions.com'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      street_address:
+        custom: []
+        name: street_address
+        description: 'optional Street address.'
+        required: false
+        example: '456 Oak Ave'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      city:
+        custom: []
+        name: city
+        description: 'City (required if street_address is provided).'
+        required: false
+        example: Boston
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      state_province:
+        custom: []
+        name: state_province
+        description: 'State (required if street_address is provided).'
+        required: false
+        example: MA
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      postal_code:
+        custom: []
+        name: postal_code
+        description: 'optional Postal code.'
+        required: false
+        example: '02101'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
-      likeable_type: App\Models\Forum
-      likeable_id: 1
+      business_name: 'Tech Solutions Inc'
+      brief: 'Updated description'
+      category:
+        - IT
+        - Software
+      website: 'https://newtechsolutions.com'
+      street_address: '456 Oak Ave'
+      city: Boston
+      state_province: MA
+      postal_code: '02101'
     fileParameters: []
     responses:
       -
@@ -62,39 +388,91 @@ endpoints:
         status: 200
         content: |-
           {
-            "liked": true,
-            "like_count": 13
+            "message": "Vendor updated successfully",
+            "data": {
+              "id": 1,
+              "business_name": "Tech Solutions Inc",
+              "updated_at": "2024-01-02T00:00:00.000000Z"
+            }
           }
         headers: []
         description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/vendors/{vendor_id}/verify'
+    metadata:
+      custom: []
+      groupName: 'Vendor Management'
+      groupDescription: |-
+
+        APIs for managing vendors
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Verify Vendor'
+      description: 'Verify a vendor (admin only). Verified vendors appear in public listings.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vendor_id:
+        custom: []
+        name: vendor_id
+        description: 'The ID of the vendor.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      vendor:
+        custom: []
+        name: vendor
+        description: 'The vendor ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      vendor_id: 1
+      vendor: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
         status: 200
         content: |-
           {
-            "liked": false,
-            "like_count": 12
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: |-
-          {
-            "message": "Unauthenticated."
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: |-
-          {
-            "message": "The given data was invalid.",
-            "errors": {
-              "likeable_type": ["The likeable type field is required."]
+            "message": "Vendor verified successfully",
+            "data": {
+              "id": 1,
+              "verified_at": "2024-01-01T00:00:00.000000Z"
             }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Unauthorized"
           }
         headers: []
         description: ''

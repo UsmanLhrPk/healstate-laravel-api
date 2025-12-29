@@ -1,0 +1,217 @@
+name: 'Vendor Reviews'
+description: |-
+
+  APIs for managing vendor ratings and reviews
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/vendors/{vendor_id}/reviews'
+    metadata:
+      custom: []
+      groupName: 'Vendor Reviews'
+      groupDescription: |-
+
+        APIs for managing vendor ratings and reviews
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List Vendor Reviews'
+      description: 'Get all reviews for a vendor with pagination.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vendor_id:
+        custom: []
+        name: vendor_id
+        description: 'The ID of the vendor.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      vendor:
+        custom: []
+        name: vendor
+        description: 'The vendor ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      vendor_id: 1
+      vendor: 1
+    queryParameters:
+      page:
+        custom: []
+        name: page
+        description: 'Page number.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Items per page (max 100).'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      page: 1
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": 1,
+                "vendor_id": 1,
+                "user_id": 1,
+                "rating": 5,
+                "user": {
+                  "id": 1,
+                  "name": "John Doe"
+                },
+                "created_at": "2024-01-01T00:00:00.000000Z"
+              },
+              {
+                "id": 2,
+                "vendor_id": 1,
+                "user_id": 2,
+                "rating": 4,
+                "user": {
+                  "id": 2,
+                  "name": "Jane Smith"
+                },
+                "created_at": "2024-01-02T00:00:00.000000Z"
+              }
+            ],
+            "links": {
+              "first": "http://localhost/api/vendors/1/reviews?page=1",
+              "last": "http://localhost/api/vendors/1/reviews?page=5",
+              "prev": null,
+              "next": "http://localhost/api/vendors/1/reviews?page=2"
+            },
+            "meta": {
+              "current_page": 1,
+              "from": 1,
+              "last_page": 5,
+              "per_page": 15,
+              "to": 15,
+              "total": 73
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/vendors/{vendor_id}/reviews'
+    metadata:
+      custom: []
+      groupName: 'Vendor Reviews'
+      groupDescription: |-
+
+        APIs for managing vendor ratings and reviews
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Add Review'
+      description: 'Submit a rating for a vendor.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      vendor_id:
+        custom: []
+        name: vendor_id
+        description: 'The ID of the vendor.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      vendor:
+        custom: []
+        name: vendor
+        description: 'The vendor ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      vendor_id: 1
+      vendor: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      rating:
+        custom: []
+        name: rating
+        description: 'Rating from 1-5.'
+        required: true
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      rating: 5
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "message": "Review created successfully",
+            "data": {
+              "id": 1,
+              "vendor_id": 1,
+              "user_id": 1,
+              "rating": 5,
+              "created_at": "2024-01-01T00:00:00.000000Z"
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

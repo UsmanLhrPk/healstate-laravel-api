@@ -22,7 +22,9 @@ class VariantService
     public function updateVariant(ProductVariant $variant, array $data): ProductVariant
     {
         DB::transaction(function () use ($variant, $data) {
-            $variant->update($data);
+            // Only update fillable fields
+            $fillableData = array_intersect_key($data, array_flip($variant->getFillable()));
+            $variant->update($fillableData);
         });
 
         return $variant->fresh();

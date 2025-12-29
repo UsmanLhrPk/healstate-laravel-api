@@ -19,7 +19,9 @@ class SlotService
     public function updateSlot(ServiceSlot $slot, array $data): ServiceSlot
     {
         DB::transaction(function () use ($slot, $data) {
-            $slot->update($data);
+            // Only update fillable fields
+            $fillableData = array_intersect_key($data, array_flip($slot->getFillable()));
+            $slot->update($fillableData);
         });
 
         return $slot->fresh();
