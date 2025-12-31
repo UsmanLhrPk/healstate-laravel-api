@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Vendors;
+namespace App\Services;
 
 use App\Models\ServiceSlot;
 use App\Models\ServiceAvailability;

@@ -22,7 +22,7 @@ Route::get('/comments', [CommentController::class, 'index']);
 Route::get('/vendors/{vendor}', [VendorController::class, 'show']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/vendors/{vendor}/reviews', [ReviewController::class, 'index']);
-Route::get('/slots/{slot}/availability', [BookingController::class, 'availability']);
+Route::get('/slots/{slot}/availability', [AvailabilityController::class, 'availability']);
 
 // Protected routes (auth required)
 Route::middleware('auth:sanctum')->group(function () {

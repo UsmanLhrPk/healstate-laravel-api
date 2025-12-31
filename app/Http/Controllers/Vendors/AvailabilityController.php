@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Vendors;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Vendors\StoreAvailabilityRequest;
-use App\Http\Resources\AvailabilityScheduleResource;
+use App\Http\Resources\Vendors\AvailabilityScheduleResource;
 use App\Models\ServiceSlot;
-use App\Services\Vendors\AvailabilityService;
+use App\Services\AvailabilityService;
 use Illuminate\Http\JsonResponse;
 
 /**

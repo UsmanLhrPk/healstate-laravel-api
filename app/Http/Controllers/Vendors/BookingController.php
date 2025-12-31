@@ -7,6 +7,7 @@ use App\Http\Requests\Vendors\StoreBookingRequest;
 use App\Models\ServiceBooking;
 use App\Models\ServiceSlot;
 use App\Services\BookingService;
+use App\Services\AvailabilityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
