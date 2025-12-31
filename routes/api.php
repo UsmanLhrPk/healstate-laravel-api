@@ -11,6 +11,7 @@ use App\Http\Controllers\Vendors\SlotController;
 use App\Http\Controllers\Vendors\VariantController;
 use App\Http\Controllers\Vendors\ReviewController;
 use App\Http\Controllers\Vendors\VendorController;
+use App\Http\Controllers\Vendors\AvailabilityController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes (no auth required)
