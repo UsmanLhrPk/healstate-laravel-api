@@ -68,6 +68,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Review routes
     Route::post('/vendors/{vendor}/reviews', [ReviewController::class, 'store']);
+
+    // Availability routes
+    Route::post('/slots/{slot}/schedule', [AvailabilityController::class, 'store']);
+    Route::get('/slots/{slot}/schedule', [AvailabilityController::class, 'show']);
+    Route::delete('/slots/{slot}/schedule', [AvailabilityController::class, 'destroy']);
 });
 
 Route::get('/user', [AuthenticatedSessionController::class, 'user'])

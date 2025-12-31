@@ -55,21 +55,28 @@ class BookingController extends Controller
      */
     public function availability(Request $request, ServiceSlot $slot): JsonResponse
     {
-        $validated = $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+        $request->validate([
+            'start_date' => 'required|date|date_format:Y-m-d',
+            'end_date' => 'required|date|date_format:Y-m-d|after_or_equal:start_date',
         ]);
 
-        $availability = $this->bookingService->getAvailability(
-            $slot,
-            $validated['start_date'],
-            $validated['end_date']
-        );
+        try {
+            $availability = $this->availabilityService->getAvailableSlots(
+                $slot,
+                $request->start_date,
+                $request->end_date
+            );
 
-        return response()->json([
-            'data' => $availability,
-        ]);
+            return response()->json($availability, 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to load availability',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Create Booking

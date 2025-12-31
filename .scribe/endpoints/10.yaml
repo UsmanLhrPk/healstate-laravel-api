@@ -30,7 +30,7 @@ endpoints:
       -
         custom: []
         status: 401
-        content: '{"message":"Unauthenticated."}'
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json

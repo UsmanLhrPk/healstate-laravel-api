@@ -31,4 +31,9 @@ class ServiceSlot extends Model
     {
         return $this->hasMany(ServiceBooking::class);
     }
+
+    public function availability()
+    {
+        return $this->hasMany(ServiceAvailability::class);
+    }
 }

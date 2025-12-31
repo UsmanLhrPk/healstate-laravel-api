@@ -29,7 +29,7 @@ endpoints:
         name: product_id
         description: 'The ID of the product.'
         required: true
-        example: 7
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -47,7 +47,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      product_id: 7
+      product_id: 1
       product: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -140,7 +140,7 @@ endpoints:
         name: variant_id
         description: 'The ID of the variant.'
         required: true
-        example: 2
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -158,7 +158,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      variant_id: 2
+      variant_id: 1
       variant: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -249,7 +249,7 @@ endpoints:
         name: variant_id
         description: 'The ID of the variant.'
         required: true
-        example: 2
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -267,7 +267,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      variant_id: 2
+      variant_id: 1
       variant: 1
     queryParameters: []
     cleanQueryParameters: []
