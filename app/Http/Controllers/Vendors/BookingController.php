@@ -19,7 +19,8 @@ use Illuminate\Http\Request;
 class BookingController extends Controller
 {
     public function __construct(
-        protected BookingService $bookingService
+        protected BookingService $bookingService,
+        protected AvailabilityService $availabilityService // Add this
     ) {}
 
     /**
