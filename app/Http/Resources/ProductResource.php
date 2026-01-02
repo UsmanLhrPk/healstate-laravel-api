@@ -17,6 +17,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'type' => $this->type,
             'active' => $this->active,
+            'images' => $this->images ?? [], // Add this
             'vendor' => new VendorResource($this->whenLoaded('vendor')),
             'variants' => ProductVariantResource::collection($this->whenLoaded('variants')),
             'service_slots' => ServiceSlotResource::collection($this->whenLoaded('serviceSlots')),

@@ -18,10 +18,12 @@ class Product extends Model
         'description',
         'type',
         'active',
+        'images', // Add this
     ];
 
     protected $casts = [
         'active' => 'boolean',
+        'images' => 'array', // Add this
     ];
 
     public function vendor(): BelongsTo

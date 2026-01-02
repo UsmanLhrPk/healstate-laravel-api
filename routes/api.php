@@ -54,7 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Variant routes
     Route::post('/products/{product}/variants', [VariantController::class, 'store']);
-    Route::put('/variants/{variant}', [VariantController::class, 'update']);
+    Route::post('/variants/{variant}', [VariantController::class, 'update']);
     Route::delete('/variants/{variant}', [VariantController::class, 'destroy']);
     
     // Service slot routes
