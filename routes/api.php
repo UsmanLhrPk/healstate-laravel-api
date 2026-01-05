@@ -12,6 +12,7 @@ use App\Http\Controllers\Vendors\VariantController;
 use App\Http\Controllers\Vendors\ReviewController;
 use App\Http\Controllers\Vendors\VendorController;
 use App\Http\Controllers\Vendors\AvailabilityController;
+use App\Http\Controllers\Vendors\MarketplaceController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes (no auth required)
@@ -23,6 +24,7 @@ Route::get('/vendors/{vendor}', [VendorController::class, 'show']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/vendors/{vendor}/reviews', [ReviewController::class, 'index']);
 Route::get('/slots/{slot}/availability', [BookingController::class,  'availability']);
+Route::get('/marketplace', [App\Http\Controllers\Vendors\MarketplaceController::class, 'index']);
 
 // Protected routes (auth required)
 Route::middleware('auth:sanctum')->group(function () {

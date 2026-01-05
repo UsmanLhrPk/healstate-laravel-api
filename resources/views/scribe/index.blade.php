@@ -134,6 +134,16 @@
                             </li>
                                                                         </ul>
                             </ul>
+                    <ul id="tocify-header-marketplace" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="marketplace">
+                    <a href="#marketplace">Marketplace</a>
+                </li>
+                                    <ul id="tocify-subheader-marketplace" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="marketplace-GETapi-marketplace">
+                                <a href="#marketplace-GETapi-marketplace">Get Marketplace Products</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
                     <ul id="tocify-header-product-management" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="product-management">
                     <a href="#product-management">Product Management</a>
@@ -164,11 +174,27 @@
                                                     <li class="tocify-item level-2" data-unique="product-variants-POSTapi-products--product_id--variants">
                                 <a href="#product-variants-POSTapi-products--product_id--variants">Create Product Variant</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="product-variants-PUTapi-variants--variant_id-">
-                                <a href="#product-variants-PUTapi-variants--variant_id-">Update Product Variant</a>
+                                                                                <li class="tocify-item level-2" data-unique="product-variants-POSTapi-variants--variant_id-">
+                                <a href="#product-variants-POSTapi-variants--variant_id-">Update Product Variant</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="product-variants-DELETEapi-variants--variant_id-">
                                 <a href="#product-variants-DELETEapi-variants--variant_id-">Delete Product Variant</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
+                    <ul id="tocify-header-service-availability-management" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="service-availability-management">
+                    <a href="#service-availability-management">Service Availability Management</a>
+                </li>
+                                    <ul id="tocify-subheader-service-availability-management" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="service-availability-management-POSTapi-slots--slot_id--schedule">
+                                <a href="#service-availability-management-POSTapi-slots--slot_id--schedule">Store Availability Schedule</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="service-availability-management-GETapi-slots--slot_id--schedule">
+                                <a href="#service-availability-management-GETapi-slots--slot_id--schedule">Get Availability Schedule</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="service-availability-management-DELETEapi-slots--slot_id--schedule">
+                                <a href="#service-availability-management-DELETEapi-slots--slot_id--schedule">Delete Availability Schedule</a>
                             </li>
                                                                         </ul>
                             </ul>
@@ -248,7 +274,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: December 31, 2025</li>
+        <li>Last updated: January 5, 2026</li>
     </ul>
 </div>
 
@@ -2410,6 +2436,347 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
+                <h1 id="marketplace">Marketplace</h1>
+
+    <p>APIs for browsing marketplace products and services</p>
+
+                                <h2 id="marketplace-GETapi-marketplace">Get Marketplace Products</h2>
+
+<p>
+</p>
+
+<p>Retrieve paginated list of all active products and services from verified vendors.
+Supports filtering by type, category, search, and sorting.</p>
+
+<span id="example-requests-GETapi-marketplace">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/marketplace?type=product&amp;category=Photography&amp;search=wedding&amp;sort=latest&amp;page=1&amp;per_page=12" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"type\": \"service\",
+    \"category\": \"b\",
+    \"search\": \"n\",
+    \"sort\": \"price_high\",
+    \"page\": 67,
+    \"per_page\": 16
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/marketplace"
+);
+
+const params = {
+    "type": "product",
+    "category": "Photography",
+    "search": "wedding",
+    "sort": "latest",
+    "page": "1",
+    "per_page": "12",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "type": "service",
+    "category": "b",
+    "search": "n",
+    "sort": "price_high",
+    "page": 67,
+    "per_page": 16
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-marketplace">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;vendor_id&quot;: 1,
+            &quot;title&quot;: &quot;Professional Photography Session&quot;,
+            &quot;brief&quot;: &quot;Capture your special moments&quot;,
+            &quot;description&quot;: &quot;Full description here&quot;,
+            &quot;type&quot;: &quot;service&quot;,
+            &quot;image_url&quot;: &quot;https://example.com/image.jpg&quot;,
+            &quot;active&quot;: true,
+            &quot;variants&quot;: [],
+            &quot;service_slots&quot;: [
+                {
+                    &quot;id&quot;: 1,
+                    &quot;duration&quot;: 60,
+                    &quot;price&quot;: &quot;150.00&quot;
+                }
+            ],
+            &quot;vendor&quot;: {
+                &quot;id&quot;: 1,
+                &quot;business_name&quot;: &quot;Pixel Perfect Studios&quot;,
+                &quot;category&quot;: [
+                    &quot;Photography&quot;,
+                    &quot;Videography&quot;
+                ],
+                &quot;city&quot;: &quot;New York&quot;,
+                &quot;average_rating&quot;: 4.8,
+                &quot;review_count&quot;: 127,
+                &quot;is_verified&quot;: true
+            },
+            &quot;min_price&quot;: &quot;150.00&quot;,
+            &quot;created_at&quot;: &quot;2024-01-15T10:00:00.000000Z&quot;
+        }
+    ],
+    &quot;current_page&quot;: 1,
+    &quot;last_page&quot;: 3,
+    &quot;per_page&quot;: 12,
+    &quot;total&quot;: 32
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-marketplace" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-marketplace"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-marketplace"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-marketplace" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-marketplace">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-marketplace" data-method="GET"
+      data-path="api/marketplace"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-marketplace', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-marketplace"
+                    onclick="tryItOut('GETapi-marketplace');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-marketplace"
+                    onclick="cancelTryOut('GETapi-marketplace');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-marketplace"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/marketplace</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-marketplace"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-marketplace"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="type"                data-endpoint="GETapi-marketplace"
+               value="product"
+               data-component="query">
+    <br>
+<p>Filter by product type. Allowed values: product, service. Example: <code>product</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>category</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="category"                data-endpoint="GETapi-marketplace"
+               value="Photography"
+               data-component="query">
+    <br>
+<p>Filter by vendor category. Example: <code>Photography</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>search</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="search"                data-endpoint="GETapi-marketplace"
+               value="wedding"
+               data-component="query">
+    <br>
+<p>Search in title and brief. Example: <code>wedding</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort"                data-endpoint="GETapi-marketplace"
+               value="latest"
+               data-component="query">
+    <br>
+<p>Sort results. Allowed values: latest, price_low, price_high, rating. Default: latest. Example: <code>latest</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="page"                data-endpoint="GETapi-marketplace"
+               value="1"
+               data-component="query">
+    <br>
+<p>Page number for pagination. Default: 1. Example: <code>1</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-marketplace"
+               value="12"
+               data-component="query">
+    <br>
+<p>Items per page. Default: 12. Example: <code>12</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="type"                data-endpoint="GETapi-marketplace"
+               value="service"
+               data-component="body">
+    <br>
+<p>Example: <code>service</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>product</code></li> <li><code>service</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>category</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="category"                data-endpoint="GETapi-marketplace"
+               value="b"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>search</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="search"                data-endpoint="GETapi-marketplace"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>sort</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort"                data-endpoint="GETapi-marketplace"
+               value="price_high"
+               data-component="body">
+    <br>
+<p>Example: <code>price_high</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>latest</code></li> <li><code>price_low</code></li> <li><code>price_high</code></li> <li><code>rating</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="page"                data-endpoint="GETapi-marketplace"
+               value="67"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>67</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-marketplace"
+               value="16"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Must not be greater than 50. Example: <code>16</code></p>
+        </div>
+        </form>
+
                 <h1 id="product-management">Product Management</h1>
 
     <p>APIs for managing products and services</p>
@@ -2587,16 +2954,19 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/vendors/1/products" \
-    --header "Content-Type: application/json" \
+    --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --data "{
-    \"title\": \"Web Development Package\",
-    \"brief\": \"Professional website development\",
-    \"description\": \"We build responsive websites...\",
-    \"type\": \"service\",
-    \"active\": true
-}"
-</code></pre></div>
+    --form "title=Web Development Package"\
+    --form "brief=Professional website development"\
+    --form "description=We build responsive websites..."\
+    --form "type=service"\
+    --form "active=1"\
+    --form "variants[][name]=d"\
+    --form "variants[][price]=37"\
+    --form "variants[][stock]=9"\
+    --form "slots[][duration]=2"\
+    --form "slots[][price]=8"\
+    --form "images[]=@/tmp/phpvsuf17ph0mql3WqJQ8r" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -2605,22 +2975,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
-    "Content-Type": "application/json",
+    "Content-Type": "multipart/form-data",
     "Accept": "application/json",
 };
 
-let body = {
-    "title": "Web Development Package",
-    "brief": "Professional website development",
-    "description": "We build responsive websites...",
-    "type": "service",
-    "active": true
-};
+const body = new FormData();
+body.append('title', 'Web Development Package');
+body.append('brief', 'Professional website development');
+body.append('description', 'We build responsive websites...');
+body.append('type', 'service');
+body.append('active', '1');
+body.append('variants[][name]', 'd');
+body.append('variants[][price]', '37');
+body.append('variants[][stock]', '9');
+body.append('slots[][duration]', '2');
+body.append('slots[][price]', '8');
+body.append('images[]', document.querySelector('input[name="images[]"]').files[0]);
 
 fetch(url, {
     method: "POST",
     headers,
-    body: JSON.stringify(body),
+    body,
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
@@ -2663,7 +3038,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <form id="form-POSTapi-vendors--vendor_id--products" data-method="POST"
       data-path="api/vendors/{vendor_id}/products"
       data-authed="1"
-      data-hasfiles="0"
+      data-hasfiles="1"
       data-isarraybody="0"
       autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('POSTapi-vendors--vendor_id--products', this);">
@@ -2699,10 +3074,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="Content-Type"                data-endpoint="POSTapi-vendors--vendor_id--products"
-               value="application/json"
+               value="multipart/form-data"
                data-component="header">
     <br>
-<p>Example: <code>application/json</code></p>
+<p>Example: <code>multipart/form-data</code></p>
             </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
@@ -2811,6 +3186,104 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </label>
     <br>
 <p>optional Whether product is active. Example: <code>true</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>images</code></b>&nbsp;&nbsp;
+<small>file[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="file" style="display: none"
+                              name="images[0]"                data-endpoint="POSTapi-vendors--vendor_id--products"
+               data-component="body">
+        <input type="file" style="display: none"
+               name="images[1]"                data-endpoint="POSTapi-vendors--vendor_id--products"
+               data-component="body">
+    <br>
+<p>Must be an image. Must not be greater than 5120 kilobytes.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>variants</code></b>&nbsp;&nbsp;
+<small>object[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+<br>
+<p>This field is required when <code>type</code> is <code>product</code>.</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="variants.0.name"                data-endpoint="POSTapi-vendors--vendor_id--products"
+               value="d"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>d</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>price</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="variants.0.price"                data-endpoint="POSTapi-vendors--vendor_id--products"
+               value="37"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>37</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>stock</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="variants.0.stock"                data-endpoint="POSTapi-vendors--vendor_id--products"
+               value="9"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>9</code></p>
+                    </div>
+                                    </details>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>slots</code></b>&nbsp;&nbsp;
+<small>object[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+<br>
+<p>This field is required when <code>type</code> is <code>service</code>.</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slots.0.duration"                data-endpoint="POSTapi-vendors--vendor_id--products"
+               value="2"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>2</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>price</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slots.0.price"                data-endpoint="POSTapi-vendors--vendor_id--products"
+               value="8"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>8</code></p>
+                    </div>
+                                    </details>
         </div>
         </form>
 
@@ -3033,16 +3506,19 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
     "http://localhost/api/products/1" \
-    --header "Content-Type: application/json" \
+    --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --data "{
-    \"title\": \"Updated Web Package\",
-    \"brief\": \"Updated description\",
-    \"description\": \"New detailed info...\",
-    \"type\": \"service\",
-    \"active\": false
-}"
-</code></pre></div>
+    --form "title=Updated Web Package"\
+    --form "brief=Updated description"\
+    --form "description=New detailed info..."\
+    --form "type=service"\
+    --form "active="\
+    --form "variants[][name]=d"\
+    --form "variants[][price]=37"\
+    --form "variants[][stock]=9"\
+    --form "slots[][duration]=2"\
+    --form "slots[][price]=8"\
+    --form "images[]=@/tmp/phprf5jvfce00jn7xM766L" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -3051,22 +3527,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
-    "Content-Type": "application/json",
+    "Content-Type": "multipart/form-data",
     "Accept": "application/json",
 };
 
-let body = {
-    "title": "Updated Web Package",
-    "brief": "Updated description",
-    "description": "New detailed info...",
-    "type": "service",
-    "active": false
-};
+const body = new FormData();
+body.append('title', 'Updated Web Package');
+body.append('brief', 'Updated description');
+body.append('description', 'New detailed info...');
+body.append('type', 'service');
+body.append('active', '');
+body.append('variants[][name]', 'd');
+body.append('variants[][price]', '37');
+body.append('variants[][stock]', '9');
+body.append('slots[][duration]', '2');
+body.append('slots[][price]', '8');
+body.append('images[]', document.querySelector('input[name="images[]"]').files[0]);
 
 fetch(url, {
     method: "PUT",
     headers,
-    body: JSON.stringify(body),
+    body,
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
@@ -3105,7 +3586,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <form id="form-PUTapi-products--product_id-" data-method="PUT"
       data-path="api/products/{product_id}"
       data-authed="1"
-      data-hasfiles="0"
+      data-hasfiles="1"
       data-isarraybody="0"
       autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('PUTapi-products--product_id-', this);">
@@ -3141,10 +3622,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="Content-Type"                data-endpoint="PUTapi-products--product_id-"
-               value="application/json"
+               value="multipart/form-data"
                data-component="header">
     <br>
-<p>Example: <code>application/json</code></p>
+<p>Example: <code>multipart/form-data</code></p>
             </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
@@ -3253,6 +3734,128 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </label>
     <br>
 <p>optional Active status. Example: <code>false</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>images</code></b>&nbsp;&nbsp;
+<small>file[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="file" style="display: none"
+                              name="images[0]"                data-endpoint="PUTapi-products--product_id-"
+               data-component="body">
+        <input type="file" style="display: none"
+               name="images[1]"                data-endpoint="PUTapi-products--product_id-"
+               data-component="body">
+    <br>
+<p>Must be an image. Must not be greater than 5120 kilobytes.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>variants</code></b>&nbsp;&nbsp;
+<small>object[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+<br>
+
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="variants.0.id"                data-endpoint="PUTapi-products--product_id-"
+               value=""
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the product_variants table.</p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="variants.0.name"                data-endpoint="PUTapi-products--product_id-"
+               value="d"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>d</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>price</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="variants.0.price"                data-endpoint="PUTapi-products--product_id-"
+               value="37"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>37</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>stock</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="variants.0.stock"                data-endpoint="PUTapi-products--product_id-"
+               value="9"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>9</code></p>
+                    </div>
+                                    </details>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>slots</code></b>&nbsp;&nbsp;
+<small>object[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+<br>
+
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="slots.0.id"                data-endpoint="PUTapi-products--product_id-"
+               value=""
+               data-component="body">
+    <br>
+<p>The <code>id</code> of an existing record in the service_slots table.</p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slots.0.duration"                data-endpoint="PUTapi-products--product_id-"
+               value="2"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>2</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>price</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slots.0.price"                data-endpoint="PUTapi-products--product_id-"
+               value="8"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>8</code></p>
+                    </div>
+                                    </details>
         </div>
         </form>
 
@@ -3618,7 +4221,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="product-variants-PUTapi-variants--variant_id-">Update Product Variant</h2>
+                    <h2 id="product-variants-POSTapi-variants--variant_id-">Update Product Variant</h2>
 
 <p>
 <small class="badge badge-darkred">requires authentication</small>
@@ -3626,12 +4229,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <p>Update variant details. Only vendor owner can update.</p>
 
-<span id="example-requests-PUTapi-variants--variant_id-">
+<span id="example-requests-POSTapi-variants--variant_id-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
-    <pre><code class="language-bash">curl --request PUT \
+    <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/variants/1" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -3660,14 +4263,14 @@ let body = {
 };
 
 fetch(url, {
-    method: "PUT",
+    method: "POST",
     headers,
     body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
 
-<span id="example-responses-PUTapi-variants--variant_id-">
+<span id="example-responses-POSTapi-variants--variant_id-">
             <blockquote>
             <p>Example response (200):</p>
         </blockquote>
@@ -3685,50 +4288,50 @@ fetch(url, {
 }</code>
  </pre>
     </span>
-<span id="execution-results-PUTapi-variants--variant_id-" hidden>
+<span id="execution-results-POSTapi-variants--variant_id-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-PUTapi-variants--variant_id-"></span>:
+                id="execution-response-status-POSTapi-variants--variant_id-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-PUTapi-variants--variant_id-"
+    <pre class="json"><code id="execution-response-content-POSTapi-variants--variant_id-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-PUTapi-variants--variant_id-" hidden>
+<span id="execution-error-POSTapi-variants--variant_id-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-PUTapi-variants--variant_id-">
+    <pre><code id="execution-error-message-POSTapi-variants--variant_id-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-PUTapi-variants--variant_id-" data-method="PUT"
+<form id="form-POSTapi-variants--variant_id-" data-method="POST"
       data-path="api/variants/{variant_id}"
       data-authed="1"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('PUTapi-variants--variant_id-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-variants--variant_id-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-PUTapi-variants--variant_id-"
-                    onclick="tryItOut('PUTapi-variants--variant_id-');">Try it out ⚡
+                    id="btn-tryout-POSTapi-variants--variant_id-"
+                    onclick="tryItOut('POSTapi-variants--variant_id-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-PUTapi-variants--variant_id-"
-                    onclick="cancelTryOut('PUTapi-variants--variant_id-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-POSTapi-variants--variant_id-"
+                    onclick="cancelTryOut('POSTapi-variants--variant_id-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-PUTapi-variants--variant_id-"
+                    id="btn-executetryout-POSTapi-variants--variant_id-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
             </button>
             </h3>
             <p>
-            <small class="badge badge-darkblue">PUT</small>
+            <small class="badge badge-black">POST</small>
             <b><code>api/variants/{variant_id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
@@ -3738,7 +4341,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="PUTapi-variants--variant_id-"
+                              name="Content-Type"                data-endpoint="POSTapi-variants--variant_id-"
                value="application/json"
                data-component="header">
     <br>
@@ -3750,7 +4353,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="PUTapi-variants--variant_id-"
+                              name="Accept"                data-endpoint="POSTapi-variants--variant_id-"
                value="application/json"
                data-component="header">
     <br>
@@ -3763,7 +4366,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="variant_id"                data-endpoint="PUTapi-variants--variant_id-"
+               step="any"               name="variant_id"                data-endpoint="POSTapi-variants--variant_id-"
                value="1"
                data-component="url">
     <br>
@@ -3775,7 +4378,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="variant"                data-endpoint="PUTapi-variants--variant_id-"
+               step="any"               name="variant"                data-endpoint="POSTapi-variants--variant_id-"
                value="1"
                data-component="url">
     <br>
@@ -3788,7 +4391,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="name"                data-endpoint="PUTapi-variants--variant_id-"
+                              name="name"                data-endpoint="POSTapi-variants--variant_id-"
                value="Medium (Red)"
                data-component="body">
     <br>
@@ -3800,7 +4403,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="price"                data-endpoint="PUTapi-variants--variant_id-"
+               step="any"               name="price"                data-endpoint="POSTapi-variants--variant_id-"
                value="24.99"
                data-component="body">
     <br>
@@ -3812,7 +4415,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="stock"                data-endpoint="PUTapi-variants--variant_id-"
+               step="any"               name="stock"                data-endpoint="POSTapi-variants--variant_id-"
                value="50"
                data-component="body">
     <br>
@@ -3974,6 +4577,768 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
+                <h1 id="service-availability-management">Service Availability Management</h1>
+
+    <p>APIs for managing service slot availability schedules. Vendors can set their weekly availability
+(days and time ranges) for each service slot.</p>
+
+                                <h2 id="service-availability-management-POSTapi-slots--slot_id--schedule">Store Availability Schedule</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Set or update the weekly availability schedule for a service slot. This defines which days and times
+the vendor is available for bookings. The schedule will replace any existing schedule for the slot.</p>
+
+<span id="example-requests-POSTapi-slots--slot_id--schedule">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/slots/1/schedule" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"schedule\": [
+        \"architecto\"
+    ]
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/slots/1/schedule"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "schedule": [
+        "architecto"
+    ]
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-slots--slot_id--schedule">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Availability schedule saved successfully&quot;,
+    &quot;schedule&quot;: [
+        {
+            &quot;day_of_week&quot;: 0,
+            &quot;is_available&quot;: false,
+            &quot;time_slots&quot;: []
+        },
+        {
+            &quot;day_of_week&quot;: 1,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;12:00&quot;
+                },
+                {
+                    &quot;start_time&quot;: &quot;14:00&quot;,
+                    &quot;end_time&quot;: &quot;18:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 2,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 3,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 4,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 5,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 6,
+            &quot;is_available&quot;: false,
+            &quot;time_slots&quot;: []
+        }
+    ]
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthorized&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;The given data was invalid.&quot;,
+    &quot;errors&quot;: {
+        &quot;schedule.0.day_of_week&quot;: [
+            &quot;The schedule.0.day_of_week field is required.&quot;
+        ],
+        &quot;schedule.0.time_slots.0.end_time&quot;: [
+            &quot;The schedule.0.time_slots.0.end_time must be after schedule.0.time_slots.0.start_time.&quot;
+        ]
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (500):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Failed to save availability schedule&quot;,
+    &quot;error&quot;: &quot;Database error message&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-POSTapi-slots--slot_id--schedule" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-slots--slot_id--schedule"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-slots--slot_id--schedule"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-slots--slot_id--schedule" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-slots--slot_id--schedule">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-slots--slot_id--schedule" data-method="POST"
+      data-path="api/slots/{slot_id}/schedule"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-slots--slot_id--schedule', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-slots--slot_id--schedule"
+                    onclick="tryItOut('POSTapi-slots--slot_id--schedule');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-slots--slot_id--schedule"
+                    onclick="cancelTryOut('POSTapi-slots--slot_id--schedule');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-slots--slot_id--schedule"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/slots/{slot_id}/schedule</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-slots--slot_id--schedule"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-slots--slot_id--schedule"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>slot_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slot_id"                data-endpoint="POSTapi-slots--slot_id--schedule"
+               value="1"
+               data-component="url">
+    <br>
+<p>The ID of the slot. Example: <code>1</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>slot</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slot"                data-endpoint="POSTapi-slots--slot_id--schedule"
+               value="1"
+               data-component="url">
+    <br>
+<p>The ID of the service slot. Example: <code>1</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>schedule</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+ &nbsp;
+ &nbsp;
+<br>
+<p>Array of weekly schedule data. Must contain 7 elements (one for each day).</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>day_of_week</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="schedule.0.day_of_week"                data-endpoint="POSTapi-slots--slot_id--schedule"
+               value="1"
+               data-component="body">
+    <br>
+<p>Day of the week (0=Sunday, 1=Monday, ..., 6=Saturday). Example: <code>1</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>is_available</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-slots--slot_id--schedule" style="display: none">
+            <input type="radio" name="schedule.0.is_available"
+                   value="true"
+                   data-endpoint="POSTapi-slots--slot_id--schedule"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-slots--slot_id--schedule" style="display: none">
+            <input type="radio" name="schedule.0.is_available"
+                   value="false"
+                   data-endpoint="POSTapi-slots--slot_id--schedule"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Whether the vendor is available on this day. Example: <code>true</code></p>
+                    </div>
+                                                                <div style=" margin-left: 14px; clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>time_slots</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+<br>
+<p>optional Array of time slots for the day. Required if is_available is true.</p>
+            </summary>
+                                                <div style="margin-left: 28px; clear: unset;">
+                        <b style="line-height: 2;"><code>start_time</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="schedule.0.time_slots.0.start_time"                data-endpoint="POSTapi-slots--slot_id--schedule"
+               value="09:00"
+               data-component="body">
+    <br>
+<p>Start time in HH:MM format (24-hour). Example: <code>09:00</code></p>
+                    </div>
+                                                                <div style="margin-left: 28px; clear: unset;">
+                        <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="schedule.0.time_slots.0.end_time"                data-endpoint="POSTapi-slots--slot_id--schedule"
+               value="17:00"
+               data-component="body">
+    <br>
+<p>End time in HH:MM format (24-hour). Must be after start_time. Example: <code>17:00</code></p>
+                    </div>
+                                    </details>
+        </div>
+                                        </details>
+        </div>
+        </form>
+
+                    <h2 id="service-availability-management-GETapi-slots--slot_id--schedule">Get Availability Schedule</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieve the weekly availability schedule for a service slot. Returns the days and times when
+the vendor is available for bookings. Used by vendors to view/edit their schedule.</p>
+
+<span id="example-requests-GETapi-slots--slot_id--schedule">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/slots/1/schedule" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/slots/1/schedule"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-slots--slot_id--schedule">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;schedule&quot;: [
+        {
+            &quot;day_of_week&quot;: 0,
+            &quot;is_available&quot;: false,
+            &quot;time_slots&quot;: []
+        },
+        {
+            &quot;day_of_week&quot;: 1,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;12:00&quot;
+                },
+                {
+                    &quot;start_time&quot;: &quot;14:00&quot;,
+                    &quot;end_time&quot;: &quot;18:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 2,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 3,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 4,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 5,
+            &quot;is_available&quot;: true,
+            &quot;time_slots&quot;: [
+                {
+                    &quot;start_time&quot;: &quot;09:00&quot;,
+                    &quot;end_time&quot;: &quot;17:00&quot;
+                }
+            ]
+        },
+        {
+            &quot;day_of_week&quot;: 6,
+            &quot;is_available&quot;: false,
+            &quot;time_slots&quot;: []
+        }
+    ]
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthorized&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Service slot not found&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (500):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Failed to load availability schedule&quot;,
+    &quot;error&quot;: &quot;Error message&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-slots--slot_id--schedule" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-slots--slot_id--schedule"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-slots--slot_id--schedule"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-slots--slot_id--schedule" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-slots--slot_id--schedule">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-slots--slot_id--schedule" data-method="GET"
+      data-path="api/slots/{slot_id}/schedule"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-slots--slot_id--schedule', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-slots--slot_id--schedule"
+                    onclick="tryItOut('GETapi-slots--slot_id--schedule');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-slots--slot_id--schedule"
+                    onclick="cancelTryOut('GETapi-slots--slot_id--schedule');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-slots--slot_id--schedule"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/slots/{slot_id}/schedule</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-slots--slot_id--schedule"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-slots--slot_id--schedule"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>slot_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slot_id"                data-endpoint="GETapi-slots--slot_id--schedule"
+               value="1"
+               data-component="url">
+    <br>
+<p>The ID of the slot. Example: <code>1</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>slot</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slot"                data-endpoint="GETapi-slots--slot_id--schedule"
+               value="1"
+               data-component="url">
+    <br>
+<p>The ID of the service slot. Example: <code>1</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="service-availability-management-DELETEapi-slots--slot_id--schedule">Delete Availability Schedule</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Remove all availability schedule data for a service slot. After deletion, the slot will have
+no defined availability and customers won't be able to book it until a new schedule is set.</p>
+
+<span id="example-requests-DELETEapi-slots--slot_id--schedule">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://localhost/api/slots/1/schedule" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/slots/1/schedule"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-slots--slot_id--schedule">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Availability schedule deleted successfully&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Unauthorized&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Service slot not found&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (500):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;message&quot;: &quot;Failed to delete availability schedule&quot;,
+    &quot;error&quot;: &quot;Error message&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-DELETEapi-slots--slot_id--schedule" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-slots--slot_id--schedule"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-slots--slot_id--schedule"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-slots--slot_id--schedule" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-slots--slot_id--schedule">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-slots--slot_id--schedule" data-method="DELETE"
+      data-path="api/slots/{slot_id}/schedule"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-slots--slot_id--schedule', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-slots--slot_id--schedule"
+                    onclick="tryItOut('DELETEapi-slots--slot_id--schedule');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-slots--slot_id--schedule"
+                    onclick="cancelTryOut('DELETEapi-slots--slot_id--schedule');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-slots--slot_id--schedule"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/slots/{slot_id}/schedule</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-slots--slot_id--schedule"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-slots--slot_id--schedule"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>slot_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slot_id"                data-endpoint="DELETEapi-slots--slot_id--schedule"
+               value="1"
+               data-component="url">
+    <br>
+<p>The ID of the slot. Example: <code>1</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>slot</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="slot"                data-endpoint="DELETEapi-slots--slot_id--schedule"
+               value="1"
+               data-component="url">
+    <br>
+<p>The ID of the service slot. Example: <code>1</code></p>
+            </div>
+                    </form>
+
                 <h1 id="service-bookings">Service Bookings</h1>
 
     <p>APIs for managing service bookings and availability</p>
@@ -3995,8 +5360,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"start_date\": \"2025-12-31T14:47:08\",
-    \"end_date\": \"2052-01-24\"
+    \"start_date\": \"2026-01-05\",
+    \"end_date\": \"2052-01-29\"
 }"
 </code></pre></div>
 
@@ -4019,8 +5384,8 @@ const headers = {
 };
 
 let body = {
-    "start_date": "2025-12-31T14:47:08",
-    "end_date": "2052-01-24"
+    "start_date": "2026-01-05",
+    "end_date": "2052-01-29"
 };
 
 fetch(url, {
@@ -4189,10 +5554,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_date"                data-endpoint="GETapi-slots--slot_id--availability"
-               value="2025-12-31T14:47:08"
+               value="2026-01-05"
                data-component="body">
     <br>
-<p>Must be a valid date. Example: <code>2025-12-31T14:47:08</code></p>
+<p>Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-01-05</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
@@ -4201,10 +5566,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_date"                data-endpoint="GETapi-slots--slot_id--availability"
-               value="2052-01-24"
+               value="2052-01-29"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>start_date</code>. Example: <code>2052-01-24</code></p>
+<p>Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Must be a date after or equal to <code>start_date</code>. Example: <code>2052-01-29</code></p>
         </div>
         </form>
 
