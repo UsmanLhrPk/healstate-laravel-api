@@ -37,12 +37,13 @@ class ProductService
 
             // Handle variants for products
             if ($product->isProduct() && isset($data['variants'])) {
-                foreach ($data['variants'] as $index => $variantData) {
+                $variants = array_values($data['variants']); // Reset keys to ensure sequential indexing
+                foreach ($variants as $index => $variantData) {
                     $product->variants()->create([
                         'name' => $variantData['name'],
                         'price' => $variantData['price'],
                         'stock' => $variantData['stock'] ?? 0,
-                        'sort' => $index, // Add this line
+                        'sort' => $index,
                     ]);
                 }
             }
@@ -92,14 +93,17 @@ class ProductService
 
             // Update variants if provided
             if (isset($data['variants']) && $product->isProduct()) {
+                // Reset array keys to ensure sequential indexing
+                $variants = array_values($data['variants']);
+                
                 // Get IDs of variants to keep
-                $variantIds = collect($data['variants'])
+                $variantIds = collect($variants)
                     ->pluck('id')
                     ->filter()
                     ->toArray();
 
                 // First, update existing variants
-                foreach ($data['variants'] as $index => $variantData) {
+                foreach ($variants as $index => $variantData) {
                     if (isset($variantData['id'])) {
                         $product->variants()->where('id', $variantData['id'])->update([
                             'name' => $variantData['name'],
@@ -114,7 +118,7 @@ class ProductService
                 $product->variants()->whereNotIn('id', $variantIds)->delete();
 
                 // Finally, create new variants
-                foreach ($data['variants'] as $index => $variantData) {
+                foreach ($variants as $index => $variantData) {
                     if (! isset($variantData['id'])) {
                         $product->variants()->create([
                             'name' => $variantData['name'],
@@ -161,7 +165,7 @@ class ProductService
             if ($product->images) {
                 foreach ($product->images as $imageUrl) {
                     $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
-                    Storage::disk('public')->delete($path);
+                    Storage::disk('public')->delete($oldPath);
                 }
             }
 
