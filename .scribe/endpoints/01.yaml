@@ -1,0 +1,395 @@
+name: 'Comment Management'
+description: |-
+
+  APIs for managing comments on forums
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/comments
+    metadata:
+      custom: []
+      groupName: 'Comment Management'
+      groupDescription: |-
+
+        APIs for managing comments on forums
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get comments'
+      description: |-
+        Retrieve comments for a commentable entity (e.g., Forum).
+        If parent_id is null, returns top-level comments with 3 most recent replies each (paginated 10 per page).
+        If parent_id is provided, returns all replies for that comment (paginated 10 per page).
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      commentable_type:
+        custom: []
+        name: commentable_type
+        description: 'The type of entity being commented on.'
+        required: true
+        example: App\Models\Forum
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      commentable_id:
+        custom: []
+        name: commentable_id
+        description: 'The ID of the entity being commented on.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      parent_id:
+        custom: []
+        name: parent_id
+        description: 'optional The parent comment ID (for fetching replies).'
+        required: false
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'optional The page number for pagination.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      commentable_type: App\Models\Forum
+      commentable_id: 1
+      parent_id: 5
+      page: 1
+    bodyParameters:
+      commentable_type:
+        custom: []
+        name: commentable_type
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      commentable_id:
+        custom: []
+        name: commentable_id
+        description: ''
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      parent_id:
+        custom: []
+        name: parent_id
+        description: 'The <code>id</code> of an existing record in the comments table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      commentable_type: architecto
+      commentable_id: 16
+      parent_id: 16
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": 1,
+                "comment": "Great post! I've been researching this topic too.",
+                "author_id": 2,
+                "commentable_type": "App\\Models\\Forum",
+                "commentable_id": 1,
+                "parent_id": null,
+                "created_at": "2024-01-15T11:00:00.000000Z",
+                "updated_at": "2024-01-15T11:00:00.000000Z",
+                "deleted_at": null,
+                "author": {
+                  "id": 2,
+                  "name": "Jane Smith",
+                  "email": "jane@example.com"
+                },
+                "likes_count": 3,
+                "is_liked": false,
+                "is_flagged": false,
+                "replies_count": 2,
+                "replies": [
+                  {
+                    "id": 3,
+                    "comment": "Thanks for sharing!",
+                    "author_id": 1,
+                    "parent_id": 1,
+                    "created_at": "2024-01-15T11:30:00.000000Z",
+                    "author": {
+                      "id": 1,
+                      "name": "John Doe"
+                    },
+                    "likes_count": 1
+                  }
+                ]
+              }
+            ],
+            "current_page": 1,
+            "last_page": 1,
+            "per_page": 10,
+            "total": 5
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "commentable_type": ["The commentable type field is required."]
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/comments
+    metadata:
+      custom: []
+      groupName: 'Comment Management'
+      groupDescription: |-
+
+        APIs for managing comments on forums
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Create a comment'
+      description: 'Post a new comment on a forum or reply to an existing comment. Requires authentication.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      comment:
+        custom: []
+        name: comment
+        description: 'The comment text.'
+        required: true
+        example: 'I completely agree with this approach!'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      commentable_type:
+        custom: []
+        name: commentable_type
+        description: 'The type of entity being commented on.'
+        required: true
+        example: App\Models\Forum
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      commentable_id:
+        custom: []
+        name: commentable_id
+        description: 'The ID of the entity being commented on.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      parent_id:
+        custom: []
+        name: parent_id
+        description: 'optional The parent comment ID if this is a reply.'
+        required: false
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      comment: 'I completely agree with this approach!'
+      commentable_type: App\Models\Forum
+      commentable_id: 1
+      parent_id: 5
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "message": "Comment created successfully",
+            "comment": {
+              "id": 10,
+              "comment": "I completely agree with this approach!",
+              "author_id": 2,
+              "commentable_type": "App\\Models\\Forum",
+              "commentable_id": 1,
+              "parent_id": null,
+              "created_at": "2024-01-15T12:00:00.000000Z",
+              "updated_at": "2024-01-15T12:00:00.000000Z",
+              "deleted_at": null,
+              "author": {
+                "id": 2,
+                "name": "Jane Smith",
+                "email": "jane@example.com"
+              },
+              "likes": [],
+              "flags": []
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "comment": ["The comment field is required."]
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/comments/{id}'
+    metadata:
+      custom: []
+      groupName: 'Comment Management'
+      groupDescription: |-
+
+        APIs for managing comments on forums
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Delete a comment'
+      description: 'Soft delete a comment. Only the comment author can delete their own comment.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the comment to delete.'
+        required: true
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 10
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "message": "Comment deleted successfully"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Unauthorized. You can only delete your own comments."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "Comment not found"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

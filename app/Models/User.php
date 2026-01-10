@@ -11,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, \Illuminate\Auth\MustVerifyEmail;
+    use HasApiTokens, HasFactory, \Illuminate\Auth\MustVerifyEmail, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -45,5 +45,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function vendor()
+    {
+        return $this->hasOne(\App\Models\Vendor::class);
     }
 }

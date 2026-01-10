@@ -1,0 +1,101 @@
+name: 'Flag Management'
+description: |-
+
+  APIs for flagging inappropriate content
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/flags
+    metadata:
+      custom: []
+      groupName: 'Flag Management'
+      groupDescription: |-
+
+        APIs for flagging inappropriate content
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Flag content'
+      description: 'Flag a forum or comment as inappropriate. A user can only flag the same content once. Requires authentication.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      flaggable_type:
+        custom: []
+        name: flaggable_type
+        description: 'The type of entity to flag.'
+        required: true
+        example: App\Models\Forum
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      flaggable_id:
+        custom: []
+        name: flaggable_id
+        description: 'The ID of the entity to flag.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      flaggable_type: App\Models\Forum
+      flaggable_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "message": "Content flagged successfully"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+            "message": "Unauthenticated."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 409
+        content: |-
+          {
+            "message": "You have already flagged this content"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "flaggable_type": ["The flaggable type field is required."]
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
