@@ -1,24 +1,70 @@
-name: 'Flag Management'
+name: Checkout
 description: |-
 
-  APIs for flagging inappropriate content
+  APIs for checkout process
 endpoints:
   -
     custom: []
     httpMethods:
       - POST
-    uri: api/flags
+    uri: api/checkout/payment-intent
     metadata:
       custom: []
-      groupName: 'Flag Management'
+      groupName: Checkout
       groupDescription: |-
 
-        APIs for flagging inappropriate content
+        APIs for checkout process
       subgroup: ''
       subgroupDescription: ''
-      title: 'Flag content'
-      description: 'Flag a forum or comment as inappropriate. A user can only flag the same content once. Requires authentication.'
-      authenticated: true
+      title: 'Create Payment Intent'
+      description: 'Create a Stripe payment intent for the cart total.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "client_secret": "pi_xxx_secret_xxx",
+              "payment_intent_id": "pi_xxx",
+              "amount": 107.17
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/checkout/process
+    metadata:
+      custom: []
+      groupName: Checkout
+      groupDescription: |-
+
+        APIs for checkout process
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Process Checkout'
+      description: 'Complete the checkout process and create an order.'
+      authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
@@ -28,21 +74,21 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      flaggable_type:
+      payment_method_id:
         custom: []
-        name: flaggable_type
-        description: 'The type of entity to flag.'
+        name: payment_method_id
+        description: 'Stripe payment method ID.'
         required: true
-        example: App\Models\Forum
+        example: pm_xxx
         type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      flaggable_id:
+      address_id:
         custom: []
-        name: flaggable_id
-        description: 'The ID of the entity to flag.'
+        name: address_id
+        description: 'Address ID (for authenticated users).'
         required: true
         example: 1
         type: integer
@@ -50,9 +96,33 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         deprecated: false
+      address:
+        custom: []
+        name: address
+        description: 'Address object (for guest users).'
+        required: true
+        example: []
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      order_notes:
+        custom: []
+        name: order_notes
+        description: 'optional Order notes.'
+        required: false
+        example: 'Please ring doorbell'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
-      flaggable_type: App\Models\Forum
-      flaggable_id: 1
+      payment_method_id: pm_xxx
+      address_id: 1
+      address: []
+      order_notes: 'Please ring doorbell'
     fileParameters: []
     responses:
       -
@@ -60,36 +130,69 @@ endpoints:
         status: 201
         content: |-
           {
-            "message": "Content flagged successfully"
+            "message": "Order placed successfully",
+            "data": {
+              "order_number": "ORD-ABC123",
+              "total": 107.17,
+              "status": "paid"
+            }
           }
         headers: []
         description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/checkout/verify-payment
+    metadata:
+      custom: []
+      groupName: Checkout
+      groupDescription: |-
+
+        APIs for checkout process
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Verify Payment'
+      description: 'Verify a payment intent status.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      payment_intent_id:
+        custom: []
+        name: payment_intent_id
+        description: 'Payment intent ID.'
+        required: true
+        example: pi_xxx
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      payment_intent_id: pi_xxx
+    fileParameters: []
+    responses:
       -
         custom: []
-        status: 401
+        status: 200
         content: |-
           {
-            "message": "Unauthenticated."
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 409
-        content: |-
-          {
-            "message": "You have already flagged this content"
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: |-
-          {
-            "message": "The given data was invalid.",
-            "errors": {
-              "flaggable_type": ["The flaggable type field is required."]
+            "data": {
+              "status": "succeeded",
+              "payment_intent_id": "pi_xxx",
+              "amount": 107.17
             }
           }
         headers: []

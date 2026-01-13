@@ -1,26 +1,75 @@
-name: 'Like Management'
+name: 'Cart Management'
 description: |-
 
-  APIs for liking/unliking forums and comments
+  APIs for managing shopping cart
 endpoints:
   -
     custom: []
     httpMethods:
-      - POST
-    uri: api/likes
+      - GET
+    uri: api/cart
     metadata:
       custom: []
-      groupName: 'Like Management'
+      groupName: 'Cart Management'
       groupDescription: |-
 
-        APIs for liking/unliking forums and comments
+        APIs for managing shopping cart
       subgroup: ''
       subgroupDescription: ''
-      title: 'Toggle like'
-      description: |-
-        Like or unlike a forum or comment. If the user has already liked the content, it will be unliked.
-        If the user hasn't liked it yet, a like will be created. Requires authentication.
-      authenticated: true
+      title: 'Get Cart'
+      description: "Retrieve all items in the user's cart."
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "items": [],
+              "count": 3,
+              "totals": {
+                "subtotal": 89.97,
+                "tax": 7.20,
+                "shipping": 10.00,
+                "total": 107.17
+              }
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/cart
+    metadata:
+      custom: []
+      groupName: 'Cart Management'
+      groupDescription: |-
+
+        APIs for managing shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Add Item to Cart'
+      description: 'Add a product to the shopping cart. Works for both authenticated and guest users.'
+      authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
@@ -30,21 +79,10 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      likeable_type:
+      product_id:
         custom: []
-        name: likeable_type
-        description: 'The type of entity to like.'
-        required: true
-        example: App\Models\Forum
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      likeable_id:
-        custom: []
-        name: likeable_id
-        description: 'The ID of the entity to like.'
+        name: product_id
+        description: 'The product ID.'
         required: true
         example: 1
         type: integer
@@ -52,9 +90,121 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         deprecated: false
+      variant_id:
+        custom: []
+        name: variant_id
+        description: 'optional The variant ID if applicable.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      quantity:
+        custom: []
+        name: quantity
+        description: 'Quantity to add (1-99).'
+        required: true
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
-      likeable_type: App\Models\Forum
-      likeable_id: 1
+      product_id: 1
+      variant_id: 2
+      quantity: 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "message": "Item added to cart",
+            "data": {
+              "id": 1,
+              "product_id": 1,
+              "variant_id": 2,
+              "quantity": 2,
+              "product": {
+                "id": 1,
+                "name": "Product Name",
+                "price": 29.99
+              }
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/cart/{cart_id}'
+    metadata:
+      custom: []
+      groupName: 'Cart Management'
+      groupDescription: |-
+
+        APIs for managing shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update Cart Item'
+      description: 'Update the quantity of an item in the cart.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      cart_id:
+        custom: []
+        name: cart_id
+        description: 'The ID of the cart.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cart:
+        custom: []
+        name: cart
+        description: 'The cart item ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      cart_id: 16
+      cart: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      quantity:
+        custom: []
+        name: quantity
+        description: 'New quantity (1-99).'
+        required: true
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      quantity: 3
     fileParameters: []
     responses:
       -
@@ -62,38 +212,162 @@ endpoints:
         status: 200
         content: |-
           {
-            "liked": true,
-            "like_count": 13
+            "message": "Cart updated successfully",
+            "data": {
+              "id": 1,
+              "quantity": 3
+            }
           }
         headers: []
         description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/cart/{cart_id}'
+    metadata:
+      custom: []
+      groupName: 'Cart Management'
+      groupDescription: |-
+
+        APIs for managing shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Remove Item from Cart'
+      description: 'Remove an item from the shopping cart.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      cart_id:
+        custom: []
+        name: cart_id
+        description: 'The ID of the cart.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cart:
+        custom: []
+        name: cart
+        description: 'The cart item ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      cart_id: 16
+      cart: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
         status: 200
         content: |-
           {
-            "liked": false,
-            "like_count": 12
+            "message": "Item removed from cart"
           }
         headers: []
         description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: api/cart
+    metadata:
+      custom: []
+      groupName: 'Cart Management'
+      groupDescription: |-
+
+        APIs for managing shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Clear Cart'
+      description: 'Remove all items from the cart.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
-        status: 401
+        status: 200
         content: |-
           {
-            "message": "Unauthenticated."
+            "message": "Cart cleared successfully"
           }
         headers: []
         description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/cart/count
+    metadata:
+      custom: []
+      groupName: 'Cart Management'
+      groupDescription: |-
+
+        APIs for managing shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Cart Count'
+      description: 'Get the number of items in cart (for badge display).'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
-        status: 422
+        status: 200
         content: |-
           {
-            "message": "The given data was invalid.",
-            "errors": {
-              "likeable_type": ["The likeable type field is required."]
+            "data": {
+              "count": 5
             }
           }
         headers: []

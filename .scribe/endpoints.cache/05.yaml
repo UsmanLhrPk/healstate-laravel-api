@@ -31,7 +31,7 @@ endpoints:
         name: slot_id
         description: 'The ID of the slot.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -49,7 +49,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      slot_id: 1
+      slot_id: 16
       slot: 1
     queryParameters:
       start_date:
@@ -83,7 +83,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>.'
         required: true
-        example: '2026-01-05'
+        example: '2026-01-13'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -94,15 +94,15 @@ endpoints:
         name: end_date
         description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Must be a date after or equal to <code>start_date</code>.'
         required: true
-        example: '2052-01-29'
+        example: '2052-02-06'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      start_date: '2026-01-05'
-      end_date: '2052-01-29'
+      start_date: '2026-01-13'
+      end_date: '2052-02-06'
     fileParameters: []
     responses:
       -
@@ -374,7 +374,7 @@ endpoints:
         name: booking_id
         description: 'The ID of the booking.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -392,7 +392,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      booking_id: 1
+      booking_id: 16
       booking: 1
     queryParameters: []
     cleanQueryParameters: []

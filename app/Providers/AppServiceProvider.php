@@ -2,15 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use App\Models\Forum;
 use App\Models\Comment;
+use App\Models\Forum;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ServiceBooking;
@@ -21,7 +14,18 @@ use App\Policies\ProductVariantPolicy;
 use App\Policies\ServiceBookingPolicy;
 use App\Policies\ServiceSlotPolicy;
 use App\Policies\VendorPolicy;
+use App\Models\Address;
+use App\Policies\AddressPolicy;
+use App\Models\Order;
+use App\Policies\OrderPolicy;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
         ProductVariant::class => ProductVariantPolicy::class,
         ServiceSlot::class => ServiceSlotPolicy::class,
         ServiceBooking::class => ServiceBookingPolicy::class,
+        Address::class => AddressPolicy::class,
+        Order::class => OrderPolicy::class,
     ];
 
     /**
@@ -62,7 +68,7 @@ class AppServiceProvider extends ServiceProvider
         //     'comment' => Comment::class,
         // ]);
 
-        ResetPassword::createUrlUsing(function (object $notifiable, string $token)  {
+        ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
 

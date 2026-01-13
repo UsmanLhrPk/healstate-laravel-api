@@ -1,0 +1,198 @@
+name: 'Order Management'
+description: |-
+
+  APIs for managing orders
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/orders
+    metadata:
+      custom: []
+      groupName: 'Order Management'
+      groupDescription: |-
+
+        APIs for managing orders
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get User Orders'
+      description: 'Retrieve all orders for the authenticated user.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": [
+              {
+                "id": 1,
+                "order_number": "ORD-ABC123",
+                "total": 107.17,
+                "status": "paid",
+                "created_at": "2024-01-01T00:00:00.000000Z"
+              }
+            ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/orders/{order_id}'
+    metadata:
+      custom: []
+      groupName: 'Order Management'
+      groupDescription: |-
+
+        APIs for managing orders
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Order Details'
+      description: 'Retrieve detailed information about a specific order.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      order:
+        custom: []
+        name: order
+        description: 'The order ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 16
+      order: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "data": {
+              "id": 1,
+              "order_number": "ORD-ABC123",
+              "total": 107.17,
+              "status": "paid",
+              "items": [],
+              "address": {}
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/orders/{order_id}/cancel'
+    metadata:
+      custom: []
+      groupName: 'Order Management'
+      groupDescription: |-
+
+        APIs for managing orders
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Cancel Order'
+      description: 'Cancel an order (only if pending or paid status).'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      order:
+        custom: []
+        name: order
+        description: 'The order ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 16
+      order: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "message": "Order cancelled successfully",
+            "data": {
+              "id": 1,
+              "status": "cancelled"
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
