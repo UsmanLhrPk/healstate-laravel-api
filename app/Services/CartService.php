@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Cart;
-use App\Models\Product;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -25,6 +24,7 @@ class CartService
 
             if ($existing) {
                 $existing->increment('quantity', $data['quantity']);
+
                 return $existing->fresh(['product', 'variant']);
             }
 
@@ -57,6 +57,7 @@ class CartService
     public function updateCartItem(Cart $cart, int $quantity): Cart
     {
         $cart->update(['quantity' => $quantity]);
+
         return $cart->fresh(['product', 'variant']);
     }
 
@@ -93,6 +94,7 @@ class CartService
 
         $subtotal = $cartItems->sum(function ($item) {
             $price = $item->variant ? $item->variant->price : $item->product->price;
+
             return $price * $item->quantity;
         });
 
@@ -113,8 +115,18 @@ class CartService
 
     public function mergeGuestCart(int $userId, string $sessionId): void
     {
+        \Log::info('mergeGuestCart called', [
+            'user_id' => $userId,
+            'session_id' => $sessionId,
+        ]);
+
         DB::transaction(function () use ($userId, $sessionId) {
             $guestCartItems = Cart::where('session_id', $sessionId)->get();
+
+            \Log::info('Guest cart items found', [
+                'count' => $guestCartItems->count(),
+                'items' => $guestCartItems->pluck('id')->toArray(),
+            ]);
 
             foreach ($guestCartItems as $guestItem) {
                 $existingItem = Cart::where('user_id', $userId)
@@ -123,15 +135,26 @@ class CartService
                     ->first();
 
                 if ($existingItem) {
+                    \Log::info('Merging with existing item', [
+                        'guest_item_id' => $guestItem->id,
+                        'existing_item_id' => $existingItem->id,
+                    ]);
+
                     $existingItem->increment('quantity', $guestItem->quantity);
                     $guestItem->delete();
                 } else {
+                    \Log::info('Updating guest item to user item', [
+                        'guest_item_id' => $guestItem->id,
+                    ]);
+
                     $guestItem->update([
                         'user_id' => $userId,
                         'session_id' => null,
                     ]);
                 }
             }
+
+            \Log::info('mergeGuestCart completed successfully');
         });
     }
 }

@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Cart;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\CheckoutRequest;
 use App\Models\Address;
+use App\Notifications\OrderConfirmationNotification;
+use App\Services\AddressService;
 use App\Services\CartService;
 use App\Services\OrderService;
 use App\Services\PaymentService;
-use App\Services\AddressService;
-use App\Notifications\OrderConfirmationNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 
 /**
  * @group Checkout
- * 
+ *
  * APIs for checkout process
  */
 class CheckoutController extends Controller
@@ -38,23 +38,23 @@ class CheckoutController extends Controller
         if (auth()->check()) {
             return null;
         }
-        
+
         // For guests, get session ID from header or cookie
         $sessionId = $request->header('X-Cart-Session-ID') ?? $request->cookie('cart_session_id');
-        
+
         // Generate new session ID if not exists
-        if (!$sessionId) {
+        if (! $sessionId) {
             $sessionId = Str::uuid()->toString();
         }
-        
+
         return $sessionId;
     }
 
     /**
      * Create Payment Intent
-     * 
+     *
      * Create a Stripe payment intent for the cart total.
-     * 
+     *
      * @response {
      *   "data": {
      *     "client_secret": "pi_xxx_secret_xxx",
@@ -70,9 +70,11 @@ class CheckoutController extends Controller
 
         $totals = $this->cartService->calculateCartTotals($userId, $sessionId);
 
-        if ($totals['total'] <= 0) {
+        // Validate minimum amount
+        if ($totals['total'] < 0.50) {
             return response()->json([
-                'message' => 'Cart is empty',
+                'message' => 'Cart total must be at least $0.50 USD',
+                'current_total' => $totals['total'],
             ], 422);
         }
 
@@ -92,9 +94,8 @@ class CheckoutController extends Controller
             ],
         ]);
 
-        // Set cookie for guest users
-        if (!auth()->check() && $sessionId) {
-            $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30); // 30 days
+        if (! auth()->check() && $sessionId) {
+            $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
         }
 
         return $response;
@@ -102,14 +103,14 @@ class CheckoutController extends Controller
 
     /**
      * Process Checkout
-     * 
+     *
      * Complete the checkout process and create an order.
-     * 
+     *
      * @bodyParam payment_method_id string required Stripe payment method ID. Example: pm_xxx
      * @bodyParam address_id integer required Address ID (for authenticated users). Example: 1
      * @bodyParam address object required Address object (for guest users).
      * @bodyParam order_notes string optional Order notes. Example: Please ring doorbell
-     * 
+     *
      * @response 201 {
      *   "message": "Order placed successfully",
      *   "data": {
@@ -139,30 +140,32 @@ class CheckoutController extends Controller
             // Calculate totals
             $totals = $this->cartService->calculateCartTotals($userId, $sessionId);
 
-            // Create payment intent
-            $paymentIntent = $this->paymentService->createPaymentIntent(
-                $totals['total'],
-                [
-                    'user_id' => $userId,
-                    'order_notes' => $request->order_notes,
-                ]
-            );
+            // Validate minimum amount
+            if ($totals['total'] < 0.50) {
+                return response()->json([
+                    'message' => 'Cart total must be at least $0.50 USD',
+                    'current_total' => $totals['total'],
+                ], 422);
+            }
+
+            // REMOVED: Don't create a new payment intent here
+            // The payment_method_id should already be confirmed by Stripe on frontend
 
             // Create order
             $order = $this->orderService->createOrder(
                 $userId,
                 $sessionId,
                 [
-                    'payment_intent_id' => $paymentIntent['payment_intent_id'],
+                    'payment_method_id' => $request->payment_method_id, // Store the payment method
                     'order_notes' => $request->order_notes,
                 ],
                 $address
             );
 
-            // Mark order as paid (in real scenario, this happens via webhook)
+            // Mark order as paid
             $order = $this->orderService->markOrderAsPaid(
                 $order,
-                $paymentIntent['payment_intent_id']
+                $request->payment_method_id
             );
 
             // Clear cart
@@ -179,8 +182,8 @@ class CheckoutController extends Controller
             ], 201);
 
             // Set cookie for guest users
-            if (!auth()->check() && $sessionId) {
-                $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30); // 30 days
+            if (! auth()->check() && $sessionId) {
+                $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
             }
 
             return $response;
@@ -189,11 +192,11 @@ class CheckoutController extends Controller
 
     /**
      * Verify Payment
-     * 
+     *
      * Verify a payment intent status.
-     * 
+     *
      * @bodyParam payment_intent_id string required Payment intent ID. Example: pi_xxx
-     * 
+     *
      * @response {
      *   "data": {
      *     "status": "succeeded",

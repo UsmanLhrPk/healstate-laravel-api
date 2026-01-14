@@ -16,6 +16,7 @@ use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\AddressController;
 use App\Http\Controllers\Cart\CheckoutController;
 use App\Http\Controllers\Cart\OrderController;
+use App\Http\Controllers\Webhooks\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes (no auth required)
