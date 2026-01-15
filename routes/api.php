@@ -30,7 +30,7 @@ Route::get('/vendors/{vendor}/reviews', [ReviewController::class, 'index']);
 Route::get('/slots/{slot}/availability', [BookingController::class,  'availability']);
 Route::get('/marketplace', [App\Http\Controllers\Vendors\MarketplaceController::class, 'index']);
 
-Route::prefix('cart')->group(function () {
+Route::prefix('cart')->middleware('optional-auth:sanctum')->group(function () {
     Route::get('/', [CartController::class, 'index']);
     Route::post('/', [CartController::class, 'store']);
     Route::put('/{cart}', [CartController::class, 'update']);
@@ -40,7 +40,7 @@ Route::prefix('cart')->group(function () {
 });
 
 // Public Checkout Routes
-Route::prefix('checkout')->middleware('auth:sanctum,optional')->group(function () {
+Route::prefix('checkout')->middleware('optional-auth:sanctum')->group(function () {
     Route::post('/payment-intent', [CheckoutController::class, 'createPaymentIntent']);
     Route::post('/process', [CheckoutController::class, 'processCheckout']);
     Route::post('/verify-payment', [CheckoutController::class, 'verifyPayment']);

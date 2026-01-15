@@ -35,7 +35,7 @@ class CheckoutController extends Controller
     private function getSessionId(Request $request): ?string
     {
         // For authenticated users, return null (will use user_id instead)
-        if (auth()->check()) {
+        if (auth('sanctum')->check()) {
             return null;
         }
 
@@ -65,7 +65,7 @@ class CheckoutController extends Controller
      */
     public function createPaymentIntent(Request $request): JsonResponse
     {
-        $userId = auth()->id();
+        $userId = auth('sanctum')->id();
         $sessionId = $this->getSessionId($request);
 
         $totals = $this->cartService->calculateCartTotals($userId, $sessionId);
@@ -94,7 +94,7 @@ class CheckoutController extends Controller
             ],
         ]);
 
-        if (! auth()->check() && $sessionId) {
+        if (!auth('sanctum')->check() && $sessionId) {
             $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
         }
 
@@ -123,7 +123,7 @@ class CheckoutController extends Controller
     public function processCheckout(CheckoutRequest $request): JsonResponse
     {
         return DB::transaction(function () use ($request) {
-            $userId = auth()->id();
+            $userId = auth('sanctum')->id();
             $sessionId = $this->getSessionId($request);
 
             // Get or create address
@@ -173,7 +173,7 @@ class CheckoutController extends Controller
 
             // Send confirmation email
             if ($userId) {
-                auth()->user()->notify(new OrderConfirmationNotification($order));
+                auth('sanctum')->user()->notify(new OrderConfirmationNotification($order));
             }
 
             $response = response()->json([
@@ -182,7 +182,7 @@ class CheckoutController extends Controller
             ], 201);
 
             // Set cookie for guest users
-            if (! auth()->check() && $sessionId) {
+            if (!auth('sanctum')->check() && $sessionId) {
                 $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
             }
 

@@ -65,9 +65,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Register event listeners
-        Event::listen(
-            Login::class,
-        );
+       
 
         // Enforce morph map for polymorphic relationships
         // Relation::enforceMorphMap([
