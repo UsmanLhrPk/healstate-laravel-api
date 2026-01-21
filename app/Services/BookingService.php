@@ -43,6 +43,7 @@ class BookingService
     public function createBooking(int $userId, array $data): ServiceBooking
     {
         return DB::transaction(function () use ($userId, $data) {
+            // Check if time slot overlaps with existing bookings
             $hasOverlap = $this->checkTimeOverlap(
                 $data['service_slot_id'],
                 $data['booking_date'],
@@ -52,6 +53,18 @@ class BookingService
 
             if ($hasOverlap) {
                 throw new \Exception('Time slot is already booked');
+            }
+
+            // NEW: Check if the booking falls within vendor's availability schedule
+            $isAvailable = $this->checkAvailabilitySchedule(
+                $data['service_slot_id'],
+                $data['booking_date'],
+                $data['start_time'],
+                $data['end_time']
+            );
+
+            if (!$isAvailable) {
+                throw new \Exception('Vendor is not available at this time');
             }
 
             $data['user_id'] = $userId;
@@ -102,5 +115,36 @@ class BookingService
                     });
             })
             ->exists();
+    }
+
+    /**
+     * NEW METHOD: Check if booking time falls within vendor's availability schedule
+     */
+    protected function checkAvailabilitySchedule(int $slotId, string $date, string $startTime, string $endTime): bool
+    {
+        $dayOfWeek = Carbon::parse($date)->dayOfWeek; // 0 = Sunday, 6 = Saturday
+
+        // Get all availability records for this day of week
+        $availabilities = \App\Models\ServiceAvailability::where('service_slot_id', $slotId)
+            ->where('day_of_week', $dayOfWeek)
+            ->get();
+
+        // If no availability records exist for this day, vendor is not available
+        if ($availabilities->isEmpty()) {
+            return false;
+        }
+
+        // Check if booking time falls within any of the available time slots
+        foreach ($availabilities as $availability) {
+            $availStart = $availability->start_time;
+            $availEnd = $availability->end_time;
+
+            // Booking must start at or after availability start AND end at or before availability end
+            if ($startTime >= $availStart && $endTime <= $availEnd) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
