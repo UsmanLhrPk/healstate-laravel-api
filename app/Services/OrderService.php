@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Address;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\ServiceBooking;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -47,36 +49,73 @@ class OrderService
                 // Debug each cart item
                 Log::info('Processing cart item', [
                     'cart_item_id' => $cartItem->id,
+                    'product_id' => $cartItem->product_id,
+                    'service_slot_id' => $cartItem->service_slot_id,
                     'product_loaded' => $cartItem->relationLoaded('product'),
-                    'product_exists' => isset($cartItem->product),
-                    'product_id' => $cartItem->product_id,
-                    'product_data' => $cartItem->product?->toArray(),
+                    'service_slot_loaded' => $cartItem->relationLoaded('serviceSlot'),
                 ]);
 
-                // Verify product exists
-                if (! $cartItem->product) {
-                    throw new \Exception("Product not found for cart item {$cartItem->id}");
+                if ($cartItem->product_id) {
+                    // Handle product order item
+                    if (!$cartItem->product) {
+                        throw new \Exception("Product not found for cart item {$cartItem->id}");
+                    }
+
+                    $price = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
+                    $productName = $cartItem->product->name ?? $cartItem->product->title;
+
+                    $order->items()->create([
+                        'product_id' => $cartItem->product_id,
+                        'variant_id' => $cartItem->variant_id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $price,
+                        'subtotal' => $price * $cartItem->quantity,
+                        'product_name' => $productName,
+                        'type' => 'product',
+                    ]);
+
+                } elseif ($cartItem->service_slot_id) {
+                    // Handle service order item
+                    if (!$cartItem->serviceSlot) {
+                        throw new \Exception("Service slot not found for cart item {$cartItem->id}");
+                    }
+
+                    $price = $cartItem->serviceSlot->price;
+                    $serviceName = $cartItem->serviceSlot->name ?? 'Service Appointment';
+
+                    // Create service booking
+                    $serviceBooking = ServiceBooking::create([
+                        'service_slot_id' => $cartItem->service_slot_id,
+                        'user_id' => $userId,
+                        'order_id' => $order->id,
+                        'booking_date' => $cartItem->booking_date,
+                        'start_time' => $cartItem->start_time,
+                        'end_time' => $cartItem->end_time,
+                        'status' => 'confirmed',
+                        'total_price' => $price,
+                        'notes' => $data['order_notes'] ?? null,
+                    ]);
+
+                    // Create order item for the service
+                    $order->items()->create([
+                        'service_slot_id' => $cartItem->service_slot_id,
+                        'service_booking_id' => $serviceBooking->id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $price,
+                        'subtotal' => $price * $cartItem->quantity,
+                        'product_name' => $serviceName,
+                        'type' => 'service',
+                        'booking_date' => $cartItem->booking_date,
+                        'start_time' => $cartItem->start_time,
+                        'end_time' => $cartItem->end_time,
+                    ]);
+
+                } else {
+                    throw new \Exception("Invalid cart item {$cartItem->id}: must have either product_id or service_slot_id");
                 }
-
-                $price = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
-                $productName = $cartItem->product->name;
-
-                Log::info('Creating order item', [
-                    'product_name' => $productName,
-                    'price' => $price,
-                ]);
-
-                $order->items()->create([
-                    'product_id' => $cartItem->product_id,
-                    'variant_id' => $cartItem->variant_id,
-                    'quantity' => $cartItem->quantity,
-                    'unit_price' => $price,
-                    'subtotal' => $price * $cartItem->quantity,
-                    'product_name' => $cartItem->product->title,
-                ]);
             }
 
-            return $order->load(['items.product', 'items.variant', 'address']);
+            return $order->load(['items.product', 'items.variant', 'items.serviceSlot', 'address']);
         });
     }
 
@@ -88,20 +127,32 @@ class OrderService
             'paid_at' => now(),
         ]);
 
+        // Update service bookings status if any
+        $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
+            if ($item->serviceBooking) {
+                $item->serviceBooking->update(['status' => 'confirmed']);
+            }
+        });
+
         return $order->fresh();
     }
 
     public function getUserOrders(int $userId, int $perPage = 15): LengthAwarePaginator
     {
         return Order::where('user_id', $userId)
-            ->with(['items.product', 'items.variant', 'address'])
+            ->with(['items.product', 'items.variant', 'items.serviceSlot', 'address'])
             ->latest()
             ->paginate($perPage);
     }
 
     public function getOrderDetails(Order $order): Order
     {
-        return $order->load(['items.product.vendor', 'items.variant', 'address']);
+        return $order->load([
+            'items.product.vendor', 
+            'items.variant', 
+            'items.serviceSlot',
+            'address'
+        ]);
     }
 
     public function cancelOrder(Order $order): Order
@@ -111,6 +162,13 @@ class OrderService
         }
 
         $order->update(['status' => 'cancelled']);
+
+        // Cancel service bookings if any
+        $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
+            if ($item->serviceBooking) {
+                $item->serviceBooking->update(['status' => 'cancelled']);
+            }
+        });
 
         return $order->fresh();
     }

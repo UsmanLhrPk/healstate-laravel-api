@@ -15,11 +15,18 @@ class Cart extends Model
         'session_id',
         'product_id',
         'variant_id',
+        'service_slot_id',
+        'booking_date',
+        'start_time',
+        'end_time',
         'quantity',
     ];
 
     protected $casts = [
         'quantity' => 'integer',
+        'booking_date' => 'date',     
+        'start_time' => 'datetime:H:i:s', 
+        'end_time' => 'datetime:H:i:s',   
     ];
 
     public function user(): BelongsTo
@@ -35,5 +42,10 @@ class Cart extends Model
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class);
+    }
+
+    public function serviceSlot(): BelongsTo
+    {
+        return $this->belongsTo(ServiceSlot::class);
     }
 }

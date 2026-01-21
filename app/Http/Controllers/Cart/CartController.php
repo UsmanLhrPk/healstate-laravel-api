@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Cart;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Cart\AddToCartRequest;
 use App\Http\Requests\Cart\UpdateCartItemRequest;
+use App\Http\Requests\Cart\AddToCartRequest;
 use App\Models\Cart;
 use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
@@ -69,35 +69,72 @@ class CartController extends Controller
      */
     public function store(AddToCartRequest $request): JsonResponse
     {
-        $userId = auth('sanctum')->id();
+        $validated = $request->validated(); // Now using Form Request validation
+        $userId = auth()->id();
         $sessionId = $this->getSessionId($request);
 
-        // Add logging
-        \Log::info('Cart Store Debug', [
-            'user_id' => $userId,
-            'session_id' => $sessionId,
-            'header_session' => $request->header('X-Cart-Session-ID'),
-            'cookie_session' => $request->cookie('cart_session_id'),
-        ]);
+        // Check if adding a service
+        if (isset($validated['service_slot_id'])) {
+            // Check for duplicate service booking in cart
+            $existingService = Cart::where(function ($query) use ($userId, $sessionId) {
+                if ($userId) {
+                    $query->where('user_id', $userId);
+                } else {
+                    $query->where('session_id', $sessionId);
+                }
+            })
+                ->where('service_slot_id', $validated['service_slot_id'])
+                ->where('booking_date', $validated['booking_date'])
+                ->where('start_time', $validated['start_time'])
+                ->first();
 
-        $cartItem = $this->cartService->addToCart(
-            $userId,
-            $sessionId,
-            $request->validated()
-        );
+            if ($existingService) {
+                return response()->json([
+                    'message' => 'This service is already in your cart',
+                    'data' => $existingService->load('serviceSlot'),
+                ], 409); // Conflict
+            }
 
-        $response = response()->json([
-            'message' => 'Item added to cart',
-            'data' => $cartItem,
-        ], 201);
+            $cart = Cart::create([
+                'user_id' => $userId,
+                'session_id' => $sessionId,
+                'service_slot_id' => $validated['service_slot_id'],
+                'booking_date' => $validated['booking_date'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'quantity' => 1, // Services always quantity 1
+            ]);
+        } else {
+            // Existing product logic
+            $existingCart = Cart::where(function ($query) use ($userId, $sessionId) {
+                if ($userId) {
+                    $query->where('user_id', $userId);
+                } else {
+                    $query->where('session_id', $sessionId);
+                }
+            })
+                ->where('product_id', $validated['product_id'])
+                ->where('variant_id', $validated['variant_id'])
+                ->first();
 
-        // Set cookie for guest users
-        if (! auth('sanctum')->check() && $sessionId) {
-            \Log::info('Setting cart cookie', ['session_id' => $sessionId]);
-            $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
+            if ($existingCart) {
+                $existingCart->increment('quantity', $validated['quantity']);
+                $cart = $existingCart->fresh();
+            } else {
+                $cart = Cart::create([
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'product_id' => $validated['product_id'],
+                    'variant_id' => $validated['variant_id'],
+                    'quantity' => $validated['quantity'],
+                ]);
+            }
         }
 
-        return $response;
+        return response()->json([
+            'message' => 'Item added to cart',
+            'data' => $cart->load(['product', 'variant', 'serviceSlot']),
+        ], 201);
     }
 
     /**

@@ -11,44 +11,82 @@ class CartService
     public function addToCart(?int $userId, ?string $sessionId, array $data): Cart
     {
         return DB::transaction(function () use ($userId, $sessionId, $data) {
-            $existing = Cart::where(function ($query) use ($userId, $sessionId) {
-                if ($userId) {
-                    $query->where('user_id', $userId);
-                } else {
-                    $query->where('session_id', $sessionId);
+            // Check if adding a service
+            if (isset($data['service_slot_id'])) {
+                // Check for duplicate service in cart
+                $existing = Cart::where(function ($query) use ($userId, $sessionId) {
+                    if ($userId) {
+                        $query->where('user_id', $userId);
+                    } else {
+                        $query->where('session_id', $sessionId);
+                    }
+                })
+                ->where('service_slot_id', $data['service_slot_id'])
+                ->where('booking_date', $data['booking_date'])
+                ->where('start_time', $data['start_time'])
+                ->first();
+
+                if ($existing) {
+                    // Services can't have quantity > 1, so just return existing
+                    return $existing->fresh(['serviceSlot']);
                 }
-            })
+
+                $cartData = [
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'service_slot_id' => $data['service_slot_id'],
+                    'booking_date' => $data['booking_date'],
+                    'start_time' => $data['start_time'],
+                    'end_time' => $data['end_time'],
+                    'quantity' => 1, // Services always quantity 1
+                ];
+
+                return Cart::create($cartData)->load(['serviceSlot']);
+            } else {
+                // Product logic (existing code)
+                $existing = Cart::where(function ($query) use ($userId, $sessionId) {
+                    if ($userId) {
+                        $query->where('user_id', $userId);
+                    } else {
+                        $query->where('session_id', $sessionId);
+                    }
+                })
                 ->where('product_id', $data['product_id'])
                 ->where('variant_id', $data['variant_id'] ?? null)
                 ->first();
 
-            if ($existing) {
-                $existing->increment('quantity', $data['quantity']);
+                if ($existing) {
+                    $existing->increment('quantity', $data['quantity']);
+                    return $existing->fresh(['product', 'variant']);
+                }
 
-                return $existing->fresh(['product', 'variant']);
+                $cartData = [
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'product_id' => $data['product_id'],
+                    'variant_id' => $data['variant_id'] ?? null,
+                    'quantity' => $data['quantity'],
+                ];
+
+                return Cart::create($cartData)->load(['product', 'variant']);
             }
-
-            $cartData = [
-                'user_id' => $userId,
-                'session_id' => $sessionId,
-                'product_id' => $data['product_id'],
-                'variant_id' => $data['variant_id'] ?? null,
-                'quantity' => $data['quantity'],
-            ];
-
-            return Cart::create($cartData)->load(['product', 'variant']);
         });
     }
 
     public function getCart(?int $userId, ?string $sessionId): Collection
     {
-        $query = Cart::with(['product.vendor', 'variant'])
+        $query = Cart::with(['product.vendor', 'variant', 'serviceSlot'])
             ->where(function ($query) use ($userId, $sessionId) {
                 if ($userId) {
                     $query->where('user_id', $userId);
                 } else {
                     $query->where('session_id', $sessionId);
                 }
+            })
+            ->where(function ($query) {
+                // Only get valid cart items
+                $query->whereNotNull('product_id')
+                      ->orWhereNotNull('service_slot_id');
             });
 
         return $query->get();
@@ -56,8 +94,12 @@ class CartService
 
     public function updateCartItem(Cart $cart, int $quantity): Cart
     {
+        // Don't allow updating quantity for services (always 1)
+        if ($cart->service_slot_id) {
+            return $cart->fresh(['serviceSlot']);
+        }
+        
         $cart->update(['quantity' => $quantity]);
-
         return $cart->fresh(['product', 'variant']);
     }
 
@@ -85,7 +127,13 @@ class CartService
             } else {
                 $query->where('session_id', $sessionId);
             }
-        })->count();
+        })
+        ->where(function ($query) {
+            // Only count valid items
+            $query->whereNotNull('product_id')
+                  ->orWhereNotNull('service_slot_id');
+        })
+        ->sum('quantity');
     }
 
     public function calculateCartTotals(?int $userId, ?string $sessionId): array
@@ -93,9 +141,17 @@ class CartService
         $cartItems = $this->getCart($userId, $sessionId);
 
         $subtotal = $cartItems->sum(function ($item) {
-            $price = $item->variant ? $item->variant->price : $item->product->price;
-
-            return $price * $item->quantity;
+            if ($item->product_id) {
+                // Product item
+                $price = $item->variant ? $item->variant->price : ($item->product ? $item->product->price : 0);
+                return $price * $item->quantity;
+            } elseif ($item->service_slot_id) {
+                // Service item
+                $price = $item->serviceSlot ? $item->serviceSlot->price : 0;
+                return $price * $item->quantity; // Services always quantity 1
+            }
+            
+            return 0;
         });
 
         // Tax calculation. stripe charges 2.9 percent + 30 cents per transaction
@@ -109,6 +165,7 @@ class CartService
         return [
             'subtotal' => round($subtotal, 2),
             'shipping' => round($shipping, 2),
+            'commission_fee' => round($commissionFee, 2),
             'total' => round($total, 2),
         ];
     }
@@ -129,28 +186,56 @@ class CartService
             ]);
 
             foreach ($guestCartItems as $guestItem) {
-                $existingItem = Cart::where('user_id', $userId)
-                    ->where('product_id', $guestItem->product_id)
-                    ->where('variant_id', $guestItem->variant_id)
-                    ->first();
+                if ($guestItem->product_id) {
+                    // Merge product items
+                    $existingItem = Cart::where('user_id', $userId)
+                        ->where('product_id', $guestItem->product_id)
+                        ->where('variant_id', $guestItem->variant_id)
+                        ->first();
 
-                if ($existingItem) {
-                    \Log::info('Merging with existing item', [
-                        'guest_item_id' => $guestItem->id,
-                        'existing_item_id' => $existingItem->id,
-                    ]);
+                    if ($existingItem) {
+                        \Log::info('Merging product with existing item', [
+                            'guest_item_id' => $guestItem->id,
+                            'existing_item_id' => $existingItem->id,
+                        ]);
 
-                    $existingItem->increment('quantity', $guestItem->quantity);
-                    $guestItem->delete();
-                } else {
-                    \Log::info('Updating guest item to user item', [
-                        'guest_item_id' => $guestItem->id,
-                    ]);
+                        $existingItem->increment('quantity', $guestItem->quantity);
+                        $guestItem->delete();
+                    } else {
+                        \Log::info('Updating guest product item to user item', [
+                            'guest_item_id' => $guestItem->id,
+                        ]);
 
-                    $guestItem->update([
-                        'user_id' => $userId,
-                        'session_id' => null,
-                    ]);
+                        $guestItem->update([
+                            'user_id' => $userId,
+                            'session_id' => null,
+                        ]);
+                    }
+                } elseif ($guestItem->service_slot_id) {
+                    // Merge service items - check for duplicates by date/time
+                    $existingService = Cart::where('user_id', $userId)
+                        ->where('service_slot_id', $guestItem->service_slot_id)
+                        ->where('booking_date', $guestItem->booking_date)
+                        ->where('start_time', $guestItem->start_time)
+                        ->first();
+
+                    if ($existingService) {
+                        \Log::info('Service already exists in user cart, deleting guest item', [
+                            'guest_item_id' => $guestItem->id,
+                            'existing_item_id' => $existingService->id,
+                        ]);
+
+                        $guestItem->delete();
+                    } else {
+                        \Log::info('Updating guest service item to user item', [
+                            'guest_item_id' => $guestItem->id,
+                        ]);
+
+                        $guestItem->update([
+                            'user_id' => $userId,
+                            'session_id' => null,
+                        ]);
+                    }
                 }
             }
 

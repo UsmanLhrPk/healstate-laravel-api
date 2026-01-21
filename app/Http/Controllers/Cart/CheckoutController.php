@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Cart;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\CheckoutRequest;
 use App\Models\Address;
+use App\Models\ServiceBooking;
 use App\Notifications\OrderConfirmationNotification;
+use App\Notifications\ServiceBookingConfirmationNotification;
 use App\Services\AddressService;
 use App\Services\CartService;
 use App\Services\OrderService;
@@ -148,19 +150,45 @@ class CheckoutController extends Controller
                 ], 422);
             }
 
-            // REMOVED: Don't create a new payment intent here
-            // The payment_method_id should already be confirmed by Stripe on frontend
-
             // Create order
             $order = $this->orderService->createOrder(
                 $userId,
                 $sessionId,
                 [
-                    'payment_method_id' => $request->payment_method_id, // Store the payment method
+                    'payment_method_id' => $request->payment_method_id,
                     'order_notes' => $request->order_notes,
                 ],
                 $address
             );
+
+            // Get cart items to check for service bookings
+            $cartItems = $this->cartService->getCart($userId, $sessionId);
+
+            // Create service bookings for items with service slots
+            $serviceBookings = [];
+            foreach ($cartItems as $item) {
+                if ($item->service_slot_id) {
+                    $serviceBooking = ServiceBooking::create([
+                        'service_slot_id' => $item->service_slot_id,
+                        'user_id' => $userId,
+                        'booking_date' => $item->booking_date,
+                        'start_time' => $item->start_time,
+                        'end_time' => $item->end_time,
+                        'status' => 'confirmed',
+                        'order_id' => $order->id,
+                        'total_price' => $item->price * $item->quantity,
+                        'quantity' => $item->quantity,
+                        'notes' => $request->order_notes,
+                    ]);
+
+                    // Link cart item to service booking
+                    if ($item->id) {
+                        $item->update(['service_booking_id' => $serviceBooking->id]);
+                    }
+
+                    $serviceBookings[] = $serviceBooking;
+                }
+            }
 
             // Mark order as paid
             $order = $this->orderService->markOrderAsPaid(
@@ -171,14 +199,27 @@ class CheckoutController extends Controller
             // Clear cart
             $this->cartService->clearCart($userId, $sessionId);
 
-            // Send confirmation email
+            // Send confirmation notifications
             if ($userId) {
-                auth('sanctum')->user()->notify(new OrderConfirmationNotification($order));
+                $user = auth('sanctum')->user();
+                
+                // Send order confirmation
+                $user->notify(new OrderConfirmationNotification($order));
+                
+                // Send service booking confirmations if any
+                if (!empty($serviceBookings)) {
+                    foreach ($serviceBookings as $booking) {
+                        $user->notify(new ServiceBookingConfirmationNotification($booking));
+                    }
+                }
             }
 
             $response = response()->json([
                 'message' => 'Order placed successfully',
-                'data' => $order,
+                'data' => [
+                    'order' => $order,
+                    'service_bookings' => !empty($serviceBookings) ? $serviceBookings : null,
+                ],
             ], 201);
 
             // Set cookie for guest users
