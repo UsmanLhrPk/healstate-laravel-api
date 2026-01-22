@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Cart\AddressController;
+use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\Cart\CheckoutController;
+use App\Http\Controllers\Cart\OrderController;
 use App\Http\Controllers\Forums\CommentController;
 use App\Http\Controllers\Forums\FlagController;
 use App\Http\Controllers\Forums\ForumController;
@@ -12,10 +16,7 @@ use App\Http\Controllers\Vendors\ReviewController;
 use App\Http\Controllers\Vendors\SlotController;
 use App\Http\Controllers\Vendors\VariantController;
 use App\Http\Controllers\Vendors\VendorController;
-use App\Http\Controllers\Cart\CartController;
-use App\Http\Controllers\Cart\AddressController;
-use App\Http\Controllers\Cart\CheckoutController;
-use App\Http\Controllers\Cart\OrderController;
+use App\Http\Controllers\Vendors\VendorOrderController;
 use App\Http\Controllers\Webhooks\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,7 +49,6 @@ Route::prefix('checkout')->middleware('optional-auth:sanctum')->group(function (
 
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook']);
 
-
 // Protected routes (auth required)
 Route::middleware('auth:sanctum')->group(function () {
     // Forums
@@ -65,8 +65,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Flags
     Route::post('/flags', [FlagController::class, 'store']);
-    // Add this to your routes/api.php
 
+    // Vendor Management
     Route::post('/vendors', [VendorController::class, 'store']);
     Route::put('/vendors/{vendor}', [VendorController::class, 'update']);
     Route::patch('/vendors/{vendor}/verify', [VendorController::class, 'verify']);
@@ -100,6 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/slots/{slot}/schedule', [AvailabilityController::class, 'show']);
     Route::delete('/slots/{slot}/schedule', [AvailabilityController::class, 'destroy']);
 
+    // Address Management
     Route::prefix('addresses')->group(function () {
         Route::get('/', [AddressController::class, 'index']);
         Route::post('/', [AddressController::class, 'store']);
@@ -108,11 +109,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/{address}/default', [AddressController::class, 'setDefault']);
     });
 
-    // Order Management
+    // Order Management (Customer Side)
     Route::prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::get('/{order}', [OrderController::class, 'show']);
-        Route::patch('/{order}/cancel', [OrderController::class, 'cancel']);
+        Route::get('/{order}/cancellation-status', [OrderController::class, 'checkCancellationStatus']);
+        Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
+    });
+
+    // Vendor Order Management
+    Route::prefix('vendor/orders')->group(function () {
+        Route::get('/', [VendorOrderController::class, 'index']);
+        Route::get('/{order}', [VendorOrderController::class, 'show']);
+        Route::patch('/{order}/status', [VendorOrderController::class, 'updateStatus']);
+        Route::post('/{order}/cancel', [VendorOrderController::class, 'cancelOrder']); // NEW
+        Route::post('/{order}/approve-cancellation', [VendorOrderController::class, 'approveCancellation']);
+        Route::post('/{order}/deny-cancellation', [VendorOrderController::class, 'denyCancellation']);
     });
 });
 

@@ -4,8 +4,9 @@ namespace App\Services;
 
 use App\Models\Address;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\ServiceBooking;
+use App\Notifications\OrderCancellationRequestNotification;
+use App\Notifications\OrderCancelledNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -57,7 +58,7 @@ class OrderService
 
                 if ($cartItem->product_id) {
                     // Handle product order item
-                    if (!$cartItem->product) {
+                    if (! $cartItem->product) {
                         throw new \Exception("Product not found for cart item {$cartItem->id}");
                     }
 
@@ -76,7 +77,7 @@ class OrderService
 
                 } elseif ($cartItem->service_slot_id) {
                     // Handle service order item
-                    if (!$cartItem->serviceSlot) {
+                    if (! $cartItem->serviceSlot) {
                         throw new \Exception("Service slot not found for cart item {$cartItem->id}");
                     }
 
@@ -148,20 +149,45 @@ class OrderService
     public function getOrderDetails(Order $order): Order
     {
         return $order->load([
-            'items.product.vendor', 
-            'items.variant', 
+            'items.product.vendor',
+            'items.variant',
             'items.serviceSlot',
-            'address'
+            'address',
         ]);
     }
 
-    public function cancelOrder(Order $order): Order
+    /**
+     * Cancel order - handles both immediate and requested cancellations
+     */
+    public function cancelOrder(Order $order, ?string $reason = null): Order
     {
-        if (! in_array($order->status, ['pending', 'paid'])) {
-            throw new \Exception('Order cannot be cancelled');
-        }
+        return DB::transaction(function () use ($order, $reason) {
+            // Check if can cancel immediately (within 30 minutes)
+            if ($order->canCancelImmediately()) {
+                return $this->processImmediateCancellation($order, $reason);
+            }
 
-        $order->update(['status' => 'cancelled']);
+            // Otherwise, create cancellation request
+            if ($order->canRequestCancellation()) {
+                return $this->requestCancellation($order, $reason);
+            }
+
+            throw new \Exception('Order cannot be cancelled at this time');
+        });
+    }
+
+    /**
+     * Process immediate cancellation (within 30 minutes)
+     */
+    protected function processImmediateCancellation(Order $order, ?string $reason): Order
+    {
+        $order->update([
+            'status' => 'cancelled',
+            'cancellation_type' => 'immediate',
+            'cancelled_by' => 'user',
+            'cancellation_reason' => $reason,
+            'cancellation_requested_at' => now(),
+        ]);
 
         // Cancel service bookings if any
         $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
@@ -170,10 +196,114 @@ class OrderService
             }
         });
 
+        // Notify user
+        $order->user->notify(new OrderCancelledNotification($order));
+
+        // Notify vendors
+        $this->notifyVendorsOfCancellation($order);
+
         return $order->fresh();
     }
 
-    public function updateOrderStatus(Order $order, string $status): Order
+    /**
+     * Request cancellation (after 30 minutes - needs vendor approval)
+     */
+    protected function requestCancellation(Order $order, ?string $reason): Order
+    {
+        $order->update([
+            'status' => 'cancellation_requested',
+            'cancellation_type' => 'requested',
+            'cancellation_reason' => $reason,
+            'cancellation_requested_at' => now(),
+        ]);
+
+        // Notify vendors about cancellation request
+        $this->notifyVendorsOfCancellationRequest($order);
+
+        return $order->fresh();
+    }
+
+    /**
+     * Vendor approves cancellation request
+     */
+    public function approveCancellation(Order $order, int $vendorId): Order
+    {
+        if ($order->status !== 'cancellation_requested') {
+            throw new \Exception('No pending cancellation request for this order');
+        }
+
+        return DB::transaction(function () use ($order) {
+            $order->update([
+                'status' => 'cancelled',
+                'cancelled_by' => 'vendor',
+            ]);
+
+            // Cancel service bookings if any
+            $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
+                if ($item->serviceBooking) {
+                    $item->serviceBooking->update(['status' => 'cancelled']);
+                }
+            });
+
+            // Notify user that cancellation was approved
+            $order->user->notify(new OrderCancelledNotification($order, true));
+
+            return $order->fresh();
+        });
+    }
+
+    /**
+     * Vendor denies cancellation request
+     */
+    public function denyCancellation(Order $order, int $vendorId, ?string $reason = null): Order
+    {
+        if ($order->status !== 'cancellation_requested') {
+            throw new \Exception('No pending cancellation request for this order');
+        }
+
+        $order->update([
+            'status' => 'paid', // or previous status
+            'cancellation_requested_at' => null,
+            'cancellation_reason' => null,
+            'cancellation_type' => null,
+        ]);
+
+        $order->user->notify(new OrderCancellationDeniedNotification($order, $reason));
+
+        return $order->fresh();
+    }
+
+    /**
+     * Notify vendors about immediate cancellation
+     */
+    protected function notifyVendorsOfCancellation(Order $order): void
+    {
+        $vendorIds = $order->getVendorIds();
+
+        foreach ($vendorIds as $vendorId) {
+            $vendor = \App\Models\Vendor::find($vendorId);
+            if ($vendor && $vendor->user) {
+                $vendor->user->notify(new VendorOrderCancelledNotification($order));
+            }
+        }
+    }
+
+    /**
+     * Notify vendors about cancellation request (needs approval)
+     */
+    protected function notifyVendorsOfCancellationRequest(Order $order): void
+    {
+        $vendorIds = $order->getVendorIds();
+
+        foreach ($vendorIds as $vendorId) {
+            $vendor = \App\Models\Vendor::find($vendorId);
+            if ($vendor && $vendor->user) {
+                $vendor->user->notify(new OrderCancellationRequestNotification($order));
+            }
+        }
+    }
+
+    public function updateOrderStatus(Order $order, string $status, ?int $vendorId = null): Order
     {
         $validStatuses = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled'];
 
@@ -181,8 +311,100 @@ class OrderService
             throw new \Exception('Invalid order status');
         }
 
+        // If vendor is updating to cancelled status, it's approving a cancellation
+        if ($status === 'cancelled' && $vendorId && $order->status === 'cancellation_requested') {
+            return $this->approveCancellation($order, $vendorId);
+        }
+
         $order->update(['status' => $status]);
 
         return $order->fresh();
+    }
+
+    /**
+ * Vendor cancels order with reason
+ */
+public function vendorCancelOrder(Order $order, int $vendorId, string $reason): Order
+{
+    // Verify this vendor owns products in this order
+    $hasVendorProducts = $order->items()
+        ->where(function ($q) use ($vendorId) {
+            $q->whereHas('product', function ($query) use ($vendorId) {
+                $query->where('vendor_id', $vendorId);
+            })
+            ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
+                $query->where('vendor_id', $vendorId);
+            });
+        })
+        ->exists();
+
+    if (!$hasVendorProducts) {
+        throw new \Exception('You do not have permission to cancel this order');
+    }
+
+    return DB::transaction(function () use ($order, $reason) {
+        $order->update([
+            'status' => 'cancelled',
+            'cancellation_type' => 'vendor_initiated',
+            'cancelled_by' => 'vendor',
+            'cancellation_reason' => $reason,
+            'cancellation_requested_at' => now(),
+        ]);
+
+        // Cancel service bookings if any
+        $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
+            if ($item->serviceBooking) {
+                $item->serviceBooking->update(['status' => 'cancelled']);
+            }
+        });
+
+        // Restore product stock if applicable
+        $order->items()->whereNotNull('variant_id')->each(function ($item) {
+            if ($item->variant && $item->variant->stock !== null) {
+                $item->variant->increment('stock', $item->quantity);
+            }
+        });
+
+        // Notify user about vendor cancellation
+        if ($order->user) {
+            $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
+        }
+
+        return $order->fresh();
+    });
+}
+
+
+    /**
+     * Get vendor orders with cancellation requests
+     * Fixed to handle both product and service orders
+     */
+    public function getVendorOrders(int $vendorId, ?string $status = null, int $perPage = 15): LengthAwarePaginator
+    {
+        $query = Order::where(function ($q) use ($vendorId) {
+            // Orders with product items from this vendor
+            $q->whereHas('items.product', function ($productQuery) use ($vendorId) {
+                $productQuery->where('vendor_id', $vendorId);
+            })
+            // OR orders with service items from this vendor
+                ->orWhereHas('items.serviceSlot', function ($serviceQuery) use ($vendorId) {
+                    $serviceQuery->whereHas('product', function ($productQuery) use ($vendorId) {
+                        $productQuery->where('vendor_id', $vendorId);
+                    });
+                });
+        })
+            ->with([
+                'items.product',
+                'items.variant',
+                'items.serviceSlot.product', // Important: load product through serviceSlot
+                'address',
+                'user',
+            ]);
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        return $query->latest()->paginate($perPage);
     }
 }
