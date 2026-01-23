@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class Order extends Model
 {
@@ -28,6 +27,8 @@ class Order extends Model
         'cancellation_reason',
         'cancelled_by',
         'cancellation_type', // 'immediate' or 'requested'
+        'currency',
+        'currency_symbol',
     ];
 
     protected $casts = [
@@ -64,11 +65,12 @@ class Order extends Model
      */
     public function canCancelImmediately(): bool
     {
-        if (!in_array($this->status, ['pending', 'paid'])) {
+        if (! in_array($this->status, ['pending', 'paid'])) {
             return false;
         }
 
         $minutesSinceCreation = $this->created_at->diffInMinutes(now());
+
         return $minutesSinceCreation <= 30;
     }
 
@@ -77,7 +79,7 @@ class Order extends Model
      */
     public function canRequestCancellation(): bool
     {
-        return in_array($this->status, ['pending', 'paid', 'processing']) 
+        return in_array($this->status, ['pending', 'paid', 'processing'])
             && $this->status !== 'cancellation_requested';
     }
 
@@ -101,11 +103,12 @@ class Order extends Model
      */
     public function getCancellationTimeRemaining(): ?int
     {
-        if (!$this->canCancelImmediately()) {
+        if (! $this->canCancelImmediately()) {
             return null;
         }
 
         $minutesSinceCreation = $this->created_at->diffInMinutes(now());
+
         return max(0, 30 - $minutesSinceCreation);
     }
 
@@ -115,7 +118,7 @@ class Order extends Model
 
         static::creating(function ($order) {
             if (empty($order->order_number)) {
-                $order->order_number = 'ORD-' . strtoupper(uniqid());
+                $order->order_number = 'ORD-'.strtoupper(uniqid());
             }
         });
     }

@@ -75,13 +75,15 @@ class CheckoutController extends Controller
         // Validate minimum amount
         if ($totals['total'] < 0.50) {
             return response()->json([
-                'message' => 'Cart total must be at least $0.50 USD',
+                'message' => "Cart total must be at least {$totals['currency_symbol']}0.50 {$totals['currency']}",
                 'current_total' => $totals['total'],
             ], 422);
         }
 
+        // Pass currency to payment service
         $paymentIntent = $this->paymentService->createPaymentIntent(
             $totals['total'],
+            $totals['currency'], // Add currency parameter
             [
                 'user_id' => $userId,
                 'session_id' => $sessionId,
@@ -93,10 +95,12 @@ class CheckoutController extends Controller
                 'client_secret' => $paymentIntent['client_secret'],
                 'payment_intent_id' => $paymentIntent['payment_intent_id'],
                 'amount' => $totals['total'],
+                'currency' => $totals['currency'],
+                'currency_symbol' => $totals['currency_symbol'],
             ],
         ]);
 
-        if (!auth('sanctum')->check() && $sessionId) {
+        if (! auth('sanctum')->check() && $sessionId) {
             $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
         }
 
@@ -132,40 +136,40 @@ class CheckoutController extends Controller
             if ($userId) {
                 $address = Address::findOrFail($request->address_id);
             } else {
-                // Create temporary address for guest
                 $address = Address::create([
                     'user_id' => null,
                     ...$request->address,
                 ]);
             }
 
-            // Calculate totals
+            // Calculate totals with currency
             $totals = $this->cartService->calculateCartTotals($userId, $sessionId);
 
             // Validate minimum amount
             if ($totals['total'] < 0.50) {
                 return response()->json([
-                    'message' => 'Cart total must be at least $0.50 USD',
+                    'message' => "Cart total must be at least {$totals['currency_symbol']}0.50 {$totals['currency']}",
                     'current_total' => $totals['total'],
                 ], 422);
             }
 
-            // Create order
+            // Create order with currency
             $order = $this->orderService->createOrder(
                 $userId,
                 $sessionId,
                 [
                     'payment_method_id' => $request->payment_method_id,
                     'order_notes' => $request->order_notes,
+                    'currency' => $totals['currency'],
+                    'currency_symbol' => $totals['currency_symbol'],
                 ],
                 $address
             );
 
-            // Get cart items to check for service bookings
+            // Rest of the code remains the same...
             $cartItems = $this->cartService->getCart($userId, $sessionId);
-
-            // Create service bookings for items with service slots
             $serviceBookings = [];
+
             foreach ($cartItems as $item) {
                 if ($item->service_slot_id) {
                     $serviceBooking = ServiceBooking::create([
@@ -181,7 +185,6 @@ class CheckoutController extends Controller
                         'notes' => $request->order_notes,
                     ]);
 
-                    // Link cart item to service booking
                     if ($item->id) {
                         $item->update(['service_booking_id' => $serviceBooking->id]);
                     }
@@ -190,24 +193,18 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Mark order as paid
             $order = $this->orderService->markOrderAsPaid(
                 $order,
                 $request->payment_method_id
             );
 
-            // Clear cart
             $this->cartService->clearCart($userId, $sessionId);
 
-            // Send confirmation notifications
             if ($userId) {
                 $user = auth('sanctum')->user();
-                
-                // Send order confirmation
                 $user->notify(new OrderConfirmationNotification($order));
-                
-                // Send service booking confirmations if any
-                if (!empty($serviceBookings)) {
+
+                if (! empty($serviceBookings)) {
                     foreach ($serviceBookings as $booking) {
                         $user->notify(new ServiceBookingConfirmationNotification($booking));
                     }
@@ -218,12 +215,11 @@ class CheckoutController extends Controller
                 'message' => 'Order placed successfully',
                 'data' => [
                     'order' => $order,
-                    'service_bookings' => !empty($serviceBookings) ? $serviceBookings : null,
+                    'service_bookings' => ! empty($serviceBookings) ? $serviceBookings : null,
                 ],
             ], 201);
 
-            // Set cookie for guest users
-            if (!auth('sanctum')->check() && $sessionId) {
+            if (! auth('sanctum')->check() && $sessionId) {
                 $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
             }
 

@@ -21,10 +21,10 @@ class CartService
                         $query->where('session_id', $sessionId);
                     }
                 })
-                ->where('service_slot_id', $data['service_slot_id'])
-                ->where('booking_date', $data['booking_date'])
-                ->where('start_time', $data['start_time'])
-                ->first();
+                    ->where('service_slot_id', $data['service_slot_id'])
+                    ->where('booking_date', $data['booking_date'])
+                    ->where('start_time', $data['start_time'])
+                    ->first();
 
                 if ($existing) {
                     // Services can't have quantity > 1, so just return existing
@@ -51,12 +51,13 @@ class CartService
                         $query->where('session_id', $sessionId);
                     }
                 })
-                ->where('product_id', $data['product_id'])
-                ->where('variant_id', $data['variant_id'] ?? null)
-                ->first();
+                    ->where('product_id', $data['product_id'])
+                    ->where('variant_id', $data['variant_id'] ?? null)
+                    ->first();
 
                 if ($existing) {
                     $existing->increment('quantity', $data['quantity']);
+
                     return $existing->fresh(['product', 'variant']);
                 }
 
@@ -86,7 +87,7 @@ class CartService
             ->where(function ($query) {
                 // Only get valid cart items
                 $query->whereNotNull('product_id')
-                      ->orWhereNotNull('service_slot_id');
+                    ->orWhereNotNull('service_slot_id');
             });
 
         return $query->get();
@@ -98,8 +99,9 @@ class CartService
         if ($cart->service_slot_id) {
             return $cart->fresh(['serviceSlot']);
         }
-        
+
         $cart->update(['quantity' => $quantity]);
+
         return $cart->fresh(['product', 'variant']);
     }
 
@@ -128,38 +130,59 @@ class CartService
                 $query->where('session_id', $sessionId);
             }
         })
-        ->where(function ($query) {
-            // Only count valid items
-            $query->whereNotNull('product_id')
-                  ->orWhereNotNull('service_slot_id');
-        })
-        ->sum('quantity');
+            ->where(function ($query) {
+                // Only count valid items
+                $query->whereNotNull('product_id')
+                    ->orWhereNotNull('service_slot_id');
+            })
+            ->sum('quantity');
     }
 
     public function calculateCartTotals(?int $userId, ?string $sessionId): array
     {
         $cartItems = $this->getCart($userId, $sessionId);
 
+        if ($cartItems->isEmpty()) {
+            return [
+                'subtotal' => 0,
+                'shipping' => 0,
+                'commission_fee' => 0,
+                'total' => 0,
+                'currency' => 'USD',
+                'currency_symbol' => '$',
+            ];
+        }
+
+        // Detect currency from first item (all items should have same currency from same vendor)
+        $firstItem = $cartItems->first();
+        $currency = 'USD';
+        $currencySymbol = '$';
+
+        if ($firstItem->product_id && $firstItem->product) {
+            $currency = $firstItem->product->currency ?? $firstItem->product->vendor->currency ?? 'USD';
+            $currencySymbol = $firstItem->product->currency_symbol ?? $firstItem->product->vendor->currency_symbol ?? '$';
+        } elseif ($firstItem->service_slot_id && $firstItem->serviceSlot) {
+            $currency = $firstItem->serviceSlot->currency ?? $firstItem->serviceSlot->product->currency ?? 'USD';
+            $currencySymbol = $firstItem->serviceSlot->currency_symbol ?? $firstItem->serviceSlot->product->currency_symbol ?? '$';
+        }
+
         $subtotal = $cartItems->sum(function ($item) {
             if ($item->product_id) {
-                // Product item
                 $price = $item->variant ? $item->variant->price : ($item->product ? $item->product->price : 0);
+
                 return $price * $item->quantity;
             } elseif ($item->service_slot_id) {
-                // Service item
                 $price = $item->serviceSlot ? $item->serviceSlot->price : 0;
-                return $price * $item->quantity; // Services always quantity 1
+
+                return $price * $item->quantity;
             }
-            
+
             return 0;
         });
 
-        // Tax calculation. stripe charges 2.9 percent + 30 cents per transaction
+        // Stripe charges 2.9% + 30 cents per transaction
         $commissionFee = 0.029 * $subtotal + 0.30;
-
-        // Shipping calculation (flat rate or free over certain amount)
         $shipping = 0;
-
         $total = $subtotal + $commissionFee + $shipping;
 
         return [
@@ -167,6 +190,8 @@ class CartService
             'shipping' => round($shipping, 2),
             'commission_fee' => round($commissionFee, 2),
             'total' => round($total, 2),
+            'currency' => $currency,
+            'currency_symbol' => $currencySymbol,
         ];
     }
 

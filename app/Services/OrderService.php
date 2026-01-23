@@ -20,14 +20,12 @@ class OrderService
     public function createOrder(?int $userId, ?string $sessionId, array $data, Address $address): Order
     {
         return DB::transaction(function () use ($userId, $sessionId, $data, $address) {
-            // Get cart items with explicit relationship loading
             $cartItems = $this->cartService->getCart($userId, $sessionId);
 
             if ($cartItems->isEmpty()) {
                 throw new \Exception('Cart is empty');
             }
 
-            // Debug logging
             Log::info('Cart items for order creation', [
                 'count' => $cartItems->count(),
                 'first_item' => $cartItems->first()?->toArray(),
@@ -44,20 +42,19 @@ class OrderService
                 'status' => 'pending',
                 'payment_intent_id' => $data['payment_intent_id'] ?? null,
                 'order_notes' => $data['order_notes'] ?? null,
+                'currency' => $data['currency'] ?? $totals['currency'] ?? 'USD',
+                'currency_symbol' => $data['currency_symbol'] ?? $totals['currency_symbol'] ?? '$',
             ]);
 
+            // Rest of the foreach loop remains the same...
             foreach ($cartItems as $cartItem) {
-                // Debug each cart item
                 Log::info('Processing cart item', [
                     'cart_item_id' => $cartItem->id,
                     'product_id' => $cartItem->product_id,
                     'service_slot_id' => $cartItem->service_slot_id,
-                    'product_loaded' => $cartItem->relationLoaded('product'),
-                    'service_slot_loaded' => $cartItem->relationLoaded('serviceSlot'),
                 ]);
 
                 if ($cartItem->product_id) {
-                    // Handle product order item
                     if (! $cartItem->product) {
                         throw new \Exception("Product not found for cart item {$cartItem->id}");
                     }
@@ -76,7 +73,6 @@ class OrderService
                     ]);
 
                 } elseif ($cartItem->service_slot_id) {
-                    // Handle service order item
                     if (! $cartItem->serviceSlot) {
                         throw new \Exception("Service slot not found for cart item {$cartItem->id}");
                     }
@@ -84,7 +80,6 @@ class OrderService
                     $price = $cartItem->serviceSlot->price;
                     $serviceName = $cartItem->serviceSlot->name ?? 'Service Appointment';
 
-                    // Create service booking
                     $serviceBooking = ServiceBooking::create([
                         'service_slot_id' => $cartItem->service_slot_id,
                         'user_id' => $userId,
@@ -97,7 +92,6 @@ class OrderService
                         'notes' => $data['order_notes'] ?? null,
                     ]);
 
-                    // Create order item for the service
                     $order->items()->create([
                         'service_slot_id' => $cartItem->service_slot_id,
                         'service_booking_id' => $serviceBooking->id,
@@ -110,9 +104,8 @@ class OrderService
                         'start_time' => $cartItem->start_time,
                         'end_time' => $cartItem->end_time,
                     ]);
-
                 } else {
-                    throw new \Exception("Invalid cart item {$cartItem->id}: must have either product_id or service_slot_id");
+                    throw new \Exception("Invalid cart item {$cartItem->id}");
                 }
             }
 
@@ -322,58 +315,57 @@ class OrderService
     }
 
     /**
- * Vendor cancels order with reason
- */
-public function vendorCancelOrder(Order $order, int $vendorId, string $reason): Order
-{
-    // Verify this vendor owns products in this order
-    $hasVendorProducts = $order->items()
-        ->where(function ($q) use ($vendorId) {
-            $q->whereHas('product', function ($query) use ($vendorId) {
-                $query->where('vendor_id', $vendorId);
+     * Vendor cancels order with reason
+     */
+    public function vendorCancelOrder(Order $order, int $vendorId, string $reason): Order
+    {
+        // Verify this vendor owns products in this order
+        $hasVendorProducts = $order->items()
+            ->where(function ($q) use ($vendorId) {
+                $q->whereHas('product', function ($query) use ($vendorId) {
+                    $query->where('vendor_id', $vendorId);
+                })
+                    ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
+                        $query->where('vendor_id', $vendorId);
+                    });
             })
-            ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
-                $query->where('vendor_id', $vendorId);
+            ->exists();
+
+        if (! $hasVendorProducts) {
+            throw new \Exception('You do not have permission to cancel this order');
+        }
+
+        return DB::transaction(function () use ($order, $reason) {
+            $order->update([
+                'status' => 'cancelled',
+                'cancellation_type' => 'vendor_initiated',
+                'cancelled_by' => 'vendor',
+                'cancellation_reason' => $reason,
+                'cancellation_requested_at' => now(),
+            ]);
+
+            // Cancel service bookings if any
+            $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
+                if ($item->serviceBooking) {
+                    $item->serviceBooking->update(['status' => 'cancelled']);
+                }
             });
-        })
-        ->exists();
 
-    if (!$hasVendorProducts) {
-        throw new \Exception('You do not have permission to cancel this order');
+            // Restore product stock if applicable
+            $order->items()->whereNotNull('variant_id')->each(function ($item) {
+                if ($item->variant && $item->variant->stock !== null) {
+                    $item->variant->increment('stock', $item->quantity);
+                }
+            });
+
+            // Notify user about vendor cancellation
+            // if ($order->user) {
+            //     $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
+            // }
+
+            return $order->fresh();
+        });
     }
-
-    return DB::transaction(function () use ($order, $reason) {
-        $order->update([
-            'status' => 'cancelled',
-            'cancellation_type' => 'vendor_initiated',
-            'cancelled_by' => 'vendor',
-            'cancellation_reason' => $reason,
-            'cancellation_requested_at' => now(),
-        ]);
-
-        // Cancel service bookings if any
-        $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
-            if ($item->serviceBooking) {
-                $item->serviceBooking->update(['status' => 'cancelled']);
-            }
-        });
-
-        // Restore product stock if applicable
-        $order->items()->whereNotNull('variant_id')->each(function ($item) {
-            if ($item->variant && $item->variant->stock !== null) {
-                $item->variant->increment('stock', $item->quantity);
-            }
-        });
-
-        // Notify user about vendor cancellation
-        // if ($order->user) {
-        //     $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
-        // }
-
-        return $order->fresh();
-    });
-}
-
 
     /**
      * Get vendor orders with cancellation requests
