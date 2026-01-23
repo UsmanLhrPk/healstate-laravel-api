@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Vendors;
 
+use App\Models\Vendor;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,6 +25,7 @@ class UpdateVendorRequest extends FormRequest
             'city' => 'sometimes|required_with:street_address|string|max:255',
             'state_province' => 'sometimes|required_with:street_address|string|max:255',
             'postal_code' => 'sometimes|nullable|string|max:255',
+            'currency' => ['sometimes', 'required', 'string', Rule::in(array_keys(Vendor::CURRENCIES))],
         ];
     }
 
@@ -39,6 +41,7 @@ class UpdateVendorRequest extends FormRequest
             'city',
             'state_province',
             'postal_code',
+            'currency', // Add this
         ];
 
         // Get all request keys
@@ -59,6 +62,7 @@ class UpdateVendorRequest extends FormRequest
     {
         return [
             '_invalid_fields' => 'The following fields are not allowed: ' . implode(', ', $this->input('_invalid_fields', [])),
+            'currency.in' => 'The selected currency is invalid. Please choose USD, EUR, or GBP.',
         ];
     }
 
