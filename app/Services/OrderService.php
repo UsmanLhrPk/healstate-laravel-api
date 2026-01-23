@@ -366,9 +366,9 @@ public function vendorCancelOrder(Order $order, int $vendorId, string $reason): 
         });
 
         // Notify user about vendor cancellation
-        if ($order->user) {
-            $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
-        }
+        // if ($order->user) {
+        //     $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
+        // }
 
         return $order->fresh();
     });
