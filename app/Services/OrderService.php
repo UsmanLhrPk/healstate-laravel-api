@@ -239,7 +239,7 @@ class OrderService
             });
 
             // Notify user that cancellation was approved
-            $order->user->notify(new OrderCancelledNotification($order, true));
+            // $order->user->notify(new OrderCancelledNotification($order, true));
 
             return $order->fresh();
         });
@@ -276,7 +276,7 @@ class OrderService
         foreach ($vendorIds as $vendorId) {
             $vendor = \App\Models\Vendor::find($vendorId);
             if ($vendor && $vendor->user) {
-                $vendor->user->notify(new VendorOrderCancelledNotification($order));
+                // $vendor->user->notify(new VendorOrderCancelledNotification($order));
             }
         }
     }
@@ -291,7 +291,7 @@ class OrderService
         foreach ($vendorIds as $vendorId) {
             $vendor = \App\Models\Vendor::find($vendorId);
             if ($vendor && $vendor->user) {
-                $vendor->user->notify(new OrderCancellationRequestNotification($order));
+                // $vendor->user->notify(new OrderCancellationRequestNotification($order));
             }
         }
     }
