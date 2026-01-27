@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Log;
 class OrderService
 {
     public function __construct(
-        protected CartService $cartService
+        protected CartService $cartService,
+        protected PaymentService $paymentService
     ) {}
 
     /**
@@ -281,10 +282,13 @@ class OrderService
     }
 
     /**
-     * Process immediate cancellation (within 30 minutes)
+     * Process immediate cancellation (within 30 minutes) with REFUND
      */
     protected function processImmediateCancellation(Order $order, ?string $reason): Order
     {
+        // Process refund BEFORE updating order status
+        $this->processRefund($order);
+
         $order->update([
             'status' => 'cancelled',
             'cancellation_type' => 'immediate',
@@ -299,6 +303,9 @@ class OrderService
                 $item->serviceBooking->update(['status' => 'cancelled']);
             }
         });
+
+        // Restore product stock if applicable
+        $this->restoreProductStock($order);
 
         // Notify user
         // $order->user->notify(new OrderCancelledNotification($order));
@@ -328,7 +335,7 @@ class OrderService
     }
 
     /**
-     * Vendor approves cancellation request
+     * Vendor approves cancellation request with REFUND
      */
     public function approveCancellation(Order $order, int $vendorId): Order
     {
@@ -337,6 +344,9 @@ class OrderService
         }
 
         return DB::transaction(function () use ($order) {
+            // Process refund BEFORE updating order status
+            $this->processRefund($order);
+
             $order->update([
                 'status' => 'cancelled',
                 'cancelled_by' => 'vendor',
@@ -348,6 +358,9 @@ class OrderService
                     $item->serviceBooking->update(['status' => 'cancelled']);
                 }
             });
+
+            // Restore product stock if applicable
+            $this->restoreProductStock($order);
 
             // Notify user that cancellation was approved
             // $order->user->notify(new OrderCancelledNotification($order, true));
@@ -375,6 +388,107 @@ class OrderService
         $order->user->notify(new OrderCancellationDeniedNotification($order, $reason));
 
         return $order->fresh();
+    }
+
+    /**
+     * Vendor cancels order with reason and REFUND
+     */
+    public function vendorCancelOrder(Order $order, int $vendorId, string $reason): Order
+    {
+        // Verify this vendor owns products in this order
+        $hasVendorProducts = $order->items()
+            ->where(function ($q) use ($vendorId) {
+                $q->whereHas('product', function ($query) use ($vendorId) {
+                    $query->where('vendor_id', $vendorId);
+                })
+                    ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
+                        $query->where('vendor_id', $vendorId);
+                    });
+            })
+            ->exists();
+
+        if (! $hasVendorProducts) {
+            throw new \Exception('You do not have permission to cancel this order');
+        }
+
+        return DB::transaction(function () use ($order, $reason) {
+            // Process refund BEFORE updating order status
+            $this->processRefund($order);
+
+            $order->update([
+                'status' => 'cancelled',
+                'cancellation_type' => 'vendor_initiated',
+                'cancelled_by' => 'vendor',
+                'cancellation_reason' => $reason,
+                'cancellation_requested_at' => now(),
+            ]);
+
+            // Cancel service bookings if any
+            $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
+                if ($item->serviceBooking) {
+                    $item->serviceBooking->update(['status' => 'cancelled']);
+                }
+            });
+
+            // Restore product stock if applicable
+            $this->restoreProductStock($order);
+
+            // Notify user about vendor cancellation
+            // if ($order->user) {
+            //     $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
+            // }
+
+            return $order->fresh();
+        });
+    }
+
+    /**
+     * Process refund for cancelled order
+     */
+    protected function processRefund(Order $order): void
+    {
+        if (!$order->payment_intent_id) {
+            Log::warning("Order {$order->id} has no payment intent ID, skipping refund");
+            return;
+        }
+
+        try {
+            $refund = $this->paymentService->refundPayment(
+                $order->payment_intent_id,
+                $order->total,
+                $order->currency
+            );
+
+            // Store refund information
+            $order->update([
+                'refund_id' => $refund['refund_id'],
+                'refund_status' => $refund['status'],
+                'refunded_at' => now(),
+                'refund_amount' => $refund['amount'],
+            ]);
+
+            Log::info("Refund processed for order {$order->id}", [
+                'refund_id' => $refund['refund_id'],
+                'amount' => $refund['amount'],
+                'currency' => $refund['currency'],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Refund failed for order {$order->id}: " . $e->getMessage());
+            throw new \Exception('Failed to process refund: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Restore product stock when order is cancelled
+     */
+    protected function restoreProductStock(Order $order): void
+    {
+        $order->items()->whereNotNull('variant_id')->each(function ($item) {
+            if ($item->variant && $item->variant->stock !== null) {
+                $item->variant->increment('stock', $item->quantity);
+            }
+        });
     }
 
     /**
@@ -423,59 +537,6 @@ class OrderService
         $order->update(['status' => $status]);
 
         return $order->fresh();
-    }
-
-    /**
-     * Vendor cancels order with reason
-     */
-    public function vendorCancelOrder(Order $order, int $vendorId, string $reason): Order
-    {
-        // Verify this vendor owns products in this order
-        $hasVendorProducts = $order->items()
-            ->where(function ($q) use ($vendorId) {
-                $q->whereHas('product', function ($query) use ($vendorId) {
-                    $query->where('vendor_id', $vendorId);
-                })
-                    ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
-                        $query->where('vendor_id', $vendorId);
-                    });
-            })
-            ->exists();
-
-        if (! $hasVendorProducts) {
-            throw new \Exception('You do not have permission to cancel this order');
-        }
-
-        return DB::transaction(function () use ($order, $reason) {
-            $order->update([
-                'status' => 'cancelled',
-                'cancellation_type' => 'vendor_initiated',
-                'cancelled_by' => 'vendor',
-                'cancellation_reason' => $reason,
-                'cancellation_requested_at' => now(),
-            ]);
-
-            // Cancel service bookings if any
-            $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
-                if ($item->serviceBooking) {
-                    $item->serviceBooking->update(['status' => 'cancelled']);
-                }
-            });
-
-            // Restore product stock if applicable
-            $order->items()->whereNotNull('variant_id')->each(function ($item) {
-                if ($item->variant && $item->variant->stock !== null) {
-                    $item->variant->increment('stock', $item->quantity);
-                }
-            });
-
-            // Notify user about vendor cancellation
-            // if ($order->user) {
-            //     $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
-            // }
-
-            return $order->fresh();
-        });
     }
 
     /**

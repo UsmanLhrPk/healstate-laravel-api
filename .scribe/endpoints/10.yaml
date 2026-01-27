@@ -1,23 +1,25 @@
-name: 'Flag Management'
+name: 'Like Management'
 description: |-
 
-  APIs for flagging inappropriate content
+  APIs for liking/unliking forums and comments
 endpoints:
   -
     custom: []
     httpMethods:
       - POST
-    uri: api/flags
+    uri: api/likes
     metadata:
       custom: []
-      groupName: 'Flag Management'
+      groupName: 'Like Management'
       groupDescription: |-
 
-        APIs for flagging inappropriate content
+        APIs for liking/unliking forums and comments
       subgroup: ''
       subgroupDescription: ''
-      title: 'Flag content'
-      description: 'Flag a forum or comment as inappropriate. A user can only flag the same content once. Requires authentication.'
+      title: 'Toggle like'
+      description: |-
+        Like or unlike a forum or comment. If the user has already liked the content, it will be unliked.
+        If the user hasn't liked it yet, a like will be created. Requires authentication.
       authenticated: true
       deprecated: false
     headers:
@@ -28,10 +30,10 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      flaggable_type:
+      likeable_type:
         custom: []
-        name: flaggable_type
-        description: 'The type of entity to flag.'
+        name: likeable_type
+        description: 'The type of entity to like.'
         required: true
         example: App\Models\Forum
         type: string
@@ -39,10 +41,10 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         deprecated: false
-      flaggable_id:
+      likeable_id:
         custom: []
-        name: flaggable_id
-        description: 'The ID of the entity to flag.'
+        name: likeable_id
+        description: 'The ID of the entity to like.'
         required: true
         example: 1
         type: integer
@@ -51,16 +53,27 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      flaggable_type: App\Models\Forum
-      flaggable_id: 1
+      likeable_type: App\Models\Forum
+      likeable_id: 1
     fileParameters: []
     responses:
       -
         custom: []
-        status: 201
+        status: 200
         content: |-
           {
-            "message": "Content flagged successfully"
+            "liked": true,
+            "like_count": 13
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "liked": false,
+            "like_count": 12
           }
         headers: []
         description: ''
@@ -75,21 +88,12 @@ endpoints:
         description: ''
       -
         custom: []
-        status: 409
-        content: |-
-          {
-            "message": "You have already flagged this content"
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
         status: 422
         content: |-
           {
             "message": "The given data was invalid.",
             "errors": {
-              "flaggable_type": ["The flaggable type field is required."]
+              "likeable_type": ["The likeable type field is required."]
             }
           }
         headers: []

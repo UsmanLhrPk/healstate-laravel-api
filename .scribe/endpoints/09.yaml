@@ -1,26 +1,24 @@
-name: 'Like Management'
+name: Webhooks
 description: |-
 
-  APIs for liking/unliking forums and comments
+  Stripe webhook handlers
 endpoints:
   -
     custom: []
     httpMethods:
       - POST
-    uri: api/likes
+    uri: api/webhooks/stripe
     metadata:
       custom: []
-      groupName: 'Like Management'
+      groupName: Webhooks
       groupDescription: |-
 
-        APIs for liking/unliking forums and comments
+        Stripe webhook handlers
       subgroup: ''
       subgroupDescription: ''
-      title: 'Toggle like'
-      description: |-
-        Like or unlike a forum or comment. If the user has already liked the content, it will be unliked.
-        If the user hasn't liked it yet, a like will be created. Requires authentication.
-      authenticated: true
+      title: 'Handle Stripe Webhook'
+      description: 'Process Stripe webhook events for payment confirmations.'
+      authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
@@ -29,75 +27,10 @@ endpoints:
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      likeable_type:
-        custom: []
-        name: likeable_type
-        description: 'The type of entity to like.'
-        required: true
-        example: App\Models\Forum
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      likeable_id:
-        custom: []
-        name: likeable_id
-        description: 'The ID of the entity to like.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      likeable_type: App\Models\Forum
-      likeable_id: 1
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "liked": true,
-            "like_count": 13
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "liked": false,
-            "like_count": 12
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: |-
-          {
-            "message": "Unauthenticated."
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: |-
-          {
-            "message": "The given data was invalid.",
-            "errors": {
-              "likeable_type": ["The likeable type field is required."]
-            }
-          }
-        headers: []
-        description: ''
+    responses: []
     responseFields: []
     auth: []
     controller: null

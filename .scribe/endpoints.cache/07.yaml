@@ -103,6 +103,50 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
+      service_slot_id:
+        custom: []
+        name: service_slot_id
+        description: 'This field is required when <code>product_id</code> is not present. The <code>id</code> of an existing record in the service_slots table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      booking_date:
+        custom: []
+        name: booking_date
+        description: 'This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date. Must be a date after or equal to <code>today</code>.'
+        required: false
+        example: '2052-02-20'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      start_time:
+        custom: []
+        name: start_time
+        description: 'This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>.'
+        required: false
+        example: '21:12:21'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      end_time:
+        custom: []
+        name: end_time
+        description: 'This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>. Must be a date after <code>start_time</code>.'
+        required: false
+        example: '2052-02-20'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
       quantity:
         custom: []
         name: quantity
@@ -117,6 +161,10 @@ endpoints:
     cleanBodyParameters:
       product_id: 1
       variant_id: 2
+      service_slot_id: 16
+      booking_date: '2052-02-20'
+      start_time: '21:12:21'
+      end_time: '2052-02-20'
       quantity: 2
     fileParameters: []
     responses:
@@ -171,7 +219,7 @@ endpoints:
         name: cart_id
         description: 'The ID of the cart.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -189,7 +237,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      cart_id: 16
+      cart_id: 2
       cart: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -253,7 +301,7 @@ endpoints:
         name: cart_id
         description: 'The ID of the cart.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -271,7 +319,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      cart_id: 16
+      cart_id: 2
       cart: 1
     queryParameters: []
     cleanQueryParameters: []

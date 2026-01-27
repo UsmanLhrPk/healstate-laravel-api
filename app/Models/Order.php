@@ -29,6 +29,10 @@ class Order extends Model
         'cancellation_type', // 'immediate' or 'requested'
         'currency',
         'currency_symbol',
+        'refund_id',
+        'refund_status',
+        'refunded_at',
+        'refund_amount',
     ];
 
     protected $casts = [

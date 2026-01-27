@@ -103,7 +103,7 @@ endpoints:
         name: sort
         description: ''
         required: false
-        example: popular
+        example: latest
         type: string
         enumValues:
           - latest
@@ -114,7 +114,7 @@ endpoints:
     cleanBodyParameters:
       category: architecto
       sub_category: architecto
-      sort: popular
+      sort: latest
     fileParameters: []
     responses:
       -
