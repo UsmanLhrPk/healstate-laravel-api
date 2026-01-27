@@ -190,10 +190,10 @@ class OrderService
         });
 
         // Notify user
-        $order->user->notify(new OrderCancelledNotification($order));
+        // $order->user->notify(new OrderCancelledNotification($order));
 
         // Notify vendors
-        $this->notifyVendorsOfCancellation($order);
+        // $this->notifyVendorsOfCancellation($order);
 
         return $order->fresh();
     }
@@ -211,7 +211,7 @@ class OrderService
         ]);
 
         // Notify vendors about cancellation request
-        $this->notifyVendorsOfCancellationRequest($order);
+        // $this->notifyVendorsOfCancellationRequest($order);
 
         return $order->fresh();
     }
