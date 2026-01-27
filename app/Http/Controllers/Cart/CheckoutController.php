@@ -53,15 +53,25 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Create Payment Intent
+     * Create Payment Intent (supports multi-currency)
      *
-     * Create a Stripe payment intent for the cart total.
+     * Create Stripe payment intent(s) for the cart. If cart has multiple currencies,
+     * creates separate payment intents for each currency.
+     *
+     * @bodyParam currency string optional Specific currency to create payment intent for (when cart has multiple currencies)
      *
      * @response {
      *   "data": {
-     *     "client_secret": "pi_xxx_secret_xxx",
-     *     "payment_intent_id": "pi_xxx",
-     *     "amount": 107.17
+     *     "payment_intents": [
+     *       {
+     *         "currency": "USD",
+     *         "currency_symbol": "$",
+     *         "client_secret": "pi_xxx_secret_xxx",
+     *         "payment_intent_id": "pi_xxx",
+     *         "amount": 107.17
+     *       }
+     *     ],
+     *     "has_multiple_currencies": false
      *   }
      * }
      */
@@ -70,37 +80,97 @@ class CheckoutController extends Controller
         $userId = auth('sanctum')->id();
         $sessionId = $this->getSessionId($request);
 
+        // Get cart totals (handles multi-currency)
         $totals = $this->cartService->calculateCartTotals($userId, $sessionId);
 
-        // Validate minimum amount
-        if ($totals['total'] < 0.50) {
+        // Handle empty cart
+        if (empty($totals['currencies']) && !isset($totals['currency'])) {
             return response()->json([
-                'message' => "Cart total must be at least {$totals['currency_symbol']}0.50 {$totals['currency']}",
-                'current_total' => $totals['total'],
+                'message' => 'Cart is empty',
             ], 422);
         }
 
-        // Pass currency to payment service
-        $paymentIntent = $this->paymentService->createPaymentIntent(
-            $totals['total'],
-            $totals['currency'], // Add currency parameter
-            [
-                'user_id' => $userId,
-                'session_id' => $sessionId,
-            ]
-        );
+        // Single currency cart (backward compatible)
+        if (!$totals['has_multiple_currencies']) {
+            // Validate minimum amount
+            if ($totals['total'] < 0.50) {
+                return response()->json([
+                    'message' => "Cart total must be at least {$totals['currency_symbol']}0.50 {$totals['currency']}",
+                    'current_total' => $totals['total'],
+                ], 422);
+            }
+
+            $paymentIntent = $this->paymentService->createPaymentIntent(
+                $totals['total'],
+                $totals['currency'],
+                [
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'currency' => $totals['currency'],
+                ]
+            );
+
+            $response = response()->json([
+                'data' => [
+                    'client_secret' => $paymentIntent['client_secret'],
+                    'payment_intent_id' => $paymentIntent['payment_intent_id'],
+                    'amount' => $totals['total'],
+                    'currency' => $totals['currency'],
+                    'currency_symbol' => $totals['currency_symbol'],
+                    'has_multiple_currencies' => false,
+                ],
+            ]);
+
+            if (!auth('sanctum')->check() && $sessionId) {
+                $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
+            }
+
+            return $response;
+        }
+
+        // Multi-currency cart - create payment intents for each currency
+        $paymentIntents = [];
+        
+        foreach ($totals['currencies'] as $currencyData) {
+            // Validate minimum amount for this currency
+            if ($currencyData['total'] < 0.50) {
+                return response()->json([
+                    'message' => "Cart total for {$currencyData['currency']} must be at least {$currencyData['currency_symbol']}0.50",
+                    'current_total' => $currencyData['total'],
+                    'currency' => $currencyData['currency'],
+                ], 422);
+            }
+
+            $paymentIntent = $this->paymentService->createPaymentIntent(
+                $currencyData['total'],
+                $currencyData['currency'],
+                [
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'currency' => $currencyData['currency'],
+                ]
+            );
+
+            $paymentIntents[] = [
+                'currency' => $currencyData['currency'],
+                'currency_symbol' => $currencyData['currency_symbol'],
+                'client_secret' => $paymentIntent['client_secret'],
+                'payment_intent_id' => $paymentIntent['payment_intent_id'],
+                'amount' => $currencyData['total'],
+                'subtotal' => $currencyData['subtotal'],
+                'shipping' => $currencyData['shipping'],
+                'commission_fee' => $currencyData['commission_fee'],
+            ];
+        }
 
         $response = response()->json([
             'data' => [
-                'client_secret' => $paymentIntent['client_secret'],
-                'payment_intent_id' => $paymentIntent['payment_intent_id'],
-                'amount' => $totals['total'],
-                'currency' => $totals['currency'],
-                'currency_symbol' => $totals['currency_symbol'],
+                'payment_intents' => $paymentIntents,
+                'has_multiple_currencies' => true,
             ],
         ]);
 
-        if (! auth('sanctum')->check() && $sessionId) {
+        if (!auth('sanctum')->check() && $sessionId) {
             $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
         }
 
@@ -108,21 +178,29 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Process Checkout
+     * Process Checkout (supports multi-currency)
      *
-     * Complete the checkout process and create an order.
+     * Complete the checkout process and create order(s). If cart has multiple currencies,
+     * creates separate orders for each currency.
      *
-     * @bodyParam payment_method_id string required Stripe payment method ID. Example: pm_xxx
-     * @bodyParam address_id integer required Address ID (for authenticated users). Example: 1
-     * @bodyParam address object required Address object (for guest users).
-     * @bodyParam order_notes string optional Order notes. Example: Please ring doorbell
+     * @bodyParam payment_intents array required Array of payment method IDs with their currencies
+     * @bodyParam payment_intents.*.payment_method_id string required Stripe payment method ID
+     * @bodyParam payment_intents.*.currency string required Currency for this payment
+     * @bodyParam address_id integer required Address ID (for authenticated users)
+     * @bodyParam address object required Address object (for guest users)
+     * @bodyParam order_notes string optional Order notes
      *
      * @response 201 {
-     *   "message": "Order placed successfully",
+     *   "message": "Order(s) placed successfully",
      *   "data": {
-     *     "order_number": "ORD-ABC123",
-     *     "total": 107.17,
-     *     "status": "paid"
+     *     "orders": [
+     *       {
+     *         "order_number": "ORD-ABC123",
+     *         "total": 107.17,
+     *         "currency": "USD",
+     *         "status": "paid"
+     *       }
+     *     ]
      *   }
      * }
      */
@@ -142,89 +220,166 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // Calculate totals with currency
-            $totals = $this->cartService->calculateCartTotals($userId, $sessionId);
-
-            // Validate minimum amount
-            if ($totals['total'] < 0.50) {
+            // Get cart grouped by currency
+            $cartGrouped = $this->cartService->getCartGroupedByCurrency($userId, $sessionId);
+            
+            if ($cartGrouped->isEmpty()) {
                 return response()->json([
-                    'message' => "Cart total must be at least {$totals['currency_symbol']}0.50 {$totals['currency']}",
-                    'current_total' => $totals['total'],
+                    'message' => 'Cart is empty',
                 ], 422);
             }
 
-            // Create order with currency
-            $order = $this->orderService->createOrder(
-                $userId,
-                $sessionId,
-                [
-                    'payment_method_id' => $request->payment_method_id,
-                    'order_notes' => $request->order_notes,
-                    'currency' => $totals['currency'],
-                    'currency_symbol' => $totals['currency_symbol'],
-                ],
-                $address
-            );
+            $orders = [];
+            $allServiceBookings = [];
 
-            // Rest of the code remains the same...
-            $cartItems = $this->cartService->getCart($userId, $sessionId);
-            $serviceBookings = [];
+            // Handle backward compatibility - single payment_method_id
+            if (isset($request->payment_method_id)) {
+                // Single currency checkout (old format)
+                if ($cartGrouped->count() > 1) {
+                    return response()->json([
+                        'message' => 'Cart contains multiple currencies. Please use the payment_intents array format.',
+                    ], 422);
+                }
 
-            foreach ($cartItems as $item) {
-                if ($item->service_slot_id) {
-                    $serviceBooking = ServiceBooking::create([
-                        'service_slot_id' => $item->service_slot_id,
-                        'user_id' => $userId,
-                        'booking_date' => $item->booking_date,
-                        'start_time' => $item->start_time,
-                        'end_time' => $item->end_time,
-                        'status' => 'confirmed',
-                        'order_id' => $order->id,
-                        'total_price' => $item->price * $item->quantity,
-                        'quantity' => $item->quantity,
-                        'notes' => $request->order_notes,
-                    ]);
+                $currencyData = $cartGrouped->first();
+                $currency = $currencyData['currency'];
 
-                    if ($item->id) {
-                        $item->update(['service_booking_id' => $serviceBooking->id]);
+                // Create single order
+                $order = $this->orderService->createOrderForCurrency(
+                    $userId,
+                    $sessionId,
+                    $currency,
+                    [
+                        'payment_method_id' => $request->payment_method_id,
+                        'order_notes' => $request->order_notes,
+                        'currency' => $currency,
+                        'currency_symbol' => $currencyData['currency_symbol'],
+                    ],
+                    $address
+                );
+
+                // Handle service bookings for this order
+                $serviceBookings = $this->createServiceBookingsForOrder($order, $currencyData['items'], $userId, $request->order_notes);
+                $allServiceBookings = array_merge($allServiceBookings, $serviceBookings);
+
+                // Mark order as paid
+                $order = $this->orderService->markOrderAsPaid($order, $request->payment_method_id);
+                $orders[] = $order;
+
+            } else {
+                // Multi-currency checkout (new format)
+                $paymentIntents = $request->payment_intents ?? [];
+
+                if (empty($paymentIntents)) {
+                    return response()->json([
+                        'message' => 'Payment information is required',
+                    ], 422);
+                }
+
+                // Create an order for each currency
+                foreach ($paymentIntents as $paymentData) {
+                    $currency = $paymentData['currency'];
+                    $paymentMethodId = $paymentData['payment_method_id'];
+
+                    // Get cart items for this currency
+                    if (!isset($cartGrouped[$currency])) {
+                        continue;
                     }
 
-                    $serviceBookings[] = $serviceBooking;
+                    $currencyData = $cartGrouped[$currency];
+
+                    // Create order for this currency
+                    $order = $this->orderService->createOrderForCurrency(
+                        $userId,
+                        $sessionId,
+                        $currency,
+                        [
+                            'payment_method_id' => $paymentMethodId,
+                            'order_notes' => $request->order_notes,
+                            'currency' => $currency,
+                            'currency_symbol' => $currencyData['currency_symbol'],
+                        ],
+                        $address
+                    );
+
+                    // Handle service bookings for this order
+                    $serviceBookings = $this->createServiceBookingsForOrder($order, $currencyData['items'], $userId, $request->order_notes);
+                    $allServiceBookings = array_merge($allServiceBookings, $serviceBookings);
+
+                    // Mark order as paid
+                    $order = $this->orderService->markOrderAsPaid($order, $paymentMethodId);
+                    $orders[] = $order;
                 }
             }
 
-            $order = $this->orderService->markOrderAsPaid(
-                $order,
-                $request->payment_method_id
-            );
-
+            // Clear the entire cart
             $this->cartService->clearCart($userId, $sessionId);
 
+            // Send notifications
             if ($userId) {
                 $user = auth('sanctum')->user();
-                $user->notify(new OrderConfirmationNotification($order));
+                
+                foreach ($orders as $order) {
+                    $user->notify(new OrderConfirmationNotification($order));
+                }
 
-                if (! empty($serviceBookings)) {
-                    foreach ($serviceBookings as $booking) {
+                if (!empty($allServiceBookings)) {
+                    foreach ($allServiceBookings as $booking) {
                         $user->notify(new ServiceBookingConfirmationNotification($booking));
                     }
                 }
             }
 
             $response = response()->json([
-                'message' => 'Order placed successfully',
+                'message' => count($orders) > 1 
+                    ? 'Orders placed successfully' 
+                    : 'Order placed successfully',
                 'data' => [
-                    'order' => $order,
-                    'service_bookings' => ! empty($serviceBookings) ? $serviceBookings : null,
+                    'orders' => $orders,
+                    'service_bookings' => !empty($allServiceBookings) ? $allServiceBookings : null,
+                    'total_orders' => count($orders),
                 ],
             ], 201);
 
-            if (! auth('sanctum')->check() && $sessionId) {
+            if (!auth('sanctum')->check() && $sessionId) {
                 $response->cookie('cart_session_id', $sessionId, 60 * 24 * 30);
             }
 
             return $response;
         });
+    }
+
+    /**
+     * Create service bookings for an order
+     */
+    private function createServiceBookingsForOrder($order, $cartItems, $userId, $orderNotes): array
+    {
+        $serviceBookings = [];
+
+        foreach ($cartItems as $item) {
+            if ($item->service_slot_id) {
+                $serviceBooking = ServiceBooking::create([
+                    'service_slot_id' => $item->service_slot_id,
+                    'user_id' => $userId,
+                    'booking_date' => $item->booking_date,
+                    'start_time' => $item->start_time,
+                    'end_time' => $item->end_time,
+                    'status' => 'confirmed',
+                    'order_id' => $order->id,
+                    'total_price' => $item->serviceSlot->price * $item->quantity,
+                    'quantity' => $item->quantity,
+                    'notes' => $orderNotes,
+                ]);
+
+                if ($item->id) {
+                    $item->update(['service_booking_id' => $serviceBooking->id]);
+                }
+
+                $serviceBookings[] = $serviceBooking;
+            }
+        }
+
+        return $serviceBookings;
     }
 
     /**

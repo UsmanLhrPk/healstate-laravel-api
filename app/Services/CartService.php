@@ -76,7 +76,7 @@ class CartService
 
     public function getCart(?int $userId, ?string $sessionId): Collection
     {
-        $query = Cart::with(['product.vendor', 'variant', 'serviceSlot'])
+        $query = Cart::with(['product.vendor', 'variant', 'serviceSlot.product.vendor'])
             ->where(function ($query) use ($userId, $sessionId) {
                 if ($userId) {
                     $query->where('user_id', $userId);
@@ -138,9 +138,89 @@ class CartService
             ->sum('quantity');
     }
 
-    public function calculateCartTotals(?int $userId, ?string $sessionId): array
+    /**
+     * Get currency for a cart item
+     */
+    private function getItemCurrency($item): string
+    {
+        if ($item->product_id && $item->product) {
+            return $item->product->currency ?? $item->product->vendor->currency ?? 'USD';
+        } elseif ($item->service_slot_id && $item->serviceSlot) {
+            return $item->serviceSlot->product->currency ?? $item->serviceSlot->product->vendor->currency ?? 'USD';
+        }
+        
+        return 'USD';
+    }
+
+    /**
+     * Get currency symbol for a cart item
+     */
+    private function getItemCurrencySymbol($item): string
+    {
+        if ($item->product_id && $item->product) {
+            return $item->product->currency_symbol ?? $item->product->vendor->currency_symbol ?? '$';
+        } elseif ($item->service_slot_id && $item->serviceSlot) {
+            return $item->serviceSlot->product->currency_symbol ?? $item->serviceSlot->product->vendor->currency_symbol ?? '$';
+        }
+        
+        return '$';
+    }
+
+    /**
+     * Group cart items by currency
+     */
+    public function getCartGroupedByCurrency(?int $userId, ?string $sessionId): Collection
     {
         $cartItems = $this->getCart($userId, $sessionId);
+
+        if ($cartItems->isEmpty()) {
+            return collect();
+        }
+
+        // Group items by currency
+        $grouped = $cartItems->groupBy(function ($item) {
+            return $this->getItemCurrency($item);
+        });
+
+        return $grouped->map(function ($items, $currency) {
+            $currencySymbol = $this->getItemCurrencySymbol($items->first());
+            
+            $subtotal = $items->sum(function ($item) {
+                if ($item->product_id) {
+                    $price = $item->variant ? $item->variant->price : ($item->product ? $item->product->price : 0);
+                    return $price * $item->quantity;
+                } elseif ($item->service_slot_id) {
+                    $price = $item->serviceSlot ? $item->serviceSlot->price : 0;
+                    return $price * $item->quantity;
+                }
+                return 0;
+            });
+
+            // Stripe charges 2.9% + 30 cents per transaction
+            $commissionFee = 0.029 * $subtotal + 0.30;
+            $shipping = 0;
+            $total = $subtotal + $commissionFee + $shipping;
+
+            return [
+                'currency' => $currency,
+                'currency_symbol' => $currencySymbol,
+                'items' => $items,
+                'subtotal' => round($subtotal, 2),
+                'shipping' => round($shipping, 2),
+                'commission_fee' => round($commissionFee, 2),
+                'total' => round($total, 2),
+            ];
+        });
+    }
+
+    /**
+     * Calculate totals for a specific currency
+     */
+    public function calculateCartTotalsForCurrency(?int $userId, ?string $sessionId, string $currency): array
+    {
+        $cartItems = $this->getCart($userId, $sessionId)->filter(function ($item) use ($currency) {
+            return $this->getItemCurrency($item) === $currency;
+        });
 
         if ($cartItems->isEmpty()) {
             return [
@@ -148,35 +228,21 @@ class CartService
                 'shipping' => 0,
                 'commission_fee' => 0,
                 'total' => 0,
-                'currency' => 'USD',
-                'currency_symbol' => '$',
+                'currency' => $currency,
+                'currency_symbol' => $this->getCurrencySymbol($currency),
             ];
         }
 
-        // Detect currency from first item (all items should have same currency from same vendor)
-        $firstItem = $cartItems->first();
-        $currency = 'USD';
-        $currencySymbol = '$';
-
-        if ($firstItem->product_id && $firstItem->product) {
-            $currency = $firstItem->product->currency ?? $firstItem->product->vendor->currency ?? 'USD';
-            $currencySymbol = $firstItem->product->currency_symbol ?? $firstItem->product->vendor->currency_symbol ?? '$';
-        } elseif ($firstItem->service_slot_id && $firstItem->serviceSlot) {
-            $currency = $firstItem->serviceSlot->currency ?? $firstItem->serviceSlot->product->currency ?? 'USD';
-            $currencySymbol = $firstItem->serviceSlot->currency_symbol ?? $firstItem->serviceSlot->product->currency_symbol ?? '$';
-        }
+        $currencySymbol = $this->getItemCurrencySymbol($cartItems->first());
 
         $subtotal = $cartItems->sum(function ($item) {
             if ($item->product_id) {
                 $price = $item->variant ? $item->variant->price : ($item->product ? $item->product->price : 0);
-
                 return $price * $item->quantity;
             } elseif ($item->service_slot_id) {
                 $price = $item->serviceSlot ? $item->serviceSlot->price : 0;
-
                 return $price * $item->quantity;
             }
-
             return 0;
         });
 
@@ -193,6 +259,69 @@ class CartService
             'currency' => $currency,
             'currency_symbol' => $currencySymbol,
         ];
+    }
+
+    /**
+     * Calculate cart totals (legacy method - now returns all currencies)
+     */
+    public function calculateCartTotals(?int $userId, ?string $sessionId): array
+    {
+        $grouped = $this->getCartGroupedByCurrency($userId, $sessionId);
+
+        if ($grouped->isEmpty()) {
+            return [
+                'currencies' => [],
+                'has_multiple_currencies' => false,
+            ];
+        }
+
+        // If only one currency, return it in the old format for backward compatibility
+        if ($grouped->count() === 1) {
+            $single = $grouped->first();
+            return [
+                'subtotal' => $single['subtotal'],
+                'shipping' => $single['shipping'],
+                'commission_fee' => $single['commission_fee'],
+                'total' => $single['total'],
+                'currency' => $single['currency'],
+                'currency_symbol' => $single['currency_symbol'],
+                'has_multiple_currencies' => false,
+            ];
+        }
+
+        // Multiple currencies - return all
+        return [
+            'currencies' => $grouped->map(fn($g) => [
+                'subtotal' => $g['subtotal'],
+                'shipping' => $g['shipping'],
+                'commission_fee' => $g['commission_fee'],
+                'total' => $g['total'],
+                'currency' => $g['currency'],
+                'currency_symbol' => $g['currency_symbol'],
+            ])->values()->toArray(),
+            'has_multiple_currencies' => true,
+        ];
+    }
+
+    /**
+     * Get default currency symbol
+     */
+    private function getCurrencySymbol(string $currency): string
+    {
+        $symbols = [
+            'USD' => '$',
+            'EUR' => '€',
+            'GBP' => '£',
+            'JPY' => '¥',
+            'AUD' => 'A$',
+            'CAD' => 'C$',
+            'CHF' => 'CHF',
+            'CNY' => '¥',
+            'SEK' => 'kr',
+            'NZD' => 'NZ$',
+        ];
+
+        return $symbols[$currency] ?? $currency;
     }
 
     public function mergeGuestCart(int $userId, string $sessionId): void

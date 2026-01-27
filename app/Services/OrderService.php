@@ -17,6 +17,117 @@ class OrderService
         protected CartService $cartService
     ) {}
 
+    /**
+     * Create order for a specific currency (multi-currency support)
+     */
+    public function createOrderForCurrency(?int $userId, ?string $sessionId, string $currency, array $data, Address $address): Order
+    {
+        return DB::transaction(function () use ($userId, $sessionId, $currency, $data, $address) {
+            // Get only cart items matching this currency
+            $cartItems = $this->cartService->getCart($userId, $sessionId)->filter(function ($item) use ($currency) {
+                if ($item->product_id && $item->product) {
+                    $itemCurrency = $item->product->currency ?? $item->product->vendor->currency ?? 'USD';
+                } elseif ($item->service_slot_id && $item->serviceSlot) {
+                    $itemCurrency = $item->serviceSlot->product->currency ?? $item->serviceSlot->product->vendor->currency ?? 'USD';
+                } else {
+                    $itemCurrency = 'USD';
+                }
+                
+                return $itemCurrency === $currency;
+            });
+
+            if ($cartItems->isEmpty()) {
+                throw new \Exception("No cart items found for currency {$currency}");
+            }
+
+            Log::info('Cart items for order creation (currency: ' . $currency . ')', [
+                'count' => $cartItems->count(),
+                'first_item' => $cartItems->first()?->toArray(),
+            ]);
+
+            // Calculate totals for this specific currency
+            $totals = $this->cartService->calculateCartTotalsForCurrency($userId, $sessionId, $currency);
+
+            $order = Order::create([
+                'user_id' => $userId,
+                'address_id' => $address->id,
+                'subtotal' => $totals['subtotal'],
+                'shipping' => $totals['shipping'],
+                'total' => $totals['total'],
+                'status' => 'pending',
+                'payment_intent_id' => $data['payment_intent_id'] ?? null,
+                'order_notes' => $data['order_notes'] ?? null,
+                'currency' => $currency,
+                'currency_symbol' => $data['currency_symbol'] ?? $totals['currency_symbol'] ?? '$',
+            ]);
+
+            // Create order items
+            foreach ($cartItems as $cartItem) {
+                Log::info('Processing cart item', [
+                    'cart_item_id' => $cartItem->id,
+                    'product_id' => $cartItem->product_id,
+                    'service_slot_id' => $cartItem->service_slot_id,
+                ]);
+
+                if ($cartItem->product_id) {
+                    if (!$cartItem->product) {
+                        throw new \Exception("Product not found for cart item {$cartItem->id}");
+                    }
+
+                    $price = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
+                    $productName = $cartItem->product->name ?? $cartItem->product->title;
+
+                    $order->items()->create([
+                        'product_id' => $cartItem->product_id,
+                        'variant_id' => $cartItem->variant_id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $price,
+                        'subtotal' => $price * $cartItem->quantity,
+                        'product_name' => $productName,
+                        'type' => 'product',
+                    ]);
+
+                } elseif ($cartItem->service_slot_id) {
+                    if (!$cartItem->serviceSlot) {
+                        throw new \Exception("Service slot not found for cart item {$cartItem->id}");
+                    }
+
+                    $price = $cartItem->serviceSlot->price;
+                    $serviceName = $cartItem->serviceSlot->name ?? 'Service Appointment';
+
+                    $serviceBooking = ServiceBooking::create([
+                        'service_slot_id' => $cartItem->service_slot_id,
+                        'user_id' => $userId,
+                        'order_id' => $order->id,
+                        'booking_date' => $cartItem->booking_date,
+                        'start_time' => $cartItem->start_time,
+                        'end_time' => $cartItem->end_time,
+                        'status' => 'confirmed',
+                        'total_price' => $price,
+                        'notes' => $data['order_notes'] ?? null,
+                    ]);
+
+                    $order->items()->create([
+                        'service_slot_id' => $cartItem->service_slot_id,
+                        'service_booking_id' => $serviceBooking->id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $price,
+                        'subtotal' => $price * $cartItem->quantity,
+                        'product_name' => $serviceName,
+                        'type' => 'service',
+                        'booking_date' => $cartItem->booking_date,
+                        'start_time' => $cartItem->start_time,
+                        'end_time' => $cartItem->end_time,
+                    ]);
+                } else {
+                    throw new \Exception("Invalid cart item {$cartItem->id}");
+                }
+            }
+
+            return $order->load(['items.product', 'items.variant', 'items.serviceSlot', 'address']);
+        });
+    }
+
     public function createOrder(?int $userId, ?string $sessionId, array $data, Address $address): Order
     {
         return DB::transaction(function () use ($userId, $sessionId, $data, $address) {
