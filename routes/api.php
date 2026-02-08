@@ -9,6 +9,9 @@ use App\Http\Controllers\Forums\CommentController;
 use App\Http\Controllers\Forums\FlagController;
 use App\Http\Controllers\Forums\ForumController;
 use App\Http\Controllers\Forums\LikeController;
+use App\Http\Controllers\Practitioners\PractitionerApplicationController;
+use App\Http\Controllers\Practitioners\PractitionerProfileController;
+use App\Http\Controllers\Practitioners\ServiceCategoryController;
 use App\Http\Controllers\Vendors\AvailabilityController;
 use App\Http\Controllers\Vendors\BookingController;
 use App\Http\Controllers\Vendors\ProductController;
@@ -30,6 +33,21 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/vendors/{vendor}/reviews', [ReviewController::class, 'index']);
 Route::get('/slots/{slot}/availability', [BookingController::class,  'availability']);
 Route::get('/marketplace', [App\Http\Controllers\Vendors\MarketplaceController::class, 'index']);
+
+// Practitioner Public Routes
+Route::prefix('practitioners')->group(function () {
+    // Service Categories
+    Route::get('/categories', [ServiceCategoryController::class, 'index']);
+    Route::get('/categories/{id}', [ServiceCategoryController::class, 'show']);
+    Route::get('/categories/slug/{slug}', [ServiceCategoryController::class, 'showBySlug']);
+    Route::get('/categories/{categoryId}/subcategories', [ServiceCategoryController::class, 'subcategories']);
+    
+    // Practitioner Profiles (Public listing)
+    Route::get('/profiles', [PractitionerProfileController::class, 'index']);
+    Route::get('/profiles/{id}', [PractitionerProfileController::class, 'show']);
+    Route::get('/profiles/top-rated', [PractitionerProfileController::class, 'topRated']);
+    Route::get('/profiles/category/{categoryId}', [PractitionerProfileController::class, 'byCategory']);
+});
 
 Route::prefix('cart')->middleware('optional-auth:sanctum')->group(function () {
     Route::get('/', [CartController::class, 'index']);
@@ -122,9 +140,29 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [VendorOrderController::class, 'index']);
         Route::get('/{order}', [VendorOrderController::class, 'show']);
         Route::patch('/{order}/status', [VendorOrderController::class, 'updateStatus']);
-        Route::post('/{order}/cancel', [VendorOrderController::class, 'cancelOrder']); // NEW
+        Route::post('/{order}/cancel', [VendorOrderController::class, 'cancelOrder']);
         Route::post('/{order}/approve-cancellation', [VendorOrderController::class, 'approveCancellation']);
         Route::post('/{order}/deny-cancellation', [VendorOrderController::class, 'denyCancellation']);
+    });
+
+    // Practitioner Application Routes (Authenticated)
+    Route::prefix('practitioners')->group(function () {
+        Route::post('/applications', [PractitionerApplicationController::class, 'store']);
+        Route::get('/applications/my-application', [PractitionerApplicationController::class, 'myApplication']);
+        Route::get('/applications/check-pending', [PractitionerApplicationController::class, 'checkPendingStatus']);
+        Route::get('/applications/{id}', [PractitionerApplicationController::class, 'show']);
+        
+        // Practitioner Profile Management
+        Route::get('/my-profile', [PractitionerProfileController::class, 'myProfile']);
+        Route::put('/profiles/{id}', [PractitionerProfileController::class, 'update']);
+        Route::post('/profiles/{id}/toggle-active', [PractitionerProfileController::class, 'toggleActive']);
+    });
+
+    // Admin Routes - Practitioner Management
+    Route::middleware('admin')->prefix('admin/practitioners')->group(function () {
+        Route::get('/applications', [PractitionerApplicationController::class, 'index']);
+        Route::get('/applications/pending', [PractitionerApplicationController::class, 'pendingApplications']);
+        Route::post('/applications/{id}/review', [PractitionerApplicationController::class, 'review']);
     });
 });
 
