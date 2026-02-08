@@ -83,7 +83,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>.'
         required: true
-        example: '2026-01-27'
+        example: '2026-02-08'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -94,15 +94,15 @@ endpoints:
         name: end_date
         description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Must be a date after or equal to <code>start_date</code>.'
         required: true
-        example: '2052-02-20'
+        example: '2052-03-03'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      start_date: '2026-01-27'
-      end_date: '2052-02-20'
+      start_date: '2026-02-08'
+      end_date: '2052-03-03'
     fileParameters: []
     responses:
       -

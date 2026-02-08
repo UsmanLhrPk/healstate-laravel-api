@@ -241,6 +241,62 @@
                             </li>
                                                                         </ul>
                             </ul>
+                    <ul id="tocify-header-practitioner-applications" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="practitioner-applications">
+                    <a href="#practitioner-applications">Practitioner Applications</a>
+                </li>
+                                    <ul id="tocify-subheader-practitioner-applications" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="practitioner-applications-POSTapi-practitioners-applications">
+                                <a href="#practitioner-applications-POSTapi-practitioners-applications">Submit Practitioner Application</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-applications-GETapi-practitioners-applications-my-application">
+                                <a href="#practitioner-applications-GETapi-practitioners-applications-my-application">Get My Application</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-applications-GETapi-practitioners-applications-check-pending">
+                                <a href="#practitioner-applications-GETapi-practitioners-applications-check-pending">Check Pending Application Status</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-applications-GETapi-practitioners-applications--id-">
+                                <a href="#practitioner-applications-GETapi-practitioners-applications--id-">Get Application Details</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-applications-GETapi-admin-practitioners-applications">
+                                <a href="#practitioner-applications-GETapi-admin-practitioners-applications">Get All Applications (Admin)</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-applications-GETapi-admin-practitioners-applications-pending">
+                                <a href="#practitioner-applications-GETapi-admin-practitioners-applications-pending">Get Pending Applications (Admin)</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-applications-POSTapi-admin-practitioners-applications--id--review">
+                                <a href="#practitioner-applications-POSTapi-admin-practitioners-applications--id--review">Review Application (Admin)</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
+                    <ul id="tocify-header-practitioner-profiles" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="practitioner-profiles">
+                    <a href="#practitioner-profiles">Practitioner Profiles</a>
+                </li>
+                                    <ul id="tocify-subheader-practitioner-profiles" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="practitioner-profiles-GETapi-practitioners-profiles">
+                                <a href="#practitioner-profiles-GETapi-practitioners-profiles">List All Practitioners</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-profiles-GETapi-practitioners-profiles--id-">
+                                <a href="#practitioner-profiles-GETapi-practitioners-profiles--id-">Get Practitioner Profile</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-profiles-GETapi-practitioners-profiles-top-rated">
+                                <a href="#practitioner-profiles-GETapi-practitioners-profiles-top-rated">Get Top Rated Practitioners</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-profiles-GETapi-practitioners-profiles-category--categoryId-">
+                                <a href="#practitioner-profiles-GETapi-practitioners-profiles-category--categoryId-">Get Practitioners by Category</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-profiles-GETapi-practitioners-my-profile">
+                                <a href="#practitioner-profiles-GETapi-practitioners-my-profile">Get My Practitioner Profile</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-profiles-PUTapi-practitioners-profiles--id-">
+                                <a href="#practitioner-profiles-PUTapi-practitioners-profiles--id-">Update Practitioner Profile</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="practitioner-profiles-POSTapi-practitioners-profiles--id--toggle-active">
+                                <a href="#practitioner-profiles-POSTapi-practitioners-profiles--id--toggle-active">Toggle Profile Active Status</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
                     <ul id="tocify-header-product-management" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="product-management">
                     <a href="#product-management">Product Management</a>
@@ -314,6 +370,25 @@
                             </li>
                                                                         </ul>
                             </ul>
+                    <ul id="tocify-header-service-categories" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="service-categories">
+                    <a href="#service-categories">Service Categories</a>
+                </li>
+                                    <ul id="tocify-subheader-service-categories" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="service-categories-GETapi-practitioners-categories">
+                                <a href="#service-categories-GETapi-practitioners-categories">Get All Service Categories</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="service-categories-GETapi-practitioners-categories--id-">
+                                <a href="#service-categories-GETapi-practitioners-categories--id-">Get Category by ID</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="service-categories-GETapi-practitioners-categories-slug--slug-">
+                                <a href="#service-categories-GETapi-practitioners-categories-slug--slug-">Get Category by Slug</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="service-categories-GETapi-practitioners-categories--categoryId--subcategories">
+                                <a href="#service-categories-GETapi-practitioners-categories--categoryId--subcategories">Get Category Subcategories</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
                     <ul id="tocify-header-service-slots" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="service-slots">
                     <a href="#service-slots">Service Slots</a>
@@ -381,7 +456,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: January 27, 2026</li>
+        <li>Last updated: February 8, 2026</li>
     </ul>
 </div>
 
@@ -827,7 +902,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"state_province\": \"p\",
     \"postal_code\": \"wlvqwrsitcpscqld\",
     \"country\": \"zs\",
-    \"is_default\": false
+    \"is_default\": true
 }"
 </code></pre></div>
 
@@ -851,7 +926,7 @@ let body = {
     "state_province": "p",
     "postal_code": "wlvqwrsitcpscqld",
     "country": "zs",
-    "is_default": false
+    "is_default": true
 };
 
 fetch(url, {
@@ -1091,7 +1166,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
@@ -1541,9 +1616,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"product_id\": 1,
     \"variant_id\": 2,
     \"service_slot_id\": 16,
-    \"booking_date\": \"2052-02-20\",
-    \"start_time\": \"21:12:21\",
-    \"end_time\": \"2052-02-20\",
+    \"booking_date\": \"2052-03-03\",
+    \"start_time\": \"14:37:28\",
+    \"end_time\": \"2052-03-03\",
     \"quantity\": 2
 }"
 </code></pre></div>
@@ -1563,9 +1638,9 @@ let body = {
     "product_id": 1,
     "variant_id": 2,
     "service_slot_id": 16,
-    "booking_date": "2052-02-20",
-    "start_time": "21:12:21",
-    "end_time": "2052-02-20",
+    "booking_date": "2052-03-03",
+    "start_time": "14:37:28",
+    "end_time": "2052-03-03",
     "quantity": 2
 };
 
@@ -1714,10 +1789,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="booking_date"                data-endpoint="POSTapi-cart"
-               value="2052-02-20"
+               value="2052-03-03"
                data-component="body">
     <br>
-<p>This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date. Must be a date after or equal to <code>today</code>. Example: <code>2052-02-20</code></p>
+<p>This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date. Must be a date after or equal to <code>today</code>. Example: <code>2052-03-03</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>start_time</code></b>&nbsp;&nbsp;
@@ -1726,10 +1801,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_time"                data-endpoint="POSTapi-cart"
-               value="21:12:21"
+               value="14:37:28"
                data-component="body">
     <br>
-<p>This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>. Example: <code>21:12:21</code></p>
+<p>This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>. Example: <code>14:37:28</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -1738,10 +1813,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_time"                data-endpoint="POSTapi-cart"
-               value="2052-02-20"
+               value="2052-03-03"
                data-component="body">
     <br>
-<p>This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>. Must be a date after <code>start_time</code>. Example: <code>2052-02-20</code></p>
+<p>This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>. Must be a date after <code>start_time</code>. Example: <code>2052-03-03</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>quantity</code></b>&nbsp;&nbsp;
@@ -3819,7 +3894,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"processing\"
+    \"status\": \"delivered\"
 }"
 </code></pre></div>
 
@@ -3835,7 +3910,7 @@ const headers = {
 };
 
 let body = {
-    "status": "processing"
+    "status": "delivered"
 };
 
 fetch(url, {
@@ -3940,10 +4015,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-vendor-orders--order_id--status"
-               value="processing"
+               value="delivered"
                data-component="body">
     <br>
-<p>Example: <code>processing</code></p>
+<p>Example: <code>delivered</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>processing</code></li> <li><code>shipped</code></li> <li><code>delivered</code></li></ul>
         </div>
@@ -5852,7 +5927,7 @@ Supports filtering by type, category, search, and sorting.</p>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"type\": \"service\",
+    \"type\": \"product\",
     \"category\": \"b\",
     \"search\": \"n\",
     \"sort\": \"price_high\",
@@ -5884,7 +5959,7 @@ const headers = {
 };
 
 let body = {
-    "type": "service",
+    "type": "product",
     "category": "b",
     "search": "n",
     "sort": "price_high",
@@ -6100,10 +6175,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="type"                data-endpoint="GETapi-marketplace"
-               value="service"
+               value="product"
                data-component="body">
     <br>
-<p>Example: <code>service</code></p>
+<p>Example: <code>product</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>product</code></li> <li><code>service</code></li></ul>
         </div>
@@ -6839,6 +6914,2985 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
+                <h1 id="practitioner-applications">Practitioner Applications</h1>
+
+    <p>APIs for managing practitioner/healer applications</p>
+
+                                <h2 id="practitioner-applications-POSTapi-practitioners-applications">Submit Practitioner Application</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Submit a new application to become a practitioner on the platform.
+Users can upload up to 5 credential documents (PDF/JPG, max 5MB each).
+Only one pending application is allowed per user.</p>
+
+<span id="example-requests-POSTapi-practitioners-applications">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/practitioners/applications" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"phone_number\": \"+1234567890\",
+    \"professional_title\": \"Licensed Massage Therapist\",
+    \"years_experience\": \"5-10\",
+    \"bio\": \"Experienced massage therapist specializing in...\",
+    \"license_number\": \"LMT123456\",
+    \"issuing_organization\": \"State Board of Massage\",
+    \"credentials\": [
+        {
+            \"file\": \"...\",
+            \"document_type\": \"license\"
+        }
+    ],
+    \"primary_category_id\": 1,
+    \"service_subcategories\": [
+        1,
+        2,
+        3
+    ],
+    \"service_description\": \"I specialize in deep tissue massage...\",
+    \"availability_schedule\": {
+        \"monday\": {
+            \"morning\": true,
+            \"afternoon\": false,
+            \"evening\": true
+        },
+        \"0\": {
+            \"morning\": true,
+            \"afternoon\": true,
+            \"evening\": false
+        }
+    },
+    \"timezone\": \"America\\/New_York\",
+    \"terms_agreed\": true
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/applications"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "phone_number": "+1234567890",
+    "professional_title": "Licensed Massage Therapist",
+    "years_experience": "5-10",
+    "bio": "Experienced massage therapist specializing in...",
+    "license_number": "LMT123456",
+    "issuing_organization": "State Board of Massage",
+    "credentials": [
+        {
+            "file": "...",
+            "document_type": "license"
+        }
+    ],
+    "primary_category_id": 1,
+    "service_subcategories": [
+        1,
+        2,
+        3
+    ],
+    "service_description": "I specialize in deep tissue massage...",
+    "availability_schedule": {
+        "monday": {
+            "morning": true,
+            "afternoon": false,
+            "evening": true
+        },
+        "0": {
+            "morning": true,
+            "afternoon": true,
+            "evening": false
+        }
+    },
+    "timezone": "America\/New_York",
+    "terms_agreed": true
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-practitioners-applications">
+            <blockquote>
+            <p>Example response (201):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Application submitted successfully. We will review within 3-5 business days.&quot;,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;user_id&quot;: 123,
+        &quot;status&quot;: &quot;pending&quot;,
+        &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+        &quot;submitted_at&quot;: &quot;2024-02-08T14:30:00Z&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;You already have a pending application.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Validation failed&quot;,
+    &quot;errors&quot;: {
+        &quot;bio&quot;: [
+            &quot;The bio must not exceed 500 characters.&quot;
+        ],
+        &quot;credentials&quot;: [
+            &quot;At least one credential document is required.&quot;
+        ]
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-POSTapi-practitioners-applications" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-practitioners-applications"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-practitioners-applications"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-practitioners-applications" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-practitioners-applications">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-practitioners-applications" data-method="POST"
+      data-path="api/practitioners/applications"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-practitioners-applications', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-practitioners-applications"
+                    onclick="tryItOut('POSTapi-practitioners-applications');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-practitioners-applications"
+                    onclick="cancelTryOut('POSTapi-practitioners-applications');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-practitioners-applications"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/practitioners/applications</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-practitioners-applications"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-practitioners-applications"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>phone_number</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="phone_number"                data-endpoint="POSTapi-practitioners-applications"
+               value="+1234567890"
+               data-component="body">
+    <br>
+<p>The practitioner's phone number. Example: <code>+1234567890</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>professional_title</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="professional_title"                data-endpoint="POSTapi-practitioners-applications"
+               value="Licensed Massage Therapist"
+               data-component="body">
+    <br>
+<p>Professional title or credentials. Example: <code>Licensed Massage Therapist</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>years_experience</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="years_experience"                data-endpoint="POSTapi-practitioners-applications"
+               value="5-10"
+               data-component="body">
+    <br>
+<p>Years of experience. Example: <code>5-10</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>bio</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="bio"                data-endpoint="POSTapi-practitioners-applications"
+               value="Experienced massage therapist specializing in..."
+               data-component="body">
+    <br>
+<p>Bio/About me (max 500 characters). Example: <code>Experienced massage therapist specializing in...</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>license_number</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="license_number"                data-endpoint="POSTapi-practitioners-applications"
+               value="LMT123456"
+               data-component="body">
+    <br>
+<p>optional License or certification number. Example: <code>LMT123456</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>issuing_organization</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="issuing_organization"                data-endpoint="POSTapi-practitioners-applications"
+               value="State Board of Massage"
+               data-component="body">
+    <br>
+<p>optional Issuing organization name. Example: <code>State Board of Massage</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>credentials</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+ &nbsp;
+ &nbsp;
+<br>
+<p>Array of credential files (1-5 files).</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>file</code></b>&nbsp;&nbsp;
+<small>file</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="file" style="display: none"
+                              name="credentials.0.file"                data-endpoint="POSTapi-practitioners-applications"
+               value=""
+               data-component="body">
+    <br>
+<p>Must be a file. Must not be greater than 5120 kilobytes. Example: <code>/tmp/php2k2h8dbju6i36BlfXz3</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>document_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="credentials.0.document_type"                data-endpoint="POSTapi-practitioners-applications"
+               value="other"
+               data-component="body">
+    <br>
+<p>Example: <code>other</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>certification</code></li> <li><code>license</code></li> <li><code>credential</code></li> <li><code>other</code></li></ul>
+                    </div>
+                                                                <div style=" margin-left: 14px; clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>*</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+<br>
+
+            </summary>
+                                                <div style="margin-left: 28px; clear: unset;">
+                        <b style="line-height: 2;"><code>file</code></b>&nbsp;&nbsp;
+<small>file</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="file" style="display: none"
+                              name="credentials.*.file"                data-endpoint="POSTapi-practitioners-applications"
+               value=""
+               data-component="body">
+    <br>
+<p>Credential document file (PDF/JPG/PNG, max 5MB). Example: <code>/tmp/phpgmv28e507i1ed4ZjVNA</code></p>
+                    </div>
+                                                                <div style="margin-left: 28px; clear: unset;">
+                        <b style="line-height: 2;"><code>document_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="credentials.*.document_type"                data-endpoint="POSTapi-practitioners-applications"
+               value="license"
+               data-component="body">
+    <br>
+<p>Type of document. Example: <code>license</code></p>
+                    </div>
+                                    </details>
+        </div>
+                                        </details>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>primary_category_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="primary_category_id"                data-endpoint="POSTapi-practitioners-applications"
+               value="1"
+               data-component="body">
+    <br>
+<p>Primary service category ID. Example: <code>1</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>service_subcategories</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="service_subcategories[0]"                data-endpoint="POSTapi-practitioners-applications"
+               data-component="body">
+        <input type="text" style="display: none"
+               name="service_subcategories[1]"                data-endpoint="POSTapi-practitioners-applications"
+               data-component="body">
+    <br>
+<p>Array of service subcategory IDs.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>service_description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="service_description"                data-endpoint="POSTapi-practitioners-applications"
+               value="I specialize in deep tissue massage..."
+               data-component="body">
+    <br>
+<p>Description of services offered (max 1000 characters). Example: <code>I specialize in deep tissue massage...</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>availability_schedule</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+ &nbsp;
+ &nbsp;
+<br>
+<p>Weekly availability schedule.</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>morning</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="availability_schedule.0.morning"
+                   value="true"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="availability_schedule.0.morning"
+                   value="false"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>true</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>afternoon</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="availability_schedule.0.afternoon"
+                   value="true"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="availability_schedule.0.afternoon"
+                   value="false"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>true</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>evening</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="availability_schedule.0.evening"
+                   value="true"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="availability_schedule.0.evening"
+                   value="false"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+                    </div>
+                                    </details>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>timezone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="timezone"                data-endpoint="POSTapi-practitioners-applications"
+               value="America/New_York"
+               data-component="body">
+    <br>
+<p>Timezone. Example: <code>America/New_York</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>terms_agreed</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="terms_agreed"
+                   value="true"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-practitioners-applications" style="display: none">
+            <input type="radio" name="terms_agreed"
+                   value="false"
+                   data-endpoint="POSTapi-practitioners-applications"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Must agree to terms of service. Example: <code>true</code></p>
+        </div>
+        </form>
+
+                    <h2 id="practitioner-applications-GETapi-practitioners-applications-my-application">Get My Application</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieve the current authenticated user's latest practitioner application.</p>
+
+<span id="example-requests-GETapi-practitioners-applications-my-application">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/applications/my-application" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/applications/my-application"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-applications-my-application">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;user_id&quot;: 123,
+        &quot;status&quot;: &quot;pending&quot;,
+        &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+        &quot;years_experience&quot;: &quot;5-10&quot;,
+        &quot;primary_category&quot;: {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: &quot;Body-Based Services&quot;
+        },
+        &quot;services&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;name&quot;: &quot;Massage Therapy&quot;
+            }
+        ],
+        &quot;documents&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;file_name&quot;: &quot;license.pdf&quot;,
+                &quot;document_type&quot;: &quot;license&quot;,
+                &quot;file_size_mb&quot;: 1.2
+            }
+        ],
+        &quot;rejection_reason&quot;: null,
+        &quot;reviewed_at&quot;: null,
+        &quot;submitted_at&quot;: &quot;2024-02-08T14:30:00Z&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;No application found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-applications-my-application" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-applications-my-application"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-applications-my-application"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-applications-my-application" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-applications-my-application">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-applications-my-application" data-method="GET"
+      data-path="api/practitioners/applications/my-application"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-applications-my-application', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-applications-my-application"
+                    onclick="tryItOut('GETapi-practitioners-applications-my-application');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-applications-my-application"
+                    onclick="cancelTryOut('GETapi-practitioners-applications-my-application');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-applications-my-application"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/applications/my-application</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-applications-my-application"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-applications-my-application"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="practitioner-applications-GETapi-practitioners-applications-check-pending">Check Pending Application Status</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Check if the current user has a pending practitioner application.
+Useful for determining whether to show the application form.</p>
+
+<span id="example-requests-GETapi-practitioners-applications-check-pending">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/applications/check-pending" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/applications/check-pending"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-applications-check-pending">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;has_pending_application&quot;: true
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;has_pending_application&quot;: false
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-applications-check-pending" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-applications-check-pending"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-applications-check-pending"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-applications-check-pending" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-applications-check-pending">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-applications-check-pending" data-method="GET"
+      data-path="api/practitioners/applications/check-pending"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-applications-check-pending', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-applications-check-pending"
+                    onclick="tryItOut('GETapi-practitioners-applications-check-pending');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-applications-check-pending"
+                    onclick="cancelTryOut('GETapi-practitioners-applications-check-pending');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-applications-check-pending"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/applications/check-pending</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-applications-check-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-applications-check-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="practitioner-applications-GETapi-practitioners-applications--id-">Get Application Details</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieve details of a specific practitioner application.
+Users can only view their own applications. Admins can view any application.</p>
+
+<span id="example-requests-GETapi-practitioners-applications--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/applications/1" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/applications/1"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-applications--id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;user_id&quot;: 123,
+        &quot;status&quot;: &quot;pending&quot;,
+        &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+        &quot;bio&quot;: &quot;Experienced therapist...&quot;,
+        &quot;documents&quot;: [],
+        &quot;submitted_at&quot;: &quot;2024-02-08T14:30:00Z&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthorized.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Application not found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-applications--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-applications--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-applications--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-applications--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-applications--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-applications--id-" data-method="GET"
+      data-path="api/practitioners/applications/{id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-applications--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-applications--id-"
+                    onclick="tryItOut('GETapi-practitioners-applications--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-applications--id-"
+                    onclick="cancelTryOut('GETapi-practitioners-applications--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-applications--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/applications/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-applications--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-applications--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-practitioners-applications--id-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The application ID. Example: <code>1</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="practitioner-applications-GETapi-admin-practitioners-applications">Get All Applications (Admin)</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieve all practitioner applications with filtering and sorting options.
+Admin access required.</p>
+
+<span id="example-requests-GETapi-admin-practitioners-applications">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/admin/practitioners/applications?status=pending&amp;category_id=1&amp;sort_by=submitted_at&amp;sort_order=desc&amp;per_page=15" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/admin/practitioners/applications"
+);
+
+const params = {
+    "status": "pending",
+    "category_id": "1",
+    "sort_by": "submitted_at",
+    "sort_order": "desc",
+    "per_page": "15",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-admin-practitioners-applications">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;user&quot;: {
+                &quot;id&quot;: 123,
+                &quot;name&quot;: &quot;Jane Smith&quot;,
+                &quot;email&quot;: &quot;jane@example.com&quot;
+            },
+            &quot;status&quot;: &quot;pending&quot;,
+            &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+            &quot;submitted_at&quot;: &quot;2024-02-08T14:30:00Z&quot;
+        }
+    ],
+    &quot;meta&quot;: {
+        &quot;current_page&quot;: 1,
+        &quot;last_page&quot;: 3,
+        &quot;per_page&quot;: 15,
+        &quot;total&quot;: 42
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthorized. Admin access required.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-admin-practitioners-applications" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-admin-practitioners-applications"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-admin-practitioners-applications"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-admin-practitioners-applications" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-admin-practitioners-applications">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-admin-practitioners-applications" data-method="GET"
+      data-path="api/admin/practitioners/applications"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-admin-practitioners-applications', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-admin-practitioners-applications"
+                    onclick="tryItOut('GETapi-admin-practitioners-applications');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-admin-practitioners-applications"
+                    onclick="cancelTryOut('GETapi-admin-practitioners-applications');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-admin-practitioners-applications"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/admin/practitioners/applications</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-admin-practitioners-applications"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-admin-practitioners-applications"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="status"                data-endpoint="GETapi-admin-practitioners-applications"
+               value="pending"
+               data-component="query">
+    <br>
+<p>Filter by status: &quot;pending&quot;, &quot;approved&quot;, or &quot;rejected&quot;. Example: <code>pending</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>category_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="category_id"                data-endpoint="GETapi-admin-practitioners-applications"
+               value="1"
+               data-component="query">
+    <br>
+<p>Filter by primary category ID. Example: <code>1</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort_by</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort_by"                data-endpoint="GETapi-admin-practitioners-applications"
+               value="submitted_at"
+               data-component="query">
+    <br>
+<p>Field to sort by. Example: <code>submitted_at</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort_order</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort_order"                data-endpoint="GETapi-admin-practitioners-applications"
+               value="desc"
+               data-component="query">
+    <br>
+<p>Sort order: &quot;asc&quot; or &quot;desc&quot;. Example: <code>desc</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-admin-practitioners-applications"
+               value="15"
+               data-component="query">
+    <br>
+<p>Number of results per page. Example: <code>15</code></p>
+            </div>
+                </form>
+
+                    <h2 id="practitioner-applications-GETapi-admin-practitioners-applications-pending">Get Pending Applications (Admin)</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieve all pending practitioner applications for admin review.
+Admin access required.</p>
+
+<span id="example-requests-GETapi-admin-practitioners-applications-pending">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/admin/practitioners/applications/pending" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/admin/practitioners/applications/pending"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-admin-practitioners-applications-pending">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;user&quot;: {
+                &quot;id&quot;: 123,
+                &quot;name&quot;: &quot;Jane Smith&quot;,
+                &quot;email&quot;: &quot;jane@example.com&quot;
+            },
+            &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+            &quot;years_experience&quot;: &quot;5-10&quot;,
+            &quot;primary_category&quot;: {
+                &quot;id&quot;: 1,
+                &quot;name&quot;: &quot;Body-Based Services&quot;
+            },
+            &quot;submitted_at&quot;: &quot;2024-02-08T14:30:00Z&quot;
+        }
+    ],
+    &quot;count&quot;: 5
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthorized. Admin access required.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-admin-practitioners-applications-pending" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-admin-practitioners-applications-pending"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-admin-practitioners-applications-pending"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-admin-practitioners-applications-pending" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-admin-practitioners-applications-pending">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-admin-practitioners-applications-pending" data-method="GET"
+      data-path="api/admin/practitioners/applications/pending"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-admin-practitioners-applications-pending', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-admin-practitioners-applications-pending"
+                    onclick="tryItOut('GETapi-admin-practitioners-applications-pending');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-admin-practitioners-applications-pending"
+                    onclick="cancelTryOut('GETapi-admin-practitioners-applications-pending');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-admin-practitioners-applications-pending"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/admin/practitioners/applications/pending</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-admin-practitioners-applications-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-admin-practitioners-applications-pending"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="practitioner-applications-POSTapi-admin-practitioners-applications--id--review">Review Application (Admin)</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Approve or reject a practitioner application. Admin access required.
+When approved, a practitioner profile is automatically created.
+Email notifications are sent to the applicant.</p>
+
+<span id="example-requests-POSTapi-admin-practitioners-applications--id--review">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/admin/practitioners/applications/1/review" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"action\": \"approve\",
+    \"rejection_reason\": \"Insufficient credentials provided.\",
+    \"admin_notes\": \"Follow up in 6 months.\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/admin/practitioners/applications/1/review"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "action": "approve",
+    "rejection_reason": "Insufficient credentials provided.",
+    "admin_notes": "Follow up in 6 months."
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-admin-practitioners-applications--id--review">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Application approved successfully.&quot;,
+    &quot;data&quot;: {
+        &quot;application&quot;: {
+            &quot;id&quot;: 1,
+            &quot;status&quot;: &quot;approved&quot;,
+            &quot;reviewed_by&quot;: 1,
+            &quot;reviewed_at&quot;: &quot;2024-02-08T15:00:00Z&quot;
+        },
+        &quot;profile_id&quot;: 1
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Application rejected.&quot;,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;status&quot;: &quot;rejected&quot;,
+        &quot;rejection_reason&quot;: &quot;Insufficient credentials...&quot;,
+        &quot;reviewed_at&quot;: &quot;2024-02-08T15:00:00Z&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (400):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Application has already been reviewed.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Application not found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-POSTapi-admin-practitioners-applications--id--review" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-admin-practitioners-applications--id--review"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-admin-practitioners-applications--id--review"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-admin-practitioners-applications--id--review" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-admin-practitioners-applications--id--review">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-admin-practitioners-applications--id--review" data-method="POST"
+      data-path="api/admin/practitioners/applications/{id}/review"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-admin-practitioners-applications--id--review', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-admin-practitioners-applications--id--review"
+                    onclick="tryItOut('POSTapi-admin-practitioners-applications--id--review');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-admin-practitioners-applications--id--review"
+                    onclick="cancelTryOut('POSTapi-admin-practitioners-applications--id--review');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-admin-practitioners-applications--id--review"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/admin/practitioners/applications/{id}/review</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-admin-practitioners-applications--id--review"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-admin-practitioners-applications--id--review"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="POSTapi-admin-practitioners-applications--id--review"
+               value="1"
+               data-component="url">
+    <br>
+<p>The application ID. Example: <code>1</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>action</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="action"                data-endpoint="POSTapi-admin-practitioners-applications--id--review"
+               value="approve"
+               data-component="body">
+    <br>
+<p>Action to take: &quot;approve&quot; or &quot;reject&quot;. Example: <code>approve</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>rejection_reason</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="rejection_reason"                data-endpoint="POSTapi-admin-practitioners-applications--id--review"
+               value="Insufficient credentials provided."
+               data-component="body">
+    <br>
+<p>optional Reason for rejection (required if action is &quot;reject&quot;). Example: <code>Insufficient credentials provided.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>admin_notes</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="admin_notes"                data-endpoint="POSTapi-admin-practitioners-applications--id--review"
+               value="Follow up in 6 months."
+               data-component="body">
+    <br>
+<p>optional Internal notes not shown to applicant. Example: <code>Follow up in 6 months.</code></p>
+        </div>
+        </form>
+
+                <h1 id="practitioner-profiles">Practitioner Profiles</h1>
+
+    <p>APIs for browsing and managing practitioner profiles</p>
+
+                                <h2 id="practitioner-profiles-GETapi-practitioners-profiles">List All Practitioners</h2>
+
+<p>
+</p>
+
+<p>Get a paginated list of all active practitioner profiles with filtering,
+searching, and sorting capabilities. Public endpoint, no authentication required.</p>
+
+<span id="example-requests-GETapi-practitioners-profiles">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/profiles?category_id=1&amp;service_id=5&amp;accepting_clients=1&amp;search=massage&amp;sort_by=rating&amp;sort_order=desc&amp;per_page=20" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/profiles"
+);
+
+const params = {
+    "category_id": "1",
+    "service_id": "5",
+    "accepting_clients": "1",
+    "search": "massage",
+    "sort_by": "rating",
+    "sort_order": "desc",
+    "per_page": "20",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-profiles">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;user_id&quot;: 123,
+            &quot;user&quot;: {
+                &quot;id&quot;: 123,
+                &quot;name&quot;: &quot;Jane Smith&quot;
+            },
+            &quot;phone_number&quot;: &quot;+1234567890&quot;,
+            &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+            &quot;years_experience&quot;: &quot;5-10&quot;,
+            &quot;bio&quot;: &quot;Experienced therapist...&quot;,
+            &quot;primary_category&quot;: {
+                &quot;id&quot;: 1,
+                &quot;name&quot;: &quot;Body-Based Services&quot;
+            },
+            &quot;services&quot;: [
+                {
+                    &quot;id&quot;: 1,
+                    &quot;name&quot;: &quot;Massage Therapy&quot;
+                }
+            ],
+            &quot;is_accepting_clients&quot;: true,
+            &quot;statistics&quot;: {
+                &quot;total_bookings&quot;: 45,
+                &quot;average_rating&quot;: 4.85,
+                &quot;total_reviews&quot;: 23
+            },
+            &quot;approved_at&quot;: &quot;2024-01-15T10:30:00Z&quot;
+        }
+    ],
+    &quot;meta&quot;: {
+        &quot;current_page&quot;: 1,
+        &quot;last_page&quot;: 5,
+        &quot;per_page&quot;: 20,
+        &quot;total&quot;: 87
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-profiles" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-profiles"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-profiles"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-profiles" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-profiles">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-profiles" data-method="GET"
+      data-path="api/practitioners/profiles"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-profiles', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-profiles"
+                    onclick="tryItOut('GETapi-practitioners-profiles');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-profiles"
+                    onclick="cancelTryOut('GETapi-practitioners-profiles');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-profiles"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/profiles</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-profiles"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-profiles"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>category_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="category_id"                data-endpoint="GETapi-practitioners-profiles"
+               value="1"
+               data-component="query">
+    <br>
+<p>Filter by primary service category. Example: <code>1</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>service_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="service_id"                data-endpoint="GETapi-practitioners-profiles"
+               value="5"
+               data-component="query">
+    <br>
+<p>Filter by specific service subcategory. Example: <code>5</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>accepting_clients</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="GETapi-practitioners-profiles" style="display: none">
+            <input type="radio" name="accepting_clients"
+                   value="1"
+                   data-endpoint="GETapi-practitioners-profiles"
+                   data-component="query"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="GETapi-practitioners-profiles" style="display: none">
+            <input type="radio" name="accepting_clients"
+                   value="0"
+                   data-endpoint="GETapi-practitioners-profiles"
+                   data-component="query"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Only show practitioners accepting new clients. Example: <code>true</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>search</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="search"                data-endpoint="GETapi-practitioners-profiles"
+               value="massage"
+               data-component="query">
+    <br>
+<p>Search by practitioner name or professional title. Example: <code>massage</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort_by</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort_by"                data-endpoint="GETapi-practitioners-profiles"
+               value="rating"
+               data-component="query">
+    <br>
+<p>Sort field: &quot;created_at&quot;, &quot;rating&quot;, or &quot;bookings&quot;. Example: <code>rating</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort_order</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort_order"                data-endpoint="GETapi-practitioners-profiles"
+               value="desc"
+               data-component="query">
+    <br>
+<p>Sort order: &quot;asc&quot; or &quot;desc&quot;. Example: <code>desc</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-practitioners-profiles"
+               value="20"
+               data-component="query">
+    <br>
+<p>Results per page (1-100). Example: <code>20</code></p>
+            </div>
+                </form>
+
+                    <h2 id="practitioner-profiles-GETapi-practitioners-profiles--id-">Get Practitioner Profile</h2>
+
+<p>
+</p>
+
+<p>Retrieve detailed information about a specific practitioner.
+Public endpoint, no authentication required.</p>
+
+<span id="example-requests-GETapi-practitioners-profiles--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/profiles/1" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/profiles/1"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-profiles--id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;user&quot;: {
+            &quot;id&quot;: 123,
+            &quot;name&quot;: &quot;Jane Smith&quot;
+        },
+        &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+        &quot;years_experience&quot;: &quot;5-10&quot;,
+        &quot;bio&quot;: &quot;I am an experienced massage therapist...&quot;,
+        &quot;license_number&quot;: &quot;LMT123456&quot;,
+        &quot;issuing_organization&quot;: &quot;State Board of Massage&quot;,
+        &quot;primary_category&quot;: {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: &quot;Body-Based Services&quot;
+        },
+        &quot;services&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;name&quot;: &quot;Massage Therapy&quot;
+            },
+            {
+                &quot;id&quot;: 2,
+                &quot;name&quot;: &quot;Acupuncture&quot;
+            }
+        ],
+        &quot;service_description&quot;: &quot;I specialize in deep tissue massage...&quot;,
+        &quot;availability_schedule&quot;: {
+            &quot;monday&quot;: {
+                &quot;morning&quot;: true,
+                &quot;afternoon&quot;: false,
+                &quot;evening&quot;: true
+            },
+            &quot;tuesday&quot;: {
+                &quot;morning&quot;: true,
+                &quot;afternoon&quot;: true,
+                &quot;evening&quot;: false
+            }
+        },
+        &quot;timezone&quot;: &quot;America/New_York&quot;,
+        &quot;is_active&quot;: true,
+        &quot;is_accepting_clients&quot;: true,
+        &quot;profile_image_url&quot;: &quot;https://example.com/image.jpg&quot;,
+        &quot;statistics&quot;: {
+            &quot;total_bookings&quot;: 45,
+            &quot;average_rating&quot;: 4.85,
+            &quot;total_reviews&quot;: 23
+        },
+        &quot;approved_at&quot;: &quot;2024-01-15T10:30:00Z&quot;,
+        &quot;created_at&quot;: &quot;2024-01-15T10:30:00Z&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Practitioner profile not found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-profiles--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-profiles--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-profiles--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-profiles--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-profiles--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-profiles--id-" data-method="GET"
+      data-path="api/practitioners/profiles/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-profiles--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-profiles--id-"
+                    onclick="tryItOut('GETapi-practitioners-profiles--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-profiles--id-"
+                    onclick="cancelTryOut('GETapi-practitioners-profiles--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-profiles--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/profiles/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-profiles--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-profiles--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-practitioners-profiles--id-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The practitioner profile ID. Example: <code>1</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="practitioner-profiles-GETapi-practitioners-profiles-top-rated">Get Top Rated Practitioners</h2>
+
+<p>
+</p>
+
+<p>Retrieve a list of the highest-rated practitioners.
+Only includes active practitioners accepting clients.
+Public endpoint, no authentication required.</p>
+
+<span id="example-requests-GETapi-practitioners-profiles-top-rated">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/profiles/top-rated?limit=10" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/profiles/top-rated"
+);
+
+const params = {
+    "limit": "10",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-profiles-top-rated">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;user&quot;: {
+                &quot;id&quot;: 123,
+                &quot;name&quot;: &quot;Jane Smith&quot;
+            },
+            &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+            &quot;statistics&quot;: {
+                &quot;average_rating&quot;: 4.95,
+                &quot;total_reviews&quot;: 120,
+                &quot;total_bookings&quot;: 250
+            }
+        }
+    ]
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-profiles-top-rated" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-profiles-top-rated"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-profiles-top-rated"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-profiles-top-rated" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-profiles-top-rated">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-profiles-top-rated" data-method="GET"
+      data-path="api/practitioners/profiles/top-rated"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-profiles-top-rated', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-profiles-top-rated"
+                    onclick="tryItOut('GETapi-practitioners-profiles-top-rated');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-profiles-top-rated"
+                    onclick="cancelTryOut('GETapi-practitioners-profiles-top-rated');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-profiles-top-rated"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/profiles/top-rated</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-profiles-top-rated"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-profiles-top-rated"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>limit</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="limit"                data-endpoint="GETapi-practitioners-profiles-top-rated"
+               value="10"
+               data-component="query">
+    <br>
+<p>Number of practitioners to return (1-50). Example: <code>10</code></p>
+            </div>
+                </form>
+
+                    <h2 id="practitioner-profiles-GETapi-practitioners-profiles-category--categoryId-">Get Practitioners by Category</h2>
+
+<p>
+</p>
+
+<p>Retrieve practitioners in a specific service category.
+Only includes active practitioners accepting clients, sorted by rating.
+Public endpoint, no authentication required.</p>
+
+<span id="example-requests-GETapi-practitioners-profiles-category--categoryId-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/profiles/category/1?limit=10" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/profiles/category/1"
+);
+
+const params = {
+    "limit": "10",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-profiles-category--categoryId-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+            &quot;primary_category&quot;: {
+                &quot;id&quot;: 1,
+                &quot;name&quot;: &quot;Body-Based Services&quot;
+            },
+            &quot;statistics&quot;: {
+                &quot;average_rating&quot;: 4.85,
+                &quot;total_reviews&quot;: 23
+            }
+        }
+    ]
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-profiles-category--categoryId-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-profiles-category--categoryId-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-profiles-category--categoryId-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-profiles-category--categoryId-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-profiles-category--categoryId-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-profiles-category--categoryId-" data-method="GET"
+      data-path="api/practitioners/profiles/category/{categoryId}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-profiles-category--categoryId-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-profiles-category--categoryId-"
+                    onclick="tryItOut('GETapi-practitioners-profiles-category--categoryId-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-profiles-category--categoryId-"
+                    onclick="cancelTryOut('GETapi-practitioners-profiles-category--categoryId-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-profiles-category--categoryId-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/profiles/category/{categoryId}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-profiles-category--categoryId-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-profiles-category--categoryId-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>categoryId</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="categoryId"                data-endpoint="GETapi-practitioners-profiles-category--categoryId-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The service category ID. Example: <code>1</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>limit</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="limit"                data-endpoint="GETapi-practitioners-profiles-category--categoryId-"
+               value="10"
+               data-component="query">
+    <br>
+<p>Number of practitioners to return (1-50). Example: <code>10</code></p>
+            </div>
+                </form>
+
+                    <h2 id="practitioner-profiles-GETapi-practitioners-my-profile">Get My Practitioner Profile</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieve the authenticated user's practitioner profile.
+User must be an approved practitioner.</p>
+
+<span id="example-requests-GETapi-practitioners-my-profile">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/my-profile" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/my-profile"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-my-profile">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+        &quot;is_active&quot;: true,
+        &quot;is_accepting_clients&quot;: true,
+        &quot;statistics&quot;: {
+            &quot;total_bookings&quot;: 45,
+            &quot;average_rating&quot;: 4.85,
+            &quot;total_reviews&quot;: 23
+        }
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;You do not have a practitioner profile.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-my-profile" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-my-profile"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-my-profile"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-my-profile" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-my-profile">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-my-profile" data-method="GET"
+      data-path="api/practitioners/my-profile"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-my-profile', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-my-profile"
+                    onclick="tryItOut('GETapi-practitioners-my-profile');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-my-profile"
+                    onclick="cancelTryOut('GETapi-practitioners-my-profile');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-my-profile"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/my-profile</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-my-profile"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-my-profile"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="practitioner-profiles-PUTapi-practitioners-profiles--id-">Update Practitioner Profile</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Update the practitioner profile information.
+Users can only update their own profile. Admins can update any profile.</p>
+
+<span id="example-requests-PUTapi-practitioners-profiles--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://localhost/api/practitioners/profiles/1" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"phone_number\": \"+1234567890\",
+    \"professional_title\": \"Licensed Massage Therapist\",
+    \"bio\": \"Updated bio text...\",
+    \"service_description\": \"I specialize in...\",
+    \"availability_schedule\": {
+        \"monday\": {
+            \"morning\": true
+        }
+    },
+    \"timezone\": \"America\\/Los_Angeles\",
+    \"is_accepting_clients\": true,
+    \"service_subcategories\": [
+        1,
+        2,
+        3
+    ]
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/profiles/1"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "phone_number": "+1234567890",
+    "professional_title": "Licensed Massage Therapist",
+    "bio": "Updated bio text...",
+    "service_description": "I specialize in...",
+    "availability_schedule": {
+        "monday": {
+            "morning": true
+        }
+    },
+    "timezone": "America\/Los_Angeles",
+    "is_accepting_clients": true,
+    "service_subcategories": [
+        1,
+        2,
+        3
+    ]
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-practitioners-profiles--id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Profile updated successfully.&quot;,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;professional_title&quot;: &quot;Licensed Massage Therapist&quot;,
+        &quot;bio&quot;: &quot;Updated bio...&quot;
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthorized.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Profile not found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-PUTapi-practitioners-profiles--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PUTapi-practitioners-profiles--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-practitioners-profiles--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-practitioners-profiles--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-practitioners-profiles--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PUTapi-practitioners-profiles--id-" data-method="PUT"
+      data-path="api/practitioners/profiles/{id}"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-practitioners-profiles--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-practitioners-profiles--id-"
+                    onclick="tryItOut('PUTapi-practitioners-profiles--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-practitioners-profiles--id-"
+                    onclick="cancelTryOut('PUTapi-practitioners-profiles--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-practitioners-profiles--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/practitioners/profiles/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The profile ID. Example: <code>1</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>phone_number</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="phone_number"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="+1234567890"
+               data-component="body">
+    <br>
+<p>optional Phone number. Example: <code>+1234567890</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>professional_title</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="professional_title"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="Licensed Massage Therapist"
+               data-component="body">
+    <br>
+<p>optional Professional title. Example: <code>Licensed Massage Therapist</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>bio</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="bio"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="Updated bio text..."
+               data-component="body">
+    <br>
+<p>optional Bio (max 500 characters). Example: <code>Updated bio text...</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>service_description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="service_description"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="I specialize in..."
+               data-component="body">
+    <br>
+<p>optional Service description (max 1000 characters). Example: <code>I specialize in...</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>availability_schedule</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="availability_schedule"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value=""
+               data-component="body">
+    <br>
+<p>optional Weekly availability.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>timezone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="timezone"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               value="America/Los_Angeles"
+               data-component="body">
+    <br>
+<p>optional Timezone. Example: <code>America/Los_Angeles</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_accepting_clients</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="PUTapi-practitioners-profiles--id-" style="display: none">
+            <input type="radio" name="is_accepting_clients"
+                   value="true"
+                   data-endpoint="PUTapi-practitioners-profiles--id-"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="PUTapi-practitioners-profiles--id-" style="display: none">
+            <input type="radio" name="is_accepting_clients"
+                   value="false"
+                   data-endpoint="PUTapi-practitioners-profiles--id-"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>optional Whether accepting new clients. Example: <code>true</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>service_subcategories</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="service_subcategories[0]"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               data-component="body">
+        <input type="text" style="display: none"
+               name="service_subcategories[1]"                data-endpoint="PUTapi-practitioners-profiles--id-"
+               data-component="body">
+    <br>
+<p>optional Array of service subcategory IDs.</p>
+        </div>
+        </form>
+
+                    <h2 id="practitioner-profiles-POSTapi-practitioners-profiles--id--toggle-active">Toggle Profile Active Status</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Activate or deactivate a practitioner profile.
+Users can toggle their own profile. Admins can toggle any profile.
+Inactive profiles are hidden from public listings.</p>
+
+<span id="example-requests-POSTapi-practitioners-profiles--id--toggle-active">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/practitioners/profiles/1/toggle-active" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/profiles/1/toggle-active"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-practitioners-profiles--id--toggle-active">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;message&quot;: &quot;Profile status updated.&quot;,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;is_active&quot;: false
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (403):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthorized.&quot;
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Profile not found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-POSTapi-practitioners-profiles--id--toggle-active" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-practitioners-profiles--id--toggle-active"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-practitioners-profiles--id--toggle-active"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-practitioners-profiles--id--toggle-active" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-practitioners-profiles--id--toggle-active">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-practitioners-profiles--id--toggle-active" data-method="POST"
+      data-path="api/practitioners/profiles/{id}/toggle-active"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-practitioners-profiles--id--toggle-active', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-practitioners-profiles--id--toggle-active"
+                    onclick="tryItOut('POSTapi-practitioners-profiles--id--toggle-active');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-practitioners-profiles--id--toggle-active"
+                    onclick="cancelTryOut('POSTapi-practitioners-profiles--id--toggle-active');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-practitioners-profiles--id--toggle-active"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/practitioners/profiles/{id}/toggle-active</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-practitioners-profiles--id--toggle-active"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-practitioners-profiles--id--toggle-active"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="POSTapi-practitioners-profiles--id--toggle-active"
+               value="1"
+               data-component="url">
+    <br>
+<p>The profile ID. Example: <code>1</code></p>
+            </div>
+                    </form>
+
                 <h1 id="product-management">Product Management</h1>
 
     <p>APIs for managing products and services</p>
@@ -7028,7 +10082,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "variants[][stock]=9"\
     --form "slots[][duration]=2"\
     --form "slots[][price]=8"\
-    --form "images[]=@/tmp/phpg05j2cm84p8rfRTsaci" </code></pre></div>
+    --form "images[]=@/tmp/phpuije6dnkdlhhe7c9EZ2" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -7580,7 +10634,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "variants[][stock]=9"\
     --form "slots[][duration]=2"\
     --form "slots[][price]=8"\
-    --form "images[]=@/tmp/phprvdrjsh0emn2eEcRgud" </code></pre></div>
+    --form "images[]=@/tmp/phpgjr09rcvmofnegC3dua" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -9422,8 +12476,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"start_date\": \"2026-01-27\",
-    \"end_date\": \"2052-02-20\"
+    \"start_date\": \"2026-02-08\",
+    \"end_date\": \"2052-03-03\"
 }"
 </code></pre></div>
 
@@ -9446,8 +12500,8 @@ const headers = {
 };
 
 let body = {
-    "start_date": "2026-01-27",
-    "end_date": "2052-02-20"
+    "start_date": "2026-02-08",
+    "end_date": "2052-03-03"
 };
 
 fetch(url, {
@@ -9616,10 +12670,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_date"                data-endpoint="GETapi-slots--slot_id--availability"
-               value="2026-01-27"
+               value="2026-02-08"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-01-27</code></p>
+<p>Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-02-08</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
@@ -9628,10 +12682,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_date"                data-endpoint="GETapi-slots--slot_id--availability"
-               value="2052-02-20"
+               value="2052-03-03"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Must be a date after or equal to <code>start_date</code>. Example: <code>2052-02-20</code></p>
+<p>Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Must be a date after or equal to <code>start_date</code>. Example: <code>2052-03-03</code></p>
         </div>
         </form>
 
@@ -10182,6 +13236,634 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="url">
     <br>
 <p>The booking ID. Example: <code>1</code></p>
+            </div>
+                    </form>
+
+                <h1 id="service-categories">Service Categories</h1>
+
+    <p>APIs for browsing practitioner service categories and subcategories</p>
+
+                                <h2 id="service-categories-GETapi-practitioners-categories">Get All Service Categories</h2>
+
+<p>
+</p>
+
+<p>Retrieve all active service categories with optional subcategories.
+Returns the 5 main categories: Body-Based, Mind-Based, Spirit-Based,
+Frequency &amp; Technology, and Integrated Services.</p>
+
+<span id="example-requests-GETapi-practitioners-categories">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/categories?include_subcategories=1" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/categories"
+);
+
+const params = {
+    "include_subcategories": "1",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-categories">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;name&quot;: &quot;Body-Based Services&quot;,
+            &quot;slug&quot;: &quot;body-based-services&quot;,
+            &quot;description&quot;: &quot;Physical healing modalities that work with the body&quot;,
+            &quot;display_order&quot;: 1,
+            &quot;is_active&quot;: true,
+            &quot;active_subcategories&quot;: [
+                {
+                    &quot;id&quot;: 1,
+                    &quot;category_id&quot;: 1,
+                    &quot;name&quot;: &quot;Massage Therapy&quot;,
+                    &quot;slug&quot;: &quot;massage-therapy&quot;,
+                    &quot;display_order&quot;: 1,
+                    &quot;is_active&quot;: true
+                }
+            ]
+        }
+    ]
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-categories" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-categories"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-categories"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-categories" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-categories">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-categories" data-method="GET"
+      data-path="api/practitioners/categories"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-categories', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-categories"
+                    onclick="tryItOut('GETapi-practitioners-categories');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-categories"
+                    onclick="cancelTryOut('GETapi-practitioners-categories');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-categories"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/categories</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-categories"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-categories"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Query Parameters</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>include_subcategories</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="GETapi-practitioners-categories" style="display: none">
+            <input type="radio" name="include_subcategories"
+                   value="1"
+                   data-endpoint="GETapi-practitioners-categories"
+                   data-component="query"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="GETapi-practitioners-categories" style="display: none">
+            <input type="radio" name="include_subcategories"
+                   value="0"
+                   data-endpoint="GETapi-practitioners-categories"
+                   data-component="query"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Include subcategories in response. Defaults to true. Example: <code>true</code></p>
+            </div>
+                </form>
+
+                    <h2 id="service-categories-GETapi-practitioners-categories--id-">Get Category by ID</h2>
+
+<p>
+</p>
+
+<p>Retrieve a specific service category with its subcategories.</p>
+
+<span id="example-requests-GETapi-practitioners-categories--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/categories/1" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/categories/1"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-categories--id-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;name&quot;: &quot;Body-Based Services&quot;,
+        &quot;slug&quot;: &quot;body-based-services&quot;,
+        &quot;description&quot;: &quot;Physical healing modalities&quot;,
+        &quot;active_subcategories&quot;: [
+            {
+                &quot;id&quot;: 1,
+                &quot;name&quot;: &quot;Massage Therapy&quot;,
+                &quot;slug&quot;: &quot;massage-therapy&quot;
+            }
+        ]
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Category not found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-categories--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-categories--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-categories--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-categories--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-categories--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-categories--id-" data-method="GET"
+      data-path="api/practitioners/categories/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-categories--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-categories--id-"
+                    onclick="tryItOut('GETapi-practitioners-categories--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-categories--id-"
+                    onclick="cancelTryOut('GETapi-practitioners-categories--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-categories--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/categories/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-categories--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-categories--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-practitioners-categories--id-"
+               value="1"
+               data-component="url">
+    <br>
+<p>The category ID. Example: <code>1</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="service-categories-GETapi-practitioners-categories-slug--slug-">Get Category by Slug</h2>
+
+<p>
+</p>
+
+<p>Retrieve a service category using its URL-friendly slug.</p>
+
+<span id="example-requests-GETapi-practitioners-categories-slug--slug-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/categories/slug/body-based-services" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/categories/slug/body-based-services"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-categories-slug--slug-">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;name&quot;: &quot;Body-Based Services&quot;,
+        &quot;slug&quot;: &quot;body-based-services&quot;,
+        &quot;active_subcategories&quot;: []
+    }
+}</code>
+ </pre>
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Category not found.&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-categories-slug--slug-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-categories-slug--slug-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-categories-slug--slug-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-categories-slug--slug-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-categories-slug--slug-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-categories-slug--slug-" data-method="GET"
+      data-path="api/practitioners/categories/slug/{slug}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-categories-slug--slug-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-categories-slug--slug-"
+                    onclick="tryItOut('GETapi-practitioners-categories-slug--slug-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-categories-slug--slug-"
+                    onclick="cancelTryOut('GETapi-practitioners-categories-slug--slug-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-categories-slug--slug-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/categories/slug/{slug}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-categories-slug--slug-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-categories-slug--slug-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>slug</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="slug"                data-endpoint="GETapi-practitioners-categories-slug--slug-"
+               value="body-based-services"
+               data-component="url">
+    <br>
+<p>The category slug. Example: <code>body-based-services</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="service-categories-GETapi-practitioners-categories--categoryId--subcategories">Get Category Subcategories</h2>
+
+<p>
+</p>
+
+<p>Retrieve all subcategories for a specific service category.</p>
+
+<span id="example-requests-GETapi-practitioners-categories--categoryId--subcategories">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost/api/practitioners/categories/1/subcategories" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/practitioners/categories/1/subcategories"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-practitioners-categories--categoryId--subcategories">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: true,
+    &quot;data&quot;: [
+        {
+            &quot;id&quot;: 1,
+            &quot;category_id&quot;: 1,
+            &quot;name&quot;: &quot;Massage Therapy&quot;,
+            &quot;slug&quot;: &quot;massage-therapy&quot;,
+            &quot;description&quot;: null,
+            &quot;display_order&quot;: 1,
+            &quot;is_active&quot;: true
+        },
+        {
+            &quot;id&quot;: 2,
+            &quot;category_id&quot;: 1,
+            &quot;name&quot;: &quot;Acupuncture&quot;,
+            &quot;slug&quot;: &quot;acupuncture&quot;,
+            &quot;display_order&quot;: 2,
+            &quot;is_active&quot;: true
+        }
+    ]
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-practitioners-categories--categoryId--subcategories" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-practitioners-categories--categoryId--subcategories"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-practitioners-categories--categoryId--subcategories"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-practitioners-categories--categoryId--subcategories" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-practitioners-categories--categoryId--subcategories">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-practitioners-categories--categoryId--subcategories" data-method="GET"
+      data-path="api/practitioners/categories/{categoryId}/subcategories"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-practitioners-categories--categoryId--subcategories', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-practitioners-categories--categoryId--subcategories"
+                    onclick="tryItOut('GETapi-practitioners-categories--categoryId--subcategories');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-practitioners-categories--categoryId--subcategories"
+                    onclick="cancelTryOut('GETapi-practitioners-categories--categoryId--subcategories');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-practitioners-categories--categoryId--subcategories"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/practitioners/categories/{categoryId}/subcategories</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-practitioners-categories--categoryId--subcategories"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-practitioners-categories--categoryId--subcategories"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>categoryId</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="categoryId"                data-endpoint="GETapi-practitioners-categories--categoryId--subcategories"
+               value="1"
+               data-component="url">
+    <br>
+<p>The category ID. Example: <code>1</code></p>
             </div>
                     </form>
 
@@ -10908,7 +14590,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"city\": \"New York\",
     \"state_province\": \"NY\",
     \"postal_code\": \"10001\",
-    \"currency\": \"GBP\"
+    \"currency\": \"EUR\"
 }"
 </code></pre></div>
 
@@ -10935,7 +14617,7 @@ let body = {
     "city": "New York",
     "state_province": "NY",
     "postal_code": "10001",
-    "currency": "GBP"
+    "currency": "EUR"
 };
 
 fetch(url, {
@@ -11147,10 +14829,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="currency"                data-endpoint="POSTapi-vendors"
-               value="GBP"
+               value="EUR"
                data-component="body">
     <br>
-<p>Example: <code>GBP</code></p>
+<p>Example: <code>EUR</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>USD</code></li> <li><code>EUR</code></li> <li><code>GBP</code></li></ul>
         </div>

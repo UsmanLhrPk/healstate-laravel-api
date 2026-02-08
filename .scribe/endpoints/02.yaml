@@ -199,7 +199,7 @@ endpoints:
         name: currency
         description: ''
         required: true
-        example: GBP
+        example: EUR
         type: string
         enumValues:
           - USD
@@ -219,7 +219,7 @@ endpoints:
       city: 'New York'
       state_province: NY
       postal_code: '10001'
-      currency: GBP
+      currency: EUR
     fileParameters: []
     responses:
       -

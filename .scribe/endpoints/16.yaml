@@ -1,34 +1,132 @@
-name: 'Order Management'
+name: 'Service Availability Management'
 description: |-
 
-  APIs for managing orders
+  APIs for managing service slot availability schedules. Vendors can set their weekly availability 
+  (days and time ranges) for each service slot.
 endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/orders
+      - POST
+    uri: 'api/slots/{slot_id}/schedule'
     metadata:
       custom: []
-      groupName: 'Order Management'
+      groupName: 'Service Availability Management'
       groupDescription: |-
 
-        APIs for managing orders
+        APIs for managing service slot availability schedules. Vendors can set their weekly availability 
+        (days and time ranges) for each service slot.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get User Orders'
-      description: 'Retrieve all orders for the authenticated user.'
+      title: 'Store Availability Schedule'
+      description: |-
+        Set or update the weekly availability schedule for a service slot. This defines which days and times
+        the vendor is available for bookings. The schedule will replace any existing schedule for the slot.
       authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
+    urlParameters:
+      slot_id:
+        custom: []
+        name: slot_id
+        description: 'The ID of the slot.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      slot:
+        custom: []
+        name: slot
+        description: 'The ID of the service slot.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      slot_id: 1
+      slot: 1
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      schedule:
+        custom: []
+        name: schedule
+        description: 'Array of weekly schedule data. Must contain 7 elements (one for each day).'
+        required: true
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'schedule[].day_of_week':
+        custom: []
+        name: 'schedule[].day_of_week'
+        description: 'Day of the week (0=Sunday, 1=Monday, ..., 6=Saturday).'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'schedule[].is_available':
+        custom: []
+        name: 'schedule[].is_available'
+        description: 'Whether the vendor is available on this day.'
+        required: true
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'schedule[].time_slots':
+        custom: []
+        name: 'schedule[].time_slots'
+        description: 'optional Array of time slots for the day. Required if is_available is true.'
+        required: false
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'schedule[].time_slots[].start_time':
+        custom: []
+        name: 'schedule[].time_slots[].start_time'
+        description: 'Start time in HH:MM format (24-hour).'
+        required: true
+        example: '09:00'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'schedule[].time_slots[].end_time':
+        custom: []
+        name: 'schedule[].time_slots[].end_time'
+        description: 'End time in HH:MM format (24-hour). Must be after start_time.'
+        required: true
+        example: '17:00'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      schedule:
+        - architecto
     fileParameters: []
     responses:
       -
@@ -36,103 +134,108 @@ endpoints:
         status: 200
         content: |-
           {
-            "data": [
+            "message": "Availability schedule saved successfully",
+            "schedule": [
               {
-                "id": 1,
-                "order_number": "ORD-ABC123",
-                "total": 107.17,
-                "status": "paid",
-                "cancellation_type": null,
-                "can_cancel_immediately": true,
-                "time_remaining_minutes": 25,
-                "created_at": "2024-01-01T00:00:00.000000Z"
+                "day_of_week": 0,
+                "is_available": false,
+                "time_slots": []
+              },
+              {
+                "day_of_week": 1,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "12:00"
+                  },
+                  {
+                    "start_time": "14:00",
+                    "end_time": "18:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 2,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 3,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 4,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 5,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 6,
+                "is_available": false,
+                "time_slots": []
               }
             ]
           }
         headers: []
         description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/orders/{order_id}'
-    metadata:
-      custom: []
-      groupName: 'Order Management'
-      groupDescription: |-
-
-        APIs for managing orders
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Get Order Details'
-      description: 'Retrieve detailed information about a specific order.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      order:
-        custom: []
-        name: order
-        description: 'The order ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-      order: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
       -
         custom: []
-        status: 200
+        status: 403
         content: |-
           {
-            "data": {
-              "id": 1,
-              "order_number": "ORD-ABC123",
-              "total": 107.17,
-              "status": "paid",
-              "cancellation_type": null,
-              "cancellation_requested_at": null,
-              "cancellation_reason": null,
-              "items": [],
-              "address": {}
-            },
-            "cancellation_info": {
-              "can_cancel_immediately": true,
-              "can_request_cancellation": true,
-              "time_remaining_minutes": 25,
-              "cancellation_deadline": "2024-01-01T00:30:00.000000Z"
+            "message": "Unauthorized"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The given data was invalid.",
+            "errors": {
+              "schedule.0.day_of_week": ["The schedule.0.day_of_week field is required."],
+              "schedule.0.time_slots.0.end_time": ["The schedule.0.time_slots.0.end_time must be after schedule.0.time_slots.0.start_time."]
             }
           }
         headers: []
         description: ''
+      -
+        custom: []
+        status: 500
+        content: |-
+          {
+            "message": "Failed to save availability schedule",
+            "error": "Database error message"
+          }
+        headers: []
+        description: ''
     responseFields: []
     auth: []
     controller: null
@@ -142,127 +245,41 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/orders/{order_id}/cancellation-status'
+    uri: 'api/slots/{slot_id}/schedule'
     metadata:
       custom: []
-      groupName: 'Order Management'
+      groupName: 'Service Availability Management'
       groupDescription: |-
 
-        APIs for managing orders
+        APIs for managing service slot availability schedules. Vendors can set their weekly availability 
+        (days and time ranges) for each service slot.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Check Cancellation Status'
-      description: 'Check if an order can be cancelled and what type of cancellation is available.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      order:
-        custom: []
-        name: order
-        description: 'The order ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-      order: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "can_cancel_immediately": true,
-            "can_request_cancellation": true,
-            "time_remaining_minutes": 25,
-            "cancellation_deadline": "2024-01-01T00:30:00.000000Z",
-            "current_status": "paid",
-            "message": "You can cancel this order immediately for the next 25 minutes."
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "can_cancel_immediately": false,
-            "can_request_cancellation": true,
-            "time_remaining_minutes": 0,
-            "cancellation_deadline": "2024-01-01T00:30:00.000000Z",
-            "current_status": "paid",
-            "message": "You can request cancellation. The vendor will need to approve your request."
-          }
-        headers: []
-        description: 'After 30 Minutes'
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'api/orders/{order_id}/cancel'
-    metadata:
-      custom: []
-      groupName: 'Order Management'
-      groupDescription: |-
-
-        APIs for managing orders
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Cancel Order'
+      title: 'Get Availability Schedule'
       description: |-
-        Cancel an order immediately (within 30 minutes) or request cancellation (after 30 minutes).
-
-        - **Within 30 minutes**: Order is cancelled immediately
-        - **After 30 minutes**: Cancellation request is sent to vendor for approval
+        Retrieve the weekly availability schedule for a service slot. Returns the days and times when
+        the vendor is available for bookings. Used by vendors to view/edit their schedule.
       authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      order_id:
+      slot_id:
         custom: []
-        name: order_id
-        description: 'The ID of the order.'
+        name: slot_id
+        description: 'The ID of the slot.'
         required: true
-        example: 7
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      order:
+      slot:
         custom: []
-        name: order
-        description: 'The order ID.'
+        name: slot
+        description: 'The ID of the service slot.'
         required: true
         example: 1
         type: integer
@@ -271,24 +288,12 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      order_id: 7
-      order: 1
+      slot_id: 1
+      slot: 1
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      reason:
-        custom: []
-        name: reason
-        description: 'optional Reason for cancellation.'
-        required: false
-        example: 'Changed my mind'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      reason: 'Changed my mind'
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses:
       -
@@ -296,47 +301,200 @@ endpoints:
         status: 200
         content: |-
           {
-            "message": "Order cancelled successfully",
-            "cancellation_type": "immediate",
-            "data": {
-              "id": 1,
-              "order_number": "ORD-ABC123",
-              "status": "cancelled",
-              "cancellation_type": "immediate",
-              "cancelled_by": "user",
-              "cancellation_reason": "Changed my mind",
-              "cancellation_requested_at": "2024-01-01T00:15:00.000000Z"
-            }
+            "schedule": [
+              {
+                "day_of_week": 0,
+                "is_available": false,
+                "time_slots": []
+              },
+              {
+                "day_of_week": 1,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "12:00"
+                  },
+                  {
+                    "start_time": "14:00",
+                    "end_time": "18:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 2,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 3,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 4,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 5,
+                "is_available": true,
+                "time_slots": [
+                  {
+                    "start_time": "09:00",
+                    "end_time": "17:00"
+                  }
+                ]
+              },
+              {
+                "day_of_week": 6,
+                "is_available": false,
+                "time_slots": []
+              }
+            ]
           }
         headers: []
-        description: 'Immediate Cancellation'
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Unauthorized"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "Service slot not found"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 500
+        content: |-
+          {
+            "message": "Failed to load availability schedule",
+            "error": "Error message"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/slots/{slot_id}/schedule'
+    metadata:
+      custom: []
+      groupName: 'Service Availability Management'
+      groupDescription: |-
+
+        APIs for managing service slot availability schedules. Vendors can set their weekly availability 
+        (days and time ranges) for each service slot.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Delete Availability Schedule'
+      description: |-
+        Remove all availability schedule data for a service slot. After deletion, the slot will have
+        no defined availability and customers won't be able to book it until a new schedule is set.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      slot_id:
+        custom: []
+        name: slot_id
+        description: 'The ID of the slot.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      slot:
+        custom: []
+        name: slot
+        description: 'The ID of the service slot.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      slot_id: 1
+      slot: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
         status: 200
         content: |-
           {
-            "message": "Cancellation request sent to vendor. You will be notified once the vendor responds.",
-            "cancellation_type": "requested",
-            "data": {
-              "id": 1,
-              "order_number": "ORD-ABC123",
-              "status": "cancellation_requested",
-              "cancellation_type": "requested",
-              "cancellation_reason": "Changed my mind",
-              "cancellation_requested_at": "2024-01-01T01:00:00.000000Z"
-            }
+            "message": "Availability schedule deleted successfully"
           }
         headers: []
-        description: 'Cancellation Request'
+        description: ''
       -
         custom: []
-        status: 400
+        status: 403
         content: |-
           {
-            "message": "Order cannot be cancelled at this time"
+            "message": "Unauthorized"
           }
         headers: []
-        description: 'Cannot Cancel'
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "Service slot not found"
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 500
+        content: |-
+          {
+            "message": "Failed to delete availability schedule",
+            "error": "Error message"
+          }
+        headers: []
+        description: ''
     responseFields: []
     auth: []
     controller: null

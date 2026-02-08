@@ -109,7 +109,7 @@ endpoints:
         name: type
         description: ''
         required: false
-        example: service
+        example: product
         type: string
         enumValues:
           - product
@@ -177,7 +177,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      type: service
+      type: product
       category: b
       search: 'n'
       sort: price_high

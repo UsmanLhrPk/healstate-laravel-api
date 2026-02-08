@@ -51,4 +51,58 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(\App\Models\Vendor::class);
     }
+
+    /**
+     * Get the user's practitioner applications.
+     */
+    public function practitionerApplications()
+    {
+        return $this->hasMany(\App\Models\PractitionerApplication::class);
+    }
+
+    /**
+     * Get the user's practitioner profile.
+     */
+    public function practitionerProfile()
+    {
+        return $this->hasOne(\App\Models\PractitionerProfile::class);
+    }
+
+    /**
+     * Check if user has a pending practitioner application.
+     */
+    public function hasPendingPractitionerApplication(): bool
+    {
+        return $this->practitionerApplications()
+            ->where('status', 'pending')
+            ->exists();
+    }
+
+    /**
+     * Check if user has an approved practitioner application.
+     */
+    public function hasApprovedPractitionerApplication(): bool
+    {
+        return $this->practitionerApplications()
+            ->where('status', 'approved')
+            ->exists();
+    }
+
+    /**
+     * Check if user is a practitioner.
+     */
+    public function isPractitioner(): bool
+    {
+        return $this->is_practitioner === true;
+    }
+
+    /**
+     * Get user's latest practitioner application.
+     */
+    public function getLatestPractitionerApplication()
+    {
+        return $this->practitionerApplications()
+            ->latest('submitted_at')
+            ->first();
+    }
 }
