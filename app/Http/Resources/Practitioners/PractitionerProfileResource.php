@@ -18,7 +18,7 @@ class PractitionerProfileResource extends JsonResource
             'user' => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
-                'email' => $this->when($request->user()?->is_admin, $this->user->email),
+                'email' => $this->when(auth('admin')->check(), $this->user->email),
             ],
             'phone_number' => $this->phone_number,
             'professional_title' => $this->professional_title,

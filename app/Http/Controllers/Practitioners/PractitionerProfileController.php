@@ -266,7 +266,7 @@ class PractitionerProfileController extends Controller
         }
 
         // Authorization: user must own the profile or be admin
-        if ($profile->user_id !== $request->user()->id && !$request->user()->is_admin) {
+        if ($profile->user_id !== $request->user()->id && !auth('admin')->check()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized.',
@@ -344,7 +344,7 @@ class PractitionerProfileController extends Controller
         }
 
         // Authorization
-        if ($profile->user_id !== $request->user()->id && !$request->user()->is_admin) {
+        if ($profile->user_id !== $request->user()->id && !auth('admin')->check()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized.',

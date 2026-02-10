@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ActivityLog;
+use App\Models\Admin;
 use App\Models\ApplicationDocument;
 use App\Models\PractitionerApplication;
 use App\Models\PractitionerProfile;
@@ -12,7 +13,6 @@ use App\Notifications\ApplicationReceivedNotification;
 use App\Notifications\ApplicationRejectedNotification;
 use App\Notifications\NewApplicationAdminNotification;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class PractitionerApplicationService
 {
@@ -35,18 +35,19 @@ class PractitionerApplicationService
                 'service_description' => $data['service_description'],
                 'availability_schedule' => $data['availability_schedule'],
                 'timezone' => $data['timezone'],
-                'terms_agreed' => $data['terms_agreed'],
+                'terms_agreed' => filter_var($data['terms_agreed'], FILTER_VALIDATE_BOOLEAN),
                 'terms_agreed_at' => now(),
                 'status' => 'pending',
+                'submitted_at' => now(),
             ]);
 
             // Attach selected services
-            if (!empty($data['service_subcategories'])) {
+            if (! empty($data['service_subcategories'])) {
                 $application->services()->attach($data['service_subcategories']);
             }
 
             // Upload and attach documents
-            if (!empty($data['credentials'])) {
+            if (! empty($data['credentials'])) {
                 foreach ($data['credentials'] as $credential) {
                     $this->uploadDocument($application, $credential);
                 }
@@ -75,7 +76,7 @@ class PractitionerApplicationService
     protected function uploadDocument(PractitionerApplication $application, array $credential): ApplicationDocument
     {
         $file = $credential['file'];
-        $path = $file->store('practitioner-credentials/' . $application->id, 'private');
+        $path = $file->store('practitioner-credentials/'.$application->id, 'private');
 
         return ApplicationDocument::create([
             'application_id' => $application->id,
@@ -90,7 +91,7 @@ class PractitionerApplicationService
     /**
      * Approve an application.
      */
-    public function approveApplication(PractitionerApplication $application, User $admin, ?string $adminNotes = null): PractitionerProfile
+    public function approveApplication(PractitionerApplication $application, Admin $admin, ?string $adminNotes = null): PractitionerProfile
     {
         return DB::transaction(function () use ($application, $admin, $adminNotes) {
             // Update application status
@@ -101,21 +102,12 @@ class PractitionerApplicationService
                 'admin_notes' => $adminNotes,
             ]);
 
-            // Create practitioner profile
+            // Create practitioner profile (minimal data, reference the application)
             $profile = PractitionerProfile::create([
                 'user_id' => $application->user_id,
                 'application_id' => $application->id,
-                'phone_number' => $application->phone_number,
-                'professional_title' => $application->professional_title,
-                'years_experience' => $application->years_experience,
-                'bio' => $application->bio,
-                'license_number' => $application->license_number,
-                'issuing_organization' => $application->issuing_organization,
-                'primary_category_id' => $application->primary_category_id,
-                'service_description' => $application->service_description,
-                'availability_schedule' => $application->availability_schedule,
-                'timezone' => $application->timezone,
                 'approved_at' => now(),
+                // Add any other fields that actually exist in practitioner_profiles table
             ]);
 
             // Copy services to profile
@@ -146,7 +138,7 @@ class PractitionerApplicationService
      */
     public function rejectApplication(
         PractitionerApplication $application,
-        User $admin,
+        Admin $admin,
         ?string $rejectionReason = null,
         ?string $adminNotes = null
     ): PractitionerApplication {
@@ -185,7 +177,7 @@ class PractitionerApplicationService
             'user',
             'primaryCategory',
             'services',
-            'documents'
+            'documents',
         ])
             ->pending()
             ->orderBy('submitted_at', 'asc')
@@ -202,7 +194,7 @@ class PractitionerApplicationService
             'primaryCategory',
             'services',
             'documents',
-            'reviewer'
+            'reviewer',
         ])->find($id);
     }
 
@@ -229,9 +221,9 @@ class PractitionerApplicationService
      */
     protected function sendNewApplicationAdminEmail(PractitionerApplication $application): void
     {
-        // Get all admin users
-        $admins = User::where('is_admin', true)->get();
-        
+        // Get all admin users from admins table
+        $admins = Admin::all();
+
         foreach ($admins as $admin) {
             $admin->notify(new NewApplicationAdminNotification($application));
         }

@@ -41,7 +41,7 @@ class PractitionerApplication extends Model
         'reviewed_at' => 'datetime',
         'submitted_at' => 'datetime',
         'updated_at' => 'datetime',
-    ];
+    ]; 
 
     /**
      * Get the user that owns the application.
@@ -77,7 +77,7 @@ class PractitionerApplication extends Model
             'application_services',
             'application_id',
             'subcategory_id'
-        )->withTimestamps();
+        ) ->withPivot('created_at');
     }
 
     /**

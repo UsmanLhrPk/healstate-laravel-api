@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Middleware to check if the authenticated user is an admin.
+ * Works with the separate 'admin' guard.
  */
 class EnsureUserIsAdmin
 {
@@ -18,13 +19,14 @@ class EnsureUserIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !$request->user()->is_admin) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized. Admin access required.',
-            ], 403);
+        // Check if authenticated via admin guard
+        if (auth('admin')->check()) {
+            return $next($request);
         }
 
-        return $next($request);
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized. Admin access required.',
+        ], 403);
     }
 }

@@ -12,7 +12,7 @@ class ReviewApplicationRequest extends FormRequest
     public function authorize(): bool
     {
         // Only admins can review applications
-        return auth()->check() && auth()->user()->is_admin;
+        return auth('admin')->check();
     }
 
     /**

@@ -41,10 +41,10 @@ class PractitionerApplicationResource extends JsonResource
             }),
             'reviewed_at' => $this->reviewed_at?->toIso8601String(),
             'rejection_reason' => $this->when(
-                $request->user()?->is_admin || $this->user_id === $request->user()?->id,
+                auth('admin')->check() || $this->user_id === $request->user()?->id,
                 $this->rejection_reason
             ),
-            'admin_notes' => $this->when($request->user()?->is_admin, $this->admin_notes),
+            'admin_notes' => $this->when(auth('admin')->check(), $this->admin_notes),
             'terms_agreed' => $this->terms_agreed,
             'terms_agreed_at' => $this->terms_agreed_at?->toIso8601String(),
             'documents' => ApplicationDocumentResource::collection($this->whenLoaded('documents')),

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Cart\AddressController;
 use App\Http\Controllers\Cart\CartController;
@@ -41,7 +42,7 @@ Route::prefix('practitioners')->group(function () {
     Route::get('/categories/{id}', [ServiceCategoryController::class, 'show']);
     Route::get('/categories/slug/{slug}', [ServiceCategoryController::class, 'showBySlug']);
     Route::get('/categories/{categoryId}/subcategories', [ServiceCategoryController::class, 'subcategories']);
-    
+
     // Practitioner Profiles (Public listing)
     Route::get('/profiles', [PractitionerProfileController::class, 'index']);
     Route::get('/profiles/{id}', [PractitionerProfileController::class, 'show']);
@@ -151,21 +152,33 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/applications/my-application', [PractitionerApplicationController::class, 'myApplication']);
         Route::get('/applications/check-pending', [PractitionerApplicationController::class, 'checkPendingStatus']);
         Route::get('/applications/{id}', [PractitionerApplicationController::class, 'show']);
-        
+
         // Practitioner Profile Management
         Route::get('/my-profile', [PractitionerProfileController::class, 'myProfile']);
         Route::put('/profiles/{id}', [PractitionerProfileController::class, 'update']);
         Route::post('/profiles/{id}/toggle-active', [PractitionerProfileController::class, 'toggleActive']);
     });
 
-    // Admin Routes - Practitioner Management
-    Route::middleware('admin')->prefix('admin/practitioners')->group(function () {
-        Route::get('/applications', [PractitionerApplicationController::class, 'index']);
-        Route::get('/applications/pending', [PractitionerApplicationController::class, 'pendingApplications']);
-        Route::post('/applications/{id}/review', [PractitionerApplicationController::class, 'review']);
-    });
+
+
 });
 
 Route::get('/user', [AuthenticatedSessionController::class, 'user'])
     ->middleware('auth:sanctum')
     ->name('user.info');
+
+Route::prefix('admin')->group(function () {
+    Route::post('/login', [AdminLoginController::class, 'login']);
+
+    Route::middleware('auth:admin')->group(function () {
+        Route::post('/logout', [AdminLoginController::class, 'logout']);
+        Route::get('/user', [AdminLoginController::class, 'user']);
+        
+        // Practitioner Management
+        Route::prefix('practitioners')->group(function () {
+            Route::get('/applications', [PractitionerApplicationController::class, 'index']);
+            Route::get('/applications/pending', [PractitionerApplicationController::class, 'pendingApplications']);
+            Route::post('/applications/{id}/review', [PractitionerApplicationController::class, 'review']);
+        });
+    });
+});
