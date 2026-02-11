@@ -22,6 +22,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'is_practitioner',
+        'practitioner_profile_id',
     ];
 
     /**
@@ -44,6 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_practitioner' => 'boolean',
         ];
     }
 

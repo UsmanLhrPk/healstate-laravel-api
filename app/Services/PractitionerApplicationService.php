@@ -42,8 +42,8 @@ class PractitionerApplicationService
             ]);
 
             // Attach selected services
-            if (! empty($data['service_subcategories'])) {
-                $application->services()->attach($data['service_subcategories']);
+            if (! empty($data['selected_services'])) {
+                $application->services()->attach($data['selected_services']);
             }
 
             // Upload and attach documents
@@ -84,7 +84,8 @@ class PractitionerApplicationService
             'file_path' => $path,
             'file_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),
-            'document_type' => $credential['document_type'],
+            'license_number' => $credential['license_number'],
+            'issuing_organization' => $credential['issuing_organization'],
         ]);
     }
 

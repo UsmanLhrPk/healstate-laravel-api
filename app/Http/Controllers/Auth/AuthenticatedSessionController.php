@@ -33,8 +33,8 @@ class AuthenticatedSessionController extends Controller
             $this->cartService->mergeGuestCart($user->id, $sessionId);
         }
         
-        // Load vendor relationship
-        $user->load('vendor');
+        // Load vendor and practitioner relationships
+        $user->load(['vendor', 'practitionerProfile']);
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -47,6 +47,9 @@ class AuthenticatedSessionController extends Controller
                 'email' => $user->email,
                 'email_verified_at' => $user->email_verified_at,
                 'vendor_id' => $user->vendor?->id,
+                'is_practitioner' => $user->is_practitioner ?? false,
+                'practitioner_profile_id' => $user->practitioner_profile_id,
+                'has_pending_practitioner_application' => $user->hasPendingPractitionerApplication(),
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
             ],
@@ -60,8 +63,8 @@ class AuthenticatedSessionController extends Controller
     {
         $user = $request->user();
         
-        // Load vendor relationship
-        $user->load('vendor');
+        // Load vendor and practitioner relationships
+        $user->load(['vendor', 'practitionerProfile']);
         
         return response()->json([
             'user' => [
@@ -70,6 +73,9 @@ class AuthenticatedSessionController extends Controller
                 'email' => $user->email,
                 'email_verified_at' => $user->email_verified_at,
                 'vendor_id' => $user->vendor?->id,
+                'is_practitioner' => $user->is_practitioner ?? false,
+                'practitioner_profile_id' => $user->practitioner_profile_id,
+                'has_pending_practitioner_application' => $user->hasPendingPractitionerApplication(),
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
             ],
