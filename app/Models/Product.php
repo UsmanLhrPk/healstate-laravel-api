@@ -18,13 +18,16 @@ class Product extends Model
         'description',
         'type',
         'active',
-        'images', // Add this
+        'images',
     ];
 
     protected $casts = [
         'active' => 'boolean',
-        'images' => 'array', // Add this
+        'images' => 'array',
     ];
+
+    // Add appends to automatically include currency info
+    protected $appends = ['currency', 'currency_symbol'];
 
     public function vendor(): BelongsTo
     {
@@ -49,5 +52,23 @@ class Product extends Model
     public function isService(): bool
     {
         return $this->type === 'service';
+    }
+
+    // Currency accessor - inherits from vendor
+    public function getCurrencyAttribute(): string
+    {
+        return $this->vendor->currency ?? 'USD';
+    }
+
+    // Currency symbol accessor
+    public function getCurrencySymbolAttribute(): string
+    {
+        return $this->vendor->getCurrencySymbol() ?? '$';
+    }
+
+    // Helper method to format price with vendor's currency
+    public function formatPrice(float $price): string
+    {
+        return $this->vendor->formatPrice($price);
     }
 }

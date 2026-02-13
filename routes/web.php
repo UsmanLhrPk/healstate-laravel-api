@@ -7,3 +7,8 @@ Route::get('/', function () {
 });
 
 require __DIR__.'/auth.php';
+
+Route::get('/test-log', function() {
+    \Log::info('Test log message');
+    return 'Check logs now';
+});

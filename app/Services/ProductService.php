@@ -58,7 +58,7 @@ class ProductService
                 }
             }
 
-            return $product->load(['variants', 'serviceSlots']);
+            return $product->load(['variants', 'serviceSlots', 'serviceSlots.availability']);
         });
     }
 
@@ -154,7 +154,7 @@ class ProductService
                 }
             }
 
-            return $product->fresh(['variants', 'serviceSlots']);
+            return $product->fresh(['variants', 'serviceSlots', 'serviceSlots.availability']);
         });
     }
 
@@ -165,7 +165,7 @@ class ProductService
             if ($product->images) {
                 foreach ($product->images as $imageUrl) {
                     $path = str_replace('/storage/', '', parse_url($imageUrl, PHP_URL_PATH));
-                    Storage::disk('public')->delete($oldPath);
+                    Storage::disk('public')->delete($path); // Fixed: was $oldPath
                 }
             }
 
@@ -175,21 +175,21 @@ class ProductService
 
     public function getProductWithDetails(int $productId): ?Product
     {
-        return Product::with(['vendor', 'variants', 'serviceSlots'])
+        return Product::with(['vendor', 'variants', 'serviceSlots', 'serviceSlots.availability'])
             ->find($productId);
     }
 
     public function getVendorProducts(int $vendorId, int $perPage = 15): LengthAwarePaginator
     {
         return Product::where('vendor_id', $vendorId)
-            ->with(['variants', 'serviceSlots'])
+            ->with(['variants', 'serviceSlots', 'serviceSlots.availability'])
             ->latest()
             ->paginate($perPage);
     }
 
     public function getAllProducts(int $perPage = 15): LengthAwarePaginator
     {
-        return Product::with(['vendor', 'variants', 'serviceSlots'])
+        return Product::with(['vendor', 'variants', 'serviceSlots', 'serviceSlots.availability'])
             ->where('active', true)
             ->latest()
             ->paginate($perPage);

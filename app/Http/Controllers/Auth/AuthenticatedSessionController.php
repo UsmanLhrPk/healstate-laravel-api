@@ -4,11 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\CartService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AuthenticatedSessionController extends Controller
 {
+    public function __construct(
+        protected CartService $cartService
+    ) {}
+
     /**
      * Handle an incoming authentication request.
      */
@@ -19,6 +24,14 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+        
+        // Merge guest cart with user cart
+        $sessionId = $request->header('X-Cart-Session-ID') 
+                     ?? $request->cookie('cart_session_id');
+        
+        if ($sessionId) {
+            $this->cartService->mergeGuestCart($user->id, $sessionId);
+        }
         
         // Load vendor relationship
         $user->load('vendor');

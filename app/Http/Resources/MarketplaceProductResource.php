@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class MarketplaceProductResource extends JsonResource
 {
@@ -19,7 +18,6 @@ class MarketplaceProductResource extends JsonResource
         // Get full image URL
         $imageUrl = null;
         if (!empty($this->images) && isset($this->images[0])) {
-            // Convert /storage/... to full URL
             $imageUrl = url($this->images[0]);
         }
 
@@ -30,8 +28,10 @@ class MarketplaceProductResource extends JsonResource
             'brief' => $this->brief,
             'description' => $this->description,
             'type' => $this->type,
-            'image_url' => $imageUrl, // Full URL now
+            'image_url' => $imageUrl,
             'active' => $this->active,
+            'currency' => $this->vendor->currency,
+            'currency_symbol' => $this->vendor->getCurrencySymbol(),
             'variants' => $this->when(
                 $this->type === 'product' && $this->variants,
                 $this->variants->map(function ($variant) {
@@ -40,6 +40,8 @@ class MarketplaceProductResource extends JsonResource
                         'name' => $variant->name,
                         'price' => $variant->price,
                         'stock' => $variant->stock,
+                        'currency' => $this->vendor->currency,
+                        'currency_symbol' => $this->vendor->getCurrencySymbol(),
                     ];
                 })
             ),
@@ -50,6 +52,8 @@ class MarketplaceProductResource extends JsonResource
                         'id' => $slot->id,
                         'duration' => $slot->duration,
                         'price' => $slot->price,
+                        'currency' => $this->vendor->currency,
+                        'currency_symbol' => $this->vendor->getCurrencySymbol(),
                     ];
                 })
             ),
@@ -61,6 +65,8 @@ class MarketplaceProductResource extends JsonResource
                 'average_rating' => $this->vendor->average_rating,
                 'review_count' => $this->vendor->review_count,
                 'is_verified' => $this->vendor->isVerified(),
+                'currency' => $this->vendor->currency,
+                'currency_symbol' => $this->vendor->getCurrencySymbol(),
             ],
             'min_price' => number_format($minPrice, 2, '.', ''),
             'created_at' => $this->created_at,

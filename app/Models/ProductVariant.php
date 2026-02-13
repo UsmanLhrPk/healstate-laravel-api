@@ -24,8 +24,29 @@ class ProductVariant extends Model
         'sort' => 'integer',
     ];
 
+    // Add appends for currency info
+    protected $appends = ['currency', 'currency_symbol'];
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    // Currency accessor - inherits from product's vendor
+    public function getCurrencyAttribute(): string
+    {
+        return $this->product->vendor->currency ?? 'USD';
+    }
+
+    // Currency symbol accessor
+    public function getCurrencySymbolAttribute(): string
+    {
+        return $this->product->vendor->getCurrencySymbol() ?? '$';
+    }
+
+    // Helper method to format price
+    public function getFormattedPriceAttribute(): string
+    {
+        return $this->product->vendor->formatPrice((float) $this->price);
     }
 }

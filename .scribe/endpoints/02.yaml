@@ -194,6 +194,20 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
+      currency:
+        custom: []
+        name: currency
+        description: ''
+        required: true
+        example: GBP
+        type: string
+        enumValues:
+          - USD
+          - EUR
+          - GBP
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       business_name: 'Tech Solutions Inc'
       brief: 'We provide IT consulting services'
@@ -205,6 +219,7 @@ endpoints:
       city: 'New York'
       state_province: NY
       postal_code: '10001'
+      currency: GBP
     fileParameters: []
     responses:
       -
@@ -370,6 +385,20 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
+      currency:
+        custom: []
+        name: currency
+        description: ''
+        required: false
+        example: EUR
+        type: string
+        enumValues:
+          - USD
+          - EUR
+          - GBP
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       business_name: 'Tech Solutions Inc'
       brief: 'Updated description'
@@ -381,6 +410,7 @@ endpoints:
       city: Boston
       state_province: MA
       postal_code: '02101'
+      currency: EUR
     fileParameters: []
     responses:
       -
