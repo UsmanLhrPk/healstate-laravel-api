@@ -177,6 +177,7 @@ Route::prefix('admin')->group(function () {
         // Practitioner Management
         Route::prefix('practitioners')->group(function () {
             Route::get('/applications', [PractitionerApplicationController::class, 'index']);
+            Route::get('/applications/{id}', [PractitionerApplicationController::class, 'show']);
             Route::get('/applications/pending', [PractitionerApplicationController::class, 'pendingApplications']);
             Route::post('/applications/{id}/review', [PractitionerApplicationController::class, 'review']);
         });
