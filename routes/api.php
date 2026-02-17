@@ -181,5 +181,11 @@ Route::prefix('admin')->group(function () {
             Route::get('/applications/pending', [PractitionerApplicationController::class, 'pendingApplications']);
             Route::post('/applications/{id}/review', [PractitionerApplicationController::class, 'review']);
         });
+
+        Route::prefix('vendors')->group(function () {
+            Route::get('/', [VendorController::class, 'index']);
+            Route::get('/{id}', [VendorController::class, 'adminShow']);
+            Route::post('/{id}/review', [VendorController::class, 'review']);
+        });
     });
 });
