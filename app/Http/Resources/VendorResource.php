@@ -25,6 +25,18 @@ class VendorResource extends JsonResource
             'currency_name' => $this->getCurrencyName(),
             'verified_at' => $this->verified_at,
             'is_verified' => $this->isVerified(),
+            'status' => $this->status,
+            'rejection_reason' => $this->rejection_reason,
+            'admin_notes' => $this->admin_notes,
+            'reviewed_at' => $this->reviewed_at,
+            'reviewer' => $this->whenLoaded('reviewer', fn() => [
+                'name' => $this->reviewer->name,
+            ]),
+            'user' => $this->whenLoaded('user', fn() => [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+            ]),
             'average_rating' => $this->average_rating,
             'review_count' => $this->review_count,
             'created_at' => $this->created_at,

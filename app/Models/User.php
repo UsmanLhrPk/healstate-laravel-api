@@ -37,6 +37,17 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Appended computed attributes included in every JSON/array response.
+     *
+     * @var list<string>
+     */
+    protected $appends = [
+        'has_pending_practitioner_application',
+        'is_vendor',
+        'has_pending_vendor_application',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -107,5 +118,39 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->practitionerApplications()
             ->latest('submitted_at')
             ->first();
+    }
+
+    // -------------------------------------------------------------------------
+    // Appended attributes — automatically included in toArray() / toJson()
+    // -------------------------------------------------------------------------
+
+    /**
+     * Whether the user has a pending practitioner application.
+     * Replaces the manual serialization that was previously done in controllers.
+     */
+    public function getHasPendingPractitionerApplicationAttribute(): bool
+    {
+        return $this->hasPendingPractitionerApplication();
+    }
+
+    /**
+     * Whether the user's vendor profile has been verified by an admin.
+     * Requires the vendor relationship to be loaded or will lazy-load it.
+     */
+    public function getIsVendorAttribute(): bool
+    {
+        return $this->vendor?->status === \App\Models\Vendor::STATUS_APPROVED;
+    }
+
+    /**
+     * Whether the user has submitted a vendor application that is not yet approved.
+     */
+    public function getHasPendingVendorApplicationAttribute(): bool
+    {
+        if (!$this->vendor_id) {
+            return false;
+        }
+
+        return $this->vendor?->status === \App\Models\Vendor::STATUS_PENDING;
     }
 }
