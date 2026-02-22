@@ -10,7 +10,9 @@ return new class extends Migration
     {
         Schema::create('practitioner_offering_bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('practitioner_offering_slot_id')->constrained('practitioner_offering_slots')->cascadeOnDelete();
+            $table->foreignId('practitioner_offering_slot_id')
+                ->constrained('practitioner_offering_slots', 'id', 'pob_slot_id_foreign')
+                ->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->date('booking_date');
             $table->time('start_time');
