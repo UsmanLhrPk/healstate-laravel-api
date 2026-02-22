@@ -11,20 +11,25 @@ use App\Http\Controllers\Forums\FlagController;
 use App\Http\Controllers\Forums\ForumController;
 use App\Http\Controllers\Forums\LikeController;
 use App\Http\Controllers\Practitioners\PractitionerApplicationController;
+use App\Http\Controllers\Practitioners\PractitionerOfferingAvailabilityController;
+use App\Http\Controllers\Practitioners\PractitionerOfferingBookingController;
+use App\Http\Controllers\Practitioners\PractitionerOfferingController;
 use App\Http\Controllers\Practitioners\PractitionerProfileController;
 use App\Http\Controllers\Practitioners\ServiceCategoryController;
-use App\Http\Controllers\Vendors\AvailabilityController;
 use App\Http\Controllers\Vendors\BookingController;
+use App\Http\Controllers\Vendors\MarketplaceController;
 use App\Http\Controllers\Vendors\ProductController;
 use App\Http\Controllers\Vendors\ReviewController;
-use App\Http\Controllers\Vendors\SlotController;
 use App\Http\Controllers\Vendors\VariantController;
 use App\Http\Controllers\Vendors\VendorController;
 use App\Http\Controllers\Vendors\VendorOrderController;
 use App\Http\Controllers\Webhooks\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
-// Public routes (no auth required)
+// ─────────────────────────────────────────────────────────────
+// PUBLIC ROUTES
+// ─────────────────────────────────────────────────────────────
+
 Route::get('/forums', [ForumController::class, 'index']);
 Route::get('/forums/{id}', [ForumController::class, 'show']);
 Route::get('/comments', [CommentController::class, 'index']);
@@ -32,10 +37,9 @@ Route::get('/comments', [CommentController::class, 'index']);
 Route::get('/vendors/{vendor}', [VendorController::class, 'show']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/vendors/{vendor}/reviews', [ReviewController::class, 'index']);
-Route::get('/slots/{slot}/availability', [BookingController::class,  'availability']);
-Route::get('/marketplace', [App\Http\Controllers\Vendors\MarketplaceController::class, 'index']);
+Route::get('/marketplace', [MarketplaceController::class, 'index']);
 
-// Practitioner Public Routes
+// Practitioner public routes
 Route::prefix('practitioners')->group(function () {
     // Service Categories
     Route::get('/categories', [ServiceCategoryController::class, 'index']);
@@ -43,13 +47,22 @@ Route::prefix('practitioners')->group(function () {
     Route::get('/categories/slug/{slug}', [ServiceCategoryController::class, 'showBySlug']);
     Route::get('/categories/{categoryId}/subcategories', [ServiceCategoryController::class, 'subcategories']);
 
-    // Practitioner Profiles (Public listing)
+    // Practitioner Profiles
     Route::get('/profiles', [PractitionerProfileController::class, 'index']);
     Route::get('/profiles/{id}', [PractitionerProfileController::class, 'show']);
     Route::get('/profiles/top-rated', [PractitionerProfileController::class, 'topRated']);
     Route::get('/profiles/category/{categoryId}', [PractitionerProfileController::class, 'byCategory']);
+
+    // Offerings — public listing & detail
+    Route::get('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'index']);
+    Route::get('/offerings', [PractitionerOfferingController::class, 'bySubcategory']); // ?subcategory_id=X
+    Route::get('/offerings/{offering}', [PractitionerOfferingController::class, 'show']);
+
+    // Slot availability — public so customers can browse before booking
+    Route::get('/offering-slots/{slot}/availability', [PractitionerOfferingBookingController::class, 'availability']);
 });
 
+// Cart
 Route::prefix('cart')->middleware('optional-auth:sanctum')->group(function () {
     Route::get('/', [CartController::class, 'index']);
     Route::post('/', [CartController::class, 'store']);
@@ -59,17 +72,24 @@ Route::prefix('cart')->middleware('optional-auth:sanctum')->group(function () {
     Route::get('/count', [CartController::class, 'count']);
 });
 
-// Public Checkout Routes
+// Checkout
 Route::prefix('checkout')->middleware('optional-auth:sanctum')->group(function () {
     Route::post('/payment-intent', [CheckoutController::class, 'createPaymentIntent']);
     Route::post('/process', [CheckoutController::class, 'processCheckout']);
     Route::post('/verify-payment', [CheckoutController::class, 'verifyPayment']);
 });
 
+// Vendor slot availability (legacy)
+Route::get('/slots/{slot}/availability', [BookingController::class, 'availability']);
+
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handleWebhook']);
 
-// Protected routes (auth required)
+// ─────────────────────────────────────────────────────────────
+// PROTECTED ROUTES
+// ─────────────────────────────────────────────────────────────
+
 Route::middleware('auth:sanctum')->group(function () {
+
     // Forums
     Route::post('/forums', [ForumController::class, 'store']);
     Route::delete('/forums/{id}', [ForumController::class, 'destroy']);
@@ -79,61 +99,44 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/comments', [CommentController::class, 'store']);
     Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 
-    // Likes
-    Route::post('/likes', [LikeController::class, 'store']);
+    // Likes & Flags
+    Route::post('/likes', [\App\Http\Controllers\Forums\LikeController::class, 'store']);
+    Route::post('/flags', [\App\Http\Controllers\Forums\FlagController::class, 'store']);
 
-    // Flags
-    Route::post('/flags', [FlagController::class, 'store']);
-
-    // Vendor Management
+    // ── Vendor Management ────────────────────────────────────
     Route::post('/vendors', [VendorController::class, 'store']);
     Route::put('/vendors/{vendor}', [VendorController::class, 'update']);
     Route::patch('/vendors/{vendor}/verify', [VendorController::class, 'verify']);
 
-    // Product routes
+    // Vendor Products (physical only)
     Route::post('/vendors/{vendor}/products', [ProductController::class, 'store']);
     Route::get('/vendors/{vendor}/products', [ProductController::class, 'index']);
     Route::put('/products/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
-    // Variant routes
+    // Product Variants
     Route::post('/products/{product}/variants', [VariantController::class, 'store']);
     Route::post('/variants/{variant}', [VariantController::class, 'update']);
     Route::delete('/variants/{variant}', [VariantController::class, 'destroy']);
 
-    // Service slot routes
-    Route::post('/products/{product}/slots', [SlotController::class, 'store']);
-    Route::put('/slots/{slot}', [SlotController::class, 'update']);
-    Route::delete('/slots/{slot}', [SlotController::class, 'destroy']);
-
-    // Booking routes
-    Route::post('/bookings', [BookingController::class, 'store']);
-    Route::get('/bookings', [BookingController::class, 'index']);
-    Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
-
-    // Review routes
+    // Vendor Reviews
     Route::post('/vendors/{vendor}/reviews', [ReviewController::class, 'store']);
 
-    // Availability routes
-    Route::post('/slots/{slot}/schedule', [AvailabilityController::class, 'store']);
-    Route::get('/slots/{slot}/schedule', [AvailabilityController::class, 'show']);
-    Route::delete('/slots/{slot}/schedule', [AvailabilityController::class, 'destroy']);
-
-    // Address Management
+    // Addresses
     Route::prefix('addresses')->group(function () {
-        Route::get('/', [AddressController::class, 'index']);
-        Route::post('/', [AddressController::class, 'store']);
-        Route::put('/{address}', [AddressController::class, 'update']);
-        Route::delete('/{address}', [AddressController::class, 'destroy']);
-        Route::patch('/{address}/default', [AddressController::class, 'setDefault']);
+        Route::get('/', [\App\Http\Controllers\Cart\AddressController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Cart\AddressController::class, 'store']);
+        Route::put('/{address}', [\App\Http\Controllers\Cart\AddressController::class, 'update']);
+        Route::delete('/{address}', [\App\Http\Controllers\Cart\AddressController::class, 'destroy']);
+        Route::patch('/{address}/default', [\App\Http\Controllers\Cart\AddressController::class, 'setDefault']);
     });
 
-    // Order Management (Customer Side)
+    // Customer Orders
     Route::prefix('orders')->group(function () {
-        Route::get('/', [OrderController::class, 'index']);
-        Route::get('/{order}', [OrderController::class, 'show']);
-        Route::get('/{order}/cancellation-status', [OrderController::class, 'checkCancellationStatus']);
-        Route::post('/{order}/cancel', [OrderController::class, 'cancel']);
+        Route::get('/', [\App\Http\Controllers\Cart\OrderController::class, 'index']);
+        Route::get('/{order}', [\App\Http\Controllers\Cart\OrderController::class, 'show']);
+        Route::get('/{order}/cancellation-status', [\App\Http\Controllers\Cart\OrderController::class, 'checkCancellationStatus']);
+        Route::post('/{order}/cancel', [\App\Http\Controllers\Cart\OrderController::class, 'cancel']);
     });
 
     // Vendor Order Management
@@ -146,35 +149,55 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/{order}/deny-cancellation', [VendorOrderController::class, 'denyCancellation']);
     });
 
-    // Practitioner Application Routes (Authenticated)
+    // ── Practitioner Routes ──────────────────────────────────
     Route::prefix('practitioners')->group(function () {
+
+        // Applications
         Route::post('/applications', [PractitionerApplicationController::class, 'store']);
         Route::get('/applications/my-application', [PractitionerApplicationController::class, 'myApplication']);
         Route::get('/applications/check-pending', [PractitionerApplicationController::class, 'checkPendingStatus']);
         Route::get('/applications/{id}', [PractitionerApplicationController::class, 'show']);
 
-        // Practitioner Profile Management
+        // Profile Management
         Route::get('/my-profile', [PractitionerProfileController::class, 'myProfile']);
         Route::put('/profiles/{id}', [PractitionerProfileController::class, 'update']);
         Route::post('/profiles/{id}/toggle-active', [PractitionerProfileController::class, 'toggleActive']);
+
+        // Offering CRUD
+        Route::post('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'store']);
+        Route::put('/offerings/{offering}', [PractitionerOfferingController::class, 'update']);
+        Route::delete('/offerings/{offering}', [PractitionerOfferingController::class, 'destroy']);
+
+        // Offering Slot Availability Schedule
+        Route::post('/offering-slots/{slot}/schedule', [PractitionerOfferingAvailabilityController::class, 'store']);
+        Route::get('/offering-slots/{slot}/schedule', [PractitionerOfferingAvailabilityController::class, 'show']);
+        Route::delete('/offering-slots/{slot}/schedule', [PractitionerOfferingAvailabilityController::class, 'destroy']);
+
+        // Bookings — customer side
+        Route::post('/bookings', [PractitionerOfferingBookingController::class, 'store']);
+        Route::get('/bookings', [PractitionerOfferingBookingController::class, 'index']);
+        Route::patch('/bookings/{booking}/cancel', [PractitionerOfferingBookingController::class, 'cancel']);
+
+        // Bookings — practitioner's incoming
+        Route::get('/my-bookings', [PractitionerOfferingBookingController::class, 'practitionerIndex']);
     });
-
-
-
 });
 
-Route::get('/user', [AuthenticatedSessionController::class, 'user'])
+Route::get('/user', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'user'])
     ->middleware('auth:sanctum')
     ->name('user.info');
 
+// ─────────────────────────────────────────────────────────────
+// ADMIN ROUTES
+// ─────────────────────────────────────────────────────────────
+
 Route::prefix('admin')->group(function () {
-    Route::post('/login', [AdminLoginController::class, 'login']);
+    Route::post('/login', [\App\Http\Controllers\Auth\AdminLoginController::class, 'login']);
 
     Route::middleware('auth:admin')->group(function () {
-        Route::post('/logout', [AdminLoginController::class, 'logout']);
-        Route::get('/user', [AdminLoginController::class, 'user']);
-        
-        // Practitioner Management
+        Route::post('/logout', [\App\Http\Controllers\Auth\AdminLoginController::class, 'logout']);
+        Route::get('/user', [\App\Http\Controllers\Auth\AdminLoginController::class, 'user']);
+
         Route::prefix('practitioners')->group(function () {
             Route::get('/applications', [PractitionerApplicationController::class, 'index']);
             Route::get('/applications/{id}', [PractitionerApplicationController::class, 'show']);

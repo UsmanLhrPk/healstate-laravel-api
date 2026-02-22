@@ -8,23 +8,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ServiceAvailability extends Model
 {
-    use HasFactory;
+use HasFactory;
 
-    protected $table = 'service_availability';
+protected $table = 'service_availability';
 
-    protected $fillable = [
-        'service_slot_id',
-        'day_of_week',
-        'start_time',
-        'end_time',
-    ];
+protected $fillable = [
+    'service_slot_id',
+    'day_of_week',
+    'start_time',
+    'end_time',
+];
 
-    protected $casts = [
-        'day_of_week' => 'integer',
-    ];
+protected $casts = [
+    'day_of_week' => 'integer',
+];
 
-    public function serviceSlot(): BelongsTo
-    {
-        return $this->belongsTo(ServiceSlot::class);
-    }
+public function serviceSlot(): BelongsTo
+{
+    return $this->belongsTo(ServiceSlot::class);
+}
 }
