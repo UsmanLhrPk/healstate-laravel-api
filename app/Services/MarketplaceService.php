@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Http\Resources\MarketplaceProductResource;
 use App\Models\Product;
-use Illuminate\Support\Facades\DB;
 
 class MarketplaceService
 {
@@ -17,17 +16,11 @@ class MarketplaceService
                         ->withAvg('reviews', 'rating');
                 },
                 'variants',
-                'serviceSlots'  // CHANGED TO serviceSlots (camelCase)
             ])
-            // ->whereHas('vendor', function ($query) {
-            //     $query->whereNotNull('verified_at');
-            // })
+            ->whereHas('vendor', function ($query) {
+                $query->where('status', 'approved');
+            })
             ->where('active', true);
-
-        // Filter by type
-        if (!empty($filters['type'])) {
-            $query->where('type', $filters['type']);
-        }
 
         // Filter by category (vendor category)
         if (!empty($filters['category'])) {
@@ -51,10 +44,7 @@ class MarketplaceService
             case 'price_low':
                 $query->addSelect([
                     'min_price' => function ($query) {
-                        $query->selectRaw('LEAST(
-                            COALESCE((SELECT MIN(price) FROM product_variants WHERE product_id = products.id), 999999),
-                            COALESCE((SELECT MIN(price) FROM service_slots WHERE product_id = products.id), 999999)
-                        )');
+                        $query->selectRaw('COALESCE((SELECT MIN(price) FROM product_variants WHERE product_id = products.id), 999999)');
                     }
                 ])->orderBy('min_price', 'asc');
                 break;
@@ -62,10 +52,7 @@ class MarketplaceService
             case 'price_high':
                 $query->addSelect([
                     'max_price' => function ($query) {
-                        $query->selectRaw('GREATEST(
-                            COALESCE((SELECT MAX(price) FROM product_variants WHERE product_id = products.id), 0),
-                            COALESCE((SELECT MAX(price) FROM service_slots WHERE product_id = products.id), 0)
-                        )');
+                        $query->selectRaw('COALESCE((SELECT MAX(price) FROM product_variants WHERE product_id = products.id), 0)');
                     }
                 ])->orderBy('max_price', 'desc');
                 break;
@@ -84,7 +71,6 @@ class MarketplaceService
                 break;
         }
 
-        // Paginate results
         $products = $query->paginate($filters['per_page'], ['*'], 'page', $filters['page']);
 
         return [

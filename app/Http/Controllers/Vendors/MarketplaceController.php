@@ -9,8 +9,10 @@ use Illuminate\Http\JsonResponse;
 
 /**
  * @group Marketplace
- * 
- * APIs for browsing marketplace products and services
+ *
+ * APIs for browsing marketplace products from approved vendors.
+ * Only products from vendors with an approved status are listed.
+ * Practitioner services are browsed separately via Practitioner Offerings.
  */
 class MarketplaceController extends Controller
 {
@@ -20,46 +22,45 @@ class MarketplaceController extends Controller
 
     /**
      * Get Marketplace Products
-     * 
-     * Retrieve paginated list of all active products and services from verified vendors.
-     * Supports filtering by type, category, search, and sorting.
-     * 
-     * @queryParam type string Filter by product type. Allowed values: product, service. Example: product
+     *
+     * Retrieve a paginated list of active products from approved vendors.
+     * Supports filtering by category, search, and sorting.
+     * Public endpoint, no authentication required.
+     *
      * @queryParam category string Filter by vendor category. Example: Photography
-     * @queryParam search string Search in title and brief. Example: wedding
+     * @queryParam search string Search in product title, brief, and description. Example: wedding
      * @queryParam sort string Sort results. Allowed values: latest, price_low, price_high, rating. Default: latest. Example: latest
      * @queryParam page integer Page number for pagination. Default: 1. Example: 1
      * @queryParam per_page integer Items per page. Default: 12. Example: 12
-     * 
-     * @response {
+     *
+     * @response 200 {
      *   "data": [
      *     {
      *       "id": 1,
      *       "vendor_id": 1,
-     *       "title": "Professional Photography Session",
-     *       "brief": "Capture your special moments",
-     *       "description": "Full description here",
-     *       "type": "service",
+     *       "title": "Yoga Mat Pro",
+     *       "brief": "Premium non-slip yoga mat",
+     *       "description": "High-density foam with alignment lines...",
      *       "image_url": "https://example.com/image.jpg",
      *       "active": true,
-     *       "variants": [],
-     *       "service_slots": [
+     *       "variants": [
      *         {
      *           "id": 1,
-     *           "duration": 60,
-     *           "price": "150.00"
+     *           "name": "Large",
+     *           "price": "49.99",
+     *           "stock": 100
      *         }
      *       ],
      *       "vendor": {
      *         "id": 1,
-     *         "business_name": "Pixel Perfect Studios",
-     *         "category": ["Photography", "Videography"],
+     *         "business_name": "Wellness Supplies Co",
+     *         "category": ["Wellness", "Fitness"],
      *         "city": "New York",
      *         "average_rating": 4.8,
      *         "review_count": 127,
      *         "is_verified": true
      *       },
-     *       "min_price": "150.00",
+     *       "min_price": "49.99",
      *       "created_at": "2024-01-15T10:00:00.000000Z"
      *     }
      *   ],
