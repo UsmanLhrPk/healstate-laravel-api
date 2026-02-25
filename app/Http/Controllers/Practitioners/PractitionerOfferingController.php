@@ -66,12 +66,30 @@ class PractitionerOfferingController extends Controller
      *   }
      * }
      */
-    public function index(Request $request, PractitionerProfile $profile): JsonResponse
-    {
-        $perPage  = min($request->input('per_page', 15), 100);
-        $offerings = $this->offeringService->getProfileOfferings($profile->id, $perPage);
-        return response()->json($offerings);
+    public function index(Request $request)
+{
+    $query = PractitionerOffering::with(['practitioner.user', 'subcategory', 'slots.availability'])
+        ->where('active', true);
+
+    if ($request->filled('category_id')) {
+        $query->whereHas('subcategory', fn($q) =>
+            $q->where('category_id', $request->category_id)
+        );
     }
+
+    if ($request->filled('search')) {
+        $query->where('title', 'like', '%' . $request->search . '%');
+    }
+
+    $sort = $request->get('sort', 'latest');
+    match($sort) {
+        'price_low'  => $query->orderBy('price', 'asc'),
+        'price_high' => $query->orderBy('price', 'desc'),
+        default      => $query->latest(),
+    };
+
+    return response()->json($query->paginate($request->get('per_page', 12)));
+}
 
     /**
      * List Offerings by Subcategory

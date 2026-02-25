@@ -56,6 +56,7 @@
         // Offerings — public listing & detail
         Route::get('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'index']);
         Route::get('/offerings', [PractitionerOfferingController::class, 'bySubcategory']); // ?subcategory_id=X
+        Route::get('/offerings/all', [PractitionerOfferingController::class, 'index']);
         Route::get('/offerings/{offering}', [PractitionerOfferingController::class, 'show']);
 
         // Slot availability — public so customers can browse before booking

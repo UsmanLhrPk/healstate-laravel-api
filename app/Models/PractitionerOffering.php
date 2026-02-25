@@ -24,10 +24,10 @@ class PractitionerOffering extends Model
     ];
 
     protected $casts = [
-        'active'   => 'boolean',
-        'images'   => 'array',
+        'active' => 'boolean',
+        'images' => 'array',
         'duration' => 'integer',
-        'price'    => 'decimal:2',
+        'price' => 'decimal:2',
     ];
 
     public function practitionerProfile(): BelongsTo
@@ -37,11 +37,16 @@ class PractitionerOffering extends Model
 
     public function subcategory(): BelongsTo
     {
-        return $this->belongsTo(ServiceSubcategory::class);
+        return $this->belongsTo(ServiceSubcategory::class, 'subcategory_id');
     }
 
     public function slots(): HasMany
     {
         return $this->hasMany(PractitionerOfferingSlot::class);
+    }
+
+    public function practitioner(): BelongsTo
+    {
+        return $this->belongsTo(PractitionerProfile::class, 'practitioner_profile_id');
     }
 }

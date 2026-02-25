@@ -22,38 +22,34 @@ class PractitionerApplicationService
     public function submitApplication(User $user, array $data): PractitionerApplication
     {
         return DB::transaction(function () use ($user, $data) {
-            // Create the application
             $application = PractitionerApplication::create([
-                'user_id' => $user->id,
-                'phone_number' => $data['phone_number'],
-                'professional_title' => $data['professional_title'],
-                'years_experience' => $data['years_experience'],
-                'bio' => $data['bio'],
-                'license_number' => $data['license_number'] ?? null,
-                'issuing_organization' => $data['issuing_organization'] ?? null,
-                'primary_category_id' => $data['primary_category_id'],
-                'service_description' => $data['service_description'],
+                'user_id'               => $user->id,
+                'phone_number'          => $data['phone_number'],
+                'professional_title'    => $data['professional_title'],
+                'years_experience'      => $data['years_experience'],
+                'bio'                   => $data['bio'],
+                'license_number'        => $data['license_number'] ?? null,
+                'issuing_organization'  => $data['issuing_organization'] ?? null,
+                'primary_category_id'   => $data['primary_category_id'],
+                'service_description'   => $data['service_description'],
                 'availability_schedule' => $data['availability_schedule'],
-                'timezone' => $data['timezone'],
-                'terms_agreed' => filter_var($data['terms_agreed'], FILTER_VALIDATE_BOOLEAN),
-                'terms_agreed_at' => now(),
-                'status' => 'pending',
-                'submitted_at' => now(),
+                'timezone'              => $data['timezone'],
+                'terms_agreed'          => filter_var($data['terms_agreed'], FILTER_VALIDATE_BOOLEAN),
+                'terms_agreed_at'       => now(),
+                'status'                => 'pending',
+                'submitted_at'          => now(),
             ]);
 
-            // Attach selected services
             if (! empty($data['selected_services'])) {
                 $application->services()->attach($data['selected_services']);
             }
 
-            // Upload and attach documents
             if (! empty($data['credentials'])) {
                 foreach ($data['credentials'] as $credential) {
                     $this->uploadDocument($application, $credential);
                 }
             }
 
-            // Log the activity
             ActivityLog::log(
                 $user->id,
                 'application_submitted',
@@ -62,7 +58,6 @@ class PractitionerApplicationService
                 ['status' => 'pending']
             );
 
-            // Send email notifications
             $this->sendApplicationReceivedEmail($application);
             $this->sendNewApplicationAdminEmail($application);
 
@@ -76,49 +71,69 @@ class PractitionerApplicationService
     protected function uploadDocument(PractitionerApplication $application, array $credential): ApplicationDocument
     {
         $file = $credential['file'];
-        $path = $file->store('practitioner-credentials/'.$application->id, 'private');
+        $path = $file->store('practitioner-credentials/' . $application->id, 'private');
 
         return ApplicationDocument::create([
-            'application_id' => $application->id,
-            'file_name' => $file->getClientOriginalName(),
-            'file_path' => $path,
-            'file_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
-            'license_number' => $credential['license_number'],
+            'application_id'       => $application->id,
+            'file_name'            => $file->getClientOriginalName(),
+            'file_path'            => $path,
+            'file_type'            => $file->getMimeType(),
+            'file_size'            => $file->getSize(),
+            'license_number'       => $credential['license_number'],
             'issuing_organization' => $credential['issuing_organization'],
         ]);
     }
 
     /**
-     * Approve an application.
+     * Approve an application and create a fully-populated practitioner profile.
+     *
+     * BUG FIX: Previously the profile was created with only user_id, application_id,
+     * and approved_at — all other fields were left null. Now we copy every relevant
+     * field from the application into the profile at creation time.
      */
     public function approveApplication(PractitionerApplication $application, Admin $admin, ?string $adminNotes = null): PractitionerProfile
     {
         return DB::transaction(function () use ($application, $admin, $adminNotes) {
-            // Update application status
             $application->update([
-                'status' => 'approved',
+                'status'      => 'approved',
                 'reviewed_by' => $admin->id,
                 'reviewed_at' => now(),
                 'admin_notes' => $adminNotes,
             ]);
 
-            // Create practitioner profile (minimal data, reference the application)
+            // Create the profile with ALL data copied from the application
             $profile = PractitionerProfile::create([
-                'user_id' => $application->user_id,
-                'application_id' => $application->id,
-                'approved_at' => now(),
-                // Add any other fields that actually exist in practitioner_profiles table
+                'user_id'               => $application->user_id,
+                'application_id'        => $application->id,
+
+                // ── Copied from application ──────────────────────────
+                'phone_number'          => $application->phone_number,
+                'professional_title'    => $application->professional_title,
+                'years_experience'      => $application->years_experience,
+                'bio'                   => $application->bio,
+                'license_number'        => $application->license_number,
+                'issuing_organization'  => $application->issuing_organization,
+                'primary_category_id'   => $application->primary_category_id,
+                'service_description'   => $application->service_description,
+                'availability_schedule' => $application->availability_schedule,
+                'timezone'              => $application->timezone,
+                // ────────────────────────────────────────────────────
+
+                // Default operational state
+                'is_active'             => true,
+                'is_accepting_clients'  => true,
+
+                'approved_at'           => now(),
             ]);
 
-            // Copy services to profile
+            // Copy services (subcategories) from the application to the profile
             $serviceIds = $application->services->pluck('id')->toArray();
-            $profile->services()->attach($serviceIds);
+            if (! empty($serviceIds)) {
+                $profile->services()->attach($serviceIds);
+            }
 
-            // Update user's practitioner flag
             $application->user->update(['is_practitioner' => true]);
 
-            // Log the activity
             ActivityLog::log(
                 $admin->id,
                 'application_approved',
@@ -127,7 +142,6 @@ class PractitionerApplicationService
                 ['profile_id' => $profile->id]
             );
 
-            // Send approval email
             $this->sendApplicationApprovedEmail($application);
 
             return $profile;
@@ -144,16 +158,14 @@ class PractitionerApplicationService
         ?string $adminNotes = null
     ): PractitionerApplication {
         return DB::transaction(function () use ($application, $admin, $rejectionReason, $adminNotes) {
-            // Update application status
             $application->update([
-                'status' => 'rejected',
-                'reviewed_by' => $admin->id,
-                'reviewed_at' => now(),
+                'status'           => 'rejected',
+                'reviewed_by'      => $admin->id,
+                'reviewed_at'      => now(),
                 'rejection_reason' => $rejectionReason,
-                'admin_notes' => $adminNotes,
+                'admin_notes'      => $adminNotes,
             ]);
 
-            // Log the activity
             ActivityLog::log(
                 $admin->id,
                 'application_rejected',
@@ -162,7 +174,6 @@ class PractitionerApplicationService
                 ['reason' => $rejectionReason]
             );
 
-            // Send rejection email
             $this->sendApplicationRejectedEmail($application);
 
             return $application;
@@ -209,38 +220,24 @@ class PractitionerApplicationService
             ->exists();
     }
 
-    /**
-     * Send application received email to applicant.
-     */
     protected function sendApplicationReceivedEmail(PractitionerApplication $application): void
     {
         $application->user->notify(new ApplicationReceivedNotification($application));
     }
 
-    /**
-     * Send new application notification to admin.
-     */
     protected function sendNewApplicationAdminEmail(PractitionerApplication $application): void
     {
-        // Get all admin users from admins table
         $admins = Admin::all();
-
         foreach ($admins as $admin) {
             $admin->notify(new NewApplicationAdminNotification($application));
         }
     }
 
-    /**
-     * Send application approved email to applicant.
-     */
     protected function sendApplicationApprovedEmail(PractitionerApplication $application): void
     {
         $application->user->notify(new ApplicationApprovedNotification($application));
     }
 
-    /**
-     * Send application rejected email to applicant.
-     */
     protected function sendApplicationRejectedEmail(PractitionerApplication $application): void
     {
         $application->user->notify(new ApplicationRejectedNotification($application));
