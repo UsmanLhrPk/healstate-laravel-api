@@ -19,10 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            Route::middleware('api')
+            Route::middleware(['web', 'api'])
                 ->group(base_path('routes/auth.php'));
 
-            Route::middleware('api')
+            Route::middleware(['web', 'api'])
                 ->get('/sanctum/csrf-cookie', \Laravel\Sanctum\Http\Controllers\CsrfCookieController::class.'@show')
                 ->name('sanctum.csrf-cookie');
         },

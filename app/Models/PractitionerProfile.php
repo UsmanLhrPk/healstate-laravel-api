@@ -33,14 +33,14 @@ class PractitionerProfile extends Model
 
     protected $casts = [
         'availability_schedule' => 'array',
-        'is_active'             => 'boolean',
-        'is_accepting_clients'  => 'boolean',
-        'total_bookings'        => 'integer',
-        'average_rating'        => 'decimal:2',
-        'total_reviews'         => 'integer',
-        'approved_at'           => 'datetime',
-        'created_at'            => 'datetime',
-        'updated_at'            => 'datetime',
+        'is_active' => 'boolean',
+        'is_accepting_clients' => 'boolean',
+        'total_bookings' => 'integer',
+        'average_rating' => 'decimal:2',
+        'total_reviews' => 'integer',
+        'approved_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -69,6 +69,14 @@ class PractitionerProfile extends Model
             'practitioner_profile_id',
             'subcategory_id'
         )->withTimestamps();
+    }
+
+    /**
+     * Alias for serviceSubcategories() — used by application service.
+     */
+    public function services(): BelongsToMany
+    {
+        return $this->serviceSubcategories();
     }
 
     /**
@@ -103,7 +111,7 @@ class PractitionerProfile extends Model
     {
         $this->update([
             'average_rating' => $averageRating,
-            'total_reviews'  => $totalReviews,
+            'total_reviews' => $totalReviews,
         ]);
     }
 
