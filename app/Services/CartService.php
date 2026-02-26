@@ -19,7 +19,7 @@ class CartService
                 $existing = $this->findCartRow($userId, $sessionId)
                     ->where('practitioner_offering_slot_id', $data['practitioner_offering_slot_id'])
                     ->where('booking_date', $data['booking_date'])
-                    ->where('start_time',   $data['start_time'])
+                    ->where('start_time', $data['start_time'])
                     ->first();
 
                 if ($existing) {
@@ -27,13 +27,13 @@ class CartService
                 }
 
                 return Cart::create([
-                    'user_id'                          => $userId,
-                    'session_id'                       => $sessionId,
-                    'practitioner_offering_slot_id'    => $data['practitioner_offering_slot_id'],
-                    'booking_date'                     => $data['booking_date'],
-                    'start_time'                       => $data['start_time'],
-                    'end_time'                         => $data['end_time'],
-                    'quantity'                         => 1,
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'practitioner_offering_slot_id' => $data['practitioner_offering_slot_id'],
+                    'booking_date' => $data['booking_date'],
+                    'start_time' => $data['start_time'],
+                    'end_time' => $data['end_time'],
+                    'quantity' => 1,
                 ])->load('practitionerOfferingSlot.offering');
             }
 
@@ -41,8 +41,8 @@ class CartService
             if (isset($data['service_slot_id'])) {
                 $existing = $this->findCartRow($userId, $sessionId)
                     ->where('service_slot_id', $data['service_slot_id'])
-                    ->where('booking_date',    $data['booking_date'])
-                    ->where('start_time',      $data['start_time'])
+                    ->where('booking_date', $data['booking_date'])
+                    ->where('start_time', $data['start_time'])
                     ->first();
 
                 if ($existing) {
@@ -50,13 +50,13 @@ class CartService
                 }
 
                 return Cart::create([
-                    'user_id'         => $userId,
-                    'session_id'      => $sessionId,
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
                     'service_slot_id' => $data['service_slot_id'],
-                    'booking_date'    => $data['booking_date'],
-                    'start_time'      => $data['start_time'],
-                    'end_time'        => $data['end_time'],
-                    'quantity'        => 1,
+                    'booking_date' => $data['booking_date'],
+                    'start_time' => $data['start_time'],
+                    'end_time' => $data['end_time'],
+                    'quantity' => 1,
                 ])->load('serviceSlot');
             }
 
@@ -68,15 +68,16 @@ class CartService
 
             if ($existing) {
                 $existing->increment('quantity', $data['quantity']);
+
                 return $existing->fresh(['product', 'variant']);
             }
 
             return Cart::create([
-                'user_id'    => $userId,
+                'user_id' => $userId,
                 'session_id' => $sessionId,
                 'product_id' => $data['product_id'],
                 'variant_id' => $data['variant_id'] ?? null,
-                'quantity'   => $data['quantity'],
+                'quantity' => $data['quantity'],
             ])->load(['product', 'variant']);
         });
     }
@@ -98,8 +99,8 @@ class CartService
             })
             ->where(function ($q) {
                 $q->whereNotNull('product_id')
-                  ->orWhereNotNull('service_slot_id')
-                  ->orWhereNotNull('practitioner_offering_slot_id');
+                    ->orWhereNotNull('service_slot_id')
+                    ->orWhereNotNull('practitioner_offering_slot_id');
             })
             ->get();
     }
@@ -114,6 +115,7 @@ class CartService
         }
 
         $cart->update(['quantity' => $quantity]);
+
         return $cart->fresh(['product', 'variant']);
     }
 
@@ -138,8 +140,8 @@ class CartService
         })
             ->where(function ($q) {
                 $q->whereNotNull('product_id')
-                  ->orWhereNotNull('service_slot_id')
-                  ->orWhereNotNull('practitioner_offering_slot_id');
+                    ->orWhereNotNull('service_slot_id')
+                    ->orWhereNotNull('practitioner_offering_slot_id');
             })
             ->sum('quantity');
     }
@@ -152,26 +154,51 @@ class CartService
 
         if ($grouped->isEmpty()) {
             return [
-                'subtotal'               => 0,
-                'shipping'               => 0,
-                'commission_fee'         => 0,
-                'total'                  => 0,
-                'currency'               => 'USD',
-                'currency_symbol'        => '$',
-                'has_multiple_currencies'=> false,
-                'currencies'             => [],
+                'subtotal' => 0,
+                'shipping' => 0,
+                'commission_fee' => 0,
+                'total' => 0,
+                'currency' => 'USD',
+                'currency_symbol' => '$',
+                'has_multiple_currencies' => false,
+                'currencies' => [],
             ];
         }
 
         if ($grouped->count() === 1) {
             $single = $grouped->first();
+
             return array_merge($single, ['has_multiple_currencies' => false]);
         }
 
         return [
-            'currencies'              => $grouped->map(fn ($g) => collect($g)->except('items'))->values()->toArray(),
+            'currencies' => $grouped->map(fn ($g) => collect($g)->except('items'))->values()->toArray(),
             'has_multiple_currencies' => true,
         ];
+    }
+
+    /**
+     * Calculate cart totals for a specific currency.
+     * Called by OrderService::createOrderForCurrency().
+     */
+    public function calculateCartTotalsForCurrency(?int $userId, ?string $sessionId, string $currency): array
+    {
+        $grouped = $this->getCartGroupedByCurrency($userId, $sessionId);
+
+        $currencyData = $grouped->get($currency);
+
+        if (! $currencyData) {
+            return [
+                'currency' => $currency,
+                'currency_symbol' => '$',
+                'subtotal' => 0,
+                'shipping' => 0,
+                'commission_fee' => 0,
+                'total' => 0,
+            ];
+        }
+
+        return $currencyData;
     }
 
     public function getCartGroupedByCurrency(?int $userId, ?string $sessionId): Collection
@@ -184,21 +211,21 @@ class CartService
 
         return $items->groupBy(fn ($item) => $this->itemCurrency($item))
             ->map(function ($groupItems, $currency) {
-                $symbol   = $this->itemCurrencySymbol($groupItems->first());
+                $symbol = $this->itemCurrencySymbol($groupItems->first());
                 $subtotal = $groupItems->sum(fn ($item) => $this->itemPrice($item) * $item->quantity);
 
                 $commissionFee = round(0.029 * $subtotal + 0.30, 2);
-                $shipping      = 0;
-                $total         = round($subtotal + $commissionFee + $shipping, 2);
+                $shipping = 0;
+                $total = round($subtotal + $commissionFee + $shipping, 2);
 
                 return [
-                    'currency'        => $currency,
+                    'currency' => $currency,
                     'currency_symbol' => $symbol,
-                    'items'           => $groupItems,
-                    'subtotal'        => round($subtotal, 2),
-                    'shipping'        => $shipping,
-                    'commission_fee'  => $commissionFee,
-                    'total'           => $total,
+                    'items' => $groupItems,
+                    'subtotal' => round($subtotal, 2),
+                    'shipping' => $shipping,
+                    'commission_fee' => $commissionFee,
+                    'total' => $total,
                 ];
             });
     }
@@ -215,7 +242,7 @@ class CartService
                     $exists = Cart::where('user_id', $userId)
                         ->where('practitioner_offering_slot_id', $item->practitioner_offering_slot_id)
                         ->where('booking_date', $item->booking_date)
-                        ->where('start_time',   $item->start_time)
+                        ->where('start_time', $item->start_time)
                         ->exists();
 
                     $exists
@@ -226,7 +253,7 @@ class CartService
                     $exists = Cart::where('user_id', $userId)
                         ->where('service_slot_id', $item->service_slot_id)
                         ->where('booking_date', $item->booking_date)
-                        ->where('start_time',   $item->start_time)
+                        ->where('start_time', $item->start_time)
                         ->exists();
 
                     $exists

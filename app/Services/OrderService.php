@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Address;
 use App\Models\Order;
 use App\Models\ServiceBooking;
+use App\Models\PractitionerOfferingBooking;
 use App\Notifications\OrderCancellationRequestNotification;
 use App\Notifications\OrderCancelledNotification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -30,10 +31,13 @@ class OrderService
                     $itemCurrency = $item->product->currency ?? $item->product->vendor->currency ?? 'USD';
                 } elseif ($item->service_slot_id && $item->serviceSlot) {
                     $itemCurrency = $item->serviceSlot->product->currency ?? $item->serviceSlot->product->vendor->currency ?? 'USD';
+                } elseif ($item->practitioner_offering_slot_id) {
+                    // Practitioner offerings are always USD
+                    $itemCurrency = 'USD';
                 } else {
                     $itemCurrency = 'USD';
                 }
-                
+
                 return $itemCurrency === $currency;
             });
 
@@ -42,7 +46,7 @@ class OrderService
             }
 
             Log::info('Cart items for order creation (currency: ' . $currency . ')', [
-                'count' => $cartItems->count(),
+                'count'      => $cartItems->count(),
                 'first_item' => $cartItems->first()?->toArray(),
             ]);
 
@@ -50,76 +54,113 @@ class OrderService
             $totals = $this->cartService->calculateCartTotalsForCurrency($userId, $sessionId, $currency);
 
             $order = Order::create([
-                'user_id' => $userId,
-                'address_id' => $address->id,
-                'subtotal' => $totals['subtotal'],
-                'shipping' => $totals['shipping'],
-                'total' => $totals['total'],
-                'status' => 'pending',
+                'user_id'           => $userId,
+                'address_id'        => $address->id,
+                'subtotal'          => $totals['subtotal'],
+                'shipping'          => $totals['shipping'],
+                'total'             => $totals['total'],
+                'status'            => 'pending',
                 'payment_intent_id' => $data['payment_intent_id'] ?? null,
-                'order_notes' => $data['order_notes'] ?? null,
-                'currency' => $currency,
-                'currency_symbol' => $data['currency_symbol'] ?? $totals['currency_symbol'] ?? '$',
+                'order_notes'       => $data['order_notes'] ?? null,
+                'currency'          => $currency,
+                'currency_symbol'   => $data['currency_symbol'] ?? $totals['currency_symbol'] ?? '$',
             ]);
 
-            // Create order items
             foreach ($cartItems as $cartItem) {
                 Log::info('Processing cart item', [
-                    'cart_item_id' => $cartItem->id,
-                    'product_id' => $cartItem->product_id,
-                    'service_slot_id' => $cartItem->service_slot_id,
+                    'cart_item_id'                  => $cartItem->id,
+                    'product_id'                    => $cartItem->product_id,
+                    'service_slot_id'               => $cartItem->service_slot_id,
+                    'practitioner_offering_slot_id' => $cartItem->practitioner_offering_slot_id,
                 ]);
 
                 if ($cartItem->product_id) {
+                    // ── Physical product ──────────────────────────────────
                     if (!$cartItem->product) {
                         throw new \Exception("Product not found for cart item {$cartItem->id}");
                     }
 
-                    $price = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
+                    $price       = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
                     $productName = $cartItem->product->name ?? $cartItem->product->title;
 
                     $order->items()->create([
-                        'product_id' => $cartItem->product_id,
-                        'variant_id' => $cartItem->variant_id,
-                        'quantity' => $cartItem->quantity,
-                        'unit_price' => $price,
-                        'subtotal' => $price * $cartItem->quantity,
+                        'product_id'   => $cartItem->product_id,
+                        'variant_id'   => $cartItem->variant_id,
+                        'quantity'     => $cartItem->quantity,
+                        'unit_price'   => $price,
+                        'subtotal'     => $price * $cartItem->quantity,
                         'product_name' => $productName,
-                        'type' => 'product',
+                        'type'         => 'product',
                     ]);
 
                 } elseif ($cartItem->service_slot_id) {
+                    // ── Legacy vendor service slot ────────────────────────
                     if (!$cartItem->serviceSlot) {
                         throw new \Exception("Service slot not found for cart item {$cartItem->id}");
                     }
 
-                    $price = $cartItem->serviceSlot->price;
+                    $price       = $cartItem->serviceSlot->price;
                     $serviceName = $cartItem->serviceSlot->name ?? 'Service Appointment';
 
                     $serviceBooking = ServiceBooking::create([
                         'service_slot_id' => $cartItem->service_slot_id,
-                        'user_id' => $userId,
-                        'order_id' => $order->id,
-                        'booking_date' => $cartItem->booking_date,
-                        'start_time' => $cartItem->start_time,
-                        'end_time' => $cartItem->end_time,
-                        'status' => 'confirmed',
-                        'total_price' => $price,
-                        'notes' => $data['order_notes'] ?? null,
+                        'user_id'         => $userId,
+                        'order_id'        => $order->id,
+                        'booking_date'    => $cartItem->booking_date,
+                        'start_time'      => $cartItem->start_time,
+                        'end_time'        => $cartItem->end_time,
+                        'status'          => 'confirmed',
+                        'total_price'     => $price,
+                        'notes'           => $data['order_notes'] ?? null,
                     ]);
 
                     $order->items()->create([
-                        'service_slot_id' => $cartItem->service_slot_id,
+                        'service_slot_id'    => $cartItem->service_slot_id,
                         'service_booking_id' => $serviceBooking->id,
-                        'quantity' => $cartItem->quantity,
-                        'unit_price' => $price,
-                        'subtotal' => $price * $cartItem->quantity,
-                        'product_name' => $serviceName,
-                        'type' => 'service',
-                        'booking_date' => $cartItem->booking_date,
-                        'start_time' => $cartItem->start_time,
-                        'end_time' => $cartItem->end_time,
+                        'quantity'           => $cartItem->quantity,
+                        'unit_price'         => $price,
+                        'subtotal'           => $price * $cartItem->quantity,
+                        'product_name'       => $serviceName,
+                        'type'               => 'service',
+                        'booking_date'       => $cartItem->booking_date,
+                        'start_time'         => $cartItem->start_time,
+                        'end_time'           => $cartItem->end_time,
                     ]);
+
+                } elseif ($cartItem->practitioner_offering_slot_id) {
+                    // ── Practitioner offering (healer booking) ────────────
+                    $slot     = $cartItem->practitionerOfferingSlot;
+                    $offering = $slot?->offering;
+
+                    if (!$slot || !$offering) {
+                        throw new \Exception("Practitioner offering slot not found for cart item {$cartItem->id}");
+                    }
+
+                    $price        = $slot->price;
+                    $offeringName = $offering->title ?? 'Practitioner Session';
+
+                    $practitionerBooking = PractitionerOfferingBooking::create([
+                        'practitioner_offering_slot_id' => $cartItem->practitioner_offering_slot_id,
+                        'user_id'                       => $userId,
+                        'booking_date'                  => $cartItem->booking_date,
+                        'start_time'                    => $cartItem->start_time,
+                        'end_time'                      => $cartItem->end_time,
+                        'status'                        => 'confirmed',
+                    ]);
+
+                    $order->items()->create([
+                        'practitioner_offering_slot_id'    => $cartItem->practitioner_offering_slot_id,
+                        'practitioner_offering_booking_id' => $practitionerBooking->id,
+                        'quantity'                         => $cartItem->quantity,
+                        'unit_price'                       => $price,
+                        'subtotal'                         => $price * $cartItem->quantity,
+                        'product_name'                     => $offeringName,
+                        'type'                             => 'practitioner_offering',
+                        'booking_date'                     => $cartItem->booking_date,
+                        'start_time'                       => $cartItem->start_time,
+                        'end_time'                         => $cartItem->end_time,
+                    ]);
+
                 } else {
                     throw new \Exception("Invalid cart item {$cartItem->id}");
                 }
@@ -139,83 +180,120 @@ class OrderService
             }
 
             Log::info('Cart items for order creation', [
-                'count' => $cartItems->count(),
+                'count'      => $cartItems->count(),
                 'first_item' => $cartItems->first()?->toArray(),
             ]);
 
             $totals = $this->cartService->calculateCartTotals($userId, $sessionId);
 
             $order = Order::create([
-                'user_id' => $userId,
-                'address_id' => $address->id,
-                'subtotal' => $totals['subtotal'],
-                'shipping' => $totals['shipping'],
-                'total' => $totals['total'],
-                'status' => 'pending',
+                'user_id'           => $userId,
+                'address_id'        => $address->id,
+                'subtotal'          => $totals['subtotal'],
+                'shipping'          => $totals['shipping'],
+                'total'             => $totals['total'],
+                'status'            => 'pending',
                 'payment_intent_id' => $data['payment_intent_id'] ?? null,
-                'order_notes' => $data['order_notes'] ?? null,
-                'currency' => $data['currency'] ?? $totals['currency'] ?? 'USD',
-                'currency_symbol' => $data['currency_symbol'] ?? $totals['currency_symbol'] ?? '$',
+                'order_notes'       => $data['order_notes'] ?? null,
+                'currency'          => $data['currency'] ?? $totals['currency'] ?? 'USD',
+                'currency_symbol'   => $data['currency_symbol'] ?? $totals['currency_symbol'] ?? '$',
             ]);
 
-            // Rest of the foreach loop remains the same...
             foreach ($cartItems as $cartItem) {
                 Log::info('Processing cart item', [
-                    'cart_item_id' => $cartItem->id,
-                    'product_id' => $cartItem->product_id,
-                    'service_slot_id' => $cartItem->service_slot_id,
+                    'cart_item_id'                  => $cartItem->id,
+                    'product_id'                    => $cartItem->product_id,
+                    'service_slot_id'               => $cartItem->service_slot_id,
+                    'practitioner_offering_slot_id' => $cartItem->practitioner_offering_slot_id,
                 ]);
 
                 if ($cartItem->product_id) {
-                    if (! $cartItem->product) {
+                    // ── Physical product ──────────────────────────────────
+                    if (!$cartItem->product) {
                         throw new \Exception("Product not found for cart item {$cartItem->id}");
                     }
 
-                    $price = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
+                    $price       = $cartItem->variant ? $cartItem->variant->price : $cartItem->product->price;
                     $productName = $cartItem->product->name ?? $cartItem->product->title;
 
                     $order->items()->create([
-                        'product_id' => $cartItem->product_id,
-                        'variant_id' => $cartItem->variant_id,
-                        'quantity' => $cartItem->quantity,
-                        'unit_price' => $price,
-                        'subtotal' => $price * $cartItem->quantity,
+                        'product_id'   => $cartItem->product_id,
+                        'variant_id'   => $cartItem->variant_id,
+                        'quantity'     => $cartItem->quantity,
+                        'unit_price'   => $price,
+                        'subtotal'     => $price * $cartItem->quantity,
                         'product_name' => $productName,
-                        'type' => 'product',
+                        'type'         => 'product',
                     ]);
 
                 } elseif ($cartItem->service_slot_id) {
-                    if (! $cartItem->serviceSlot) {
+                    // ── Legacy vendor service slot ────────────────────────
+                    if (!$cartItem->serviceSlot) {
                         throw new \Exception("Service slot not found for cart item {$cartItem->id}");
                     }
 
-                    $price = $cartItem->serviceSlot->price;
+                    $price       = $cartItem->serviceSlot->price;
                     $serviceName = $cartItem->serviceSlot->name ?? 'Service Appointment';
 
                     $serviceBooking = ServiceBooking::create([
                         'service_slot_id' => $cartItem->service_slot_id,
-                        'user_id' => $userId,
-                        'order_id' => $order->id,
-                        'booking_date' => $cartItem->booking_date,
-                        'start_time' => $cartItem->start_time,
-                        'end_time' => $cartItem->end_time,
-                        'status' => 'confirmed',
-                        'total_price' => $price,
-                        'notes' => $data['order_notes'] ?? null,
+                        'user_id'         => $userId,
+                        'order_id'        => $order->id,
+                        'booking_date'    => $cartItem->booking_date,
+                        'start_time'      => $cartItem->start_time,
+                        'end_time'        => $cartItem->end_time,
+                        'status'          => 'confirmed',
+                        'total_price'     => $price,
+                        'notes'           => $data['order_notes'] ?? null,
                     ]);
 
                     $order->items()->create([
-                        'service_slot_id' => $cartItem->service_slot_id,
+                        'service_slot_id'    => $cartItem->service_slot_id,
                         'service_booking_id' => $serviceBooking->id,
-                        'quantity' => $cartItem->quantity,
-                        'unit_price' => $price,
-                        'subtotal' => $price * $cartItem->quantity,
-                        'product_name' => $serviceName,
-                        'type' => 'service',
-                        'booking_date' => $cartItem->booking_date,
-                        'start_time' => $cartItem->start_time,
-                        'end_time' => $cartItem->end_time,
+                        'quantity'           => $cartItem->quantity,
+                        'unit_price'         => $price,
+                        'subtotal'           => $price * $cartItem->quantity,
+                        'product_name'       => $serviceName,
+                        'type'               => 'service',
+                        'booking_date'       => $cartItem->booking_date,
+                        'start_time'         => $cartItem->start_time,
+                        'end_time'           => $cartItem->end_time,
                     ]);
+
+                } elseif ($cartItem->practitioner_offering_slot_id) {
+                    // ── Practitioner offering (healer booking) ────────────
+                    $slot     = $cartItem->practitionerOfferingSlot;
+                    $offering = $slot?->offering;
+
+                    if (!$slot || !$offering) {
+                        throw new \Exception("Practitioner offering slot not found for cart item {$cartItem->id}");
+                    }
+
+                    $price        = $slot->price;
+                    $offeringName = $offering->title ?? 'Practitioner Session';
+
+                    $practitionerBooking = PractitionerOfferingBooking::create([
+                        'practitioner_offering_slot_id' => $cartItem->practitioner_offering_slot_id,
+                        'user_id'                       => $userId,
+                        'booking_date'                  => $cartItem->booking_date,
+                        'start_time'                    => $cartItem->start_time,
+                        'end_time'                      => $cartItem->end_time,
+                        'status'                        => 'confirmed',
+                    ]);
+
+                    $order->items()->create([
+                        'practitioner_offering_slot_id'    => $cartItem->practitioner_offering_slot_id,
+                        'practitioner_offering_booking_id' => $practitionerBooking->id,
+                        'quantity'                         => $cartItem->quantity,
+                        'unit_price'                       => $price,
+                        'subtotal'                         => $price * $cartItem->quantity,
+                        'product_name'                     => $offeringName,
+                        'type'                             => 'practitioner_offering',
+                        'booking_date'                     => $cartItem->booking_date,
+                        'start_time'                       => $cartItem->start_time,
+                        'end_time'                         => $cartItem->end_time,
+                    ]);
+
                 } else {
                     throw new \Exception("Invalid cart item {$cartItem->id}");
                 }
@@ -228,15 +306,22 @@ class OrderService
     public function markOrderAsPaid(Order $order, string $paymentIntentId): Order
     {
         $order->update([
-            'status' => 'paid',
-            'payment_intent_id' => $paymentIntentId,
-            'paid_at' => now(),
+            'status'             => 'paid',
+            'payment_intent_id'  => $paymentIntentId,
+            'paid_at'            => now(),
         ]);
 
         // Update service bookings status if any
         $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
             if ($item->serviceBooking) {
                 $item->serviceBooking->update(['status' => 'confirmed']);
+            }
+        });
+
+        // Update practitioner booking status if any
+        $order->items()->whereNotNull('practitioner_offering_booking_id')->each(function ($item) {
+            if ($item->practitionerOfferingBooking) {
+                $item->practitionerOfferingBooking->update(['status' => 'confirmed']);
             }
         });
 
@@ -267,12 +352,10 @@ class OrderService
     public function cancelOrder(Order $order, ?string $reason = null): Order
     {
         return DB::transaction(function () use ($order, $reason) {
-            // Check if can cancel immediately (within 30 minutes)
             if ($order->canCancelImmediately()) {
                 return $this->processImmediateCancellation($order, $reason);
             }
 
-            // Otherwise, create cancellation request
             if ($order->canRequestCancellation()) {
                 return $this->requestCancellation($order, $reason);
             }
@@ -286,32 +369,29 @@ class OrderService
      */
     protected function processImmediateCancellation(Order $order, ?string $reason): Order
     {
-        // Process refund BEFORE updating order status
         $this->processRefund($order);
 
         $order->update([
-            'status' => 'cancelled',
-            'cancellation_type' => 'immediate',
-            'cancelled_by' => 'user',
-            'cancellation_reason' => $reason,
-            'cancellation_requested_at' => now(),
+            'status'                     => 'cancelled',
+            'cancellation_type'          => 'immediate',
+            'cancelled_by'               => 'user',
+            'cancellation_reason'        => $reason,
+            'cancellation_requested_at'  => now(),
         ]);
 
-        // Cancel service bookings if any
         $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
             if ($item->serviceBooking) {
                 $item->serviceBooking->update(['status' => 'cancelled']);
             }
         });
 
-        // Restore product stock if applicable
+        $order->items()->whereNotNull('practitioner_offering_booking_id')->each(function ($item) {
+            if ($item->practitionerOfferingBooking) {
+                $item->practitionerOfferingBooking->update(['status' => 'cancelled']);
+            }
+        });
+
         $this->restoreProductStock($order);
-
-        // Notify user
-        // $order->user->notify(new OrderCancelledNotification($order));
-
-        // Notify vendors
-        // $this->notifyVendorsOfCancellation($order);
 
         return $order->fresh();
     }
@@ -322,14 +402,11 @@ class OrderService
     protected function requestCancellation(Order $order, ?string $reason): Order
     {
         $order->update([
-            'status' => 'cancellation_requested',
-            'cancellation_type' => 'requested',
-            'cancellation_reason' => $reason,
+            'status'                    => 'cancellation_requested',
+            'cancellation_type'         => 'requested',
+            'cancellation_reason'       => $reason,
             'cancellation_requested_at' => now(),
         ]);
-
-        // Notify vendors about cancellation request
-        // $this->notifyVendorsOfCancellationRequest($order);
 
         return $order->fresh();
     }
@@ -344,26 +421,26 @@ class OrderService
         }
 
         return DB::transaction(function () use ($order) {
-            // Process refund BEFORE updating order status
             $this->processRefund($order);
 
             $order->update([
-                'status' => 'cancelled',
+                'status'       => 'cancelled',
                 'cancelled_by' => 'vendor',
             ]);
 
-            // Cancel service bookings if any
             $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
                 if ($item->serviceBooking) {
                     $item->serviceBooking->update(['status' => 'cancelled']);
                 }
             });
 
-            // Restore product stock if applicable
-            $this->restoreProductStock($order);
+            $order->items()->whereNotNull('practitioner_offering_booking_id')->each(function ($item) {
+                if ($item->practitionerOfferingBooking) {
+                    $item->practitionerOfferingBooking->update(['status' => 'cancelled']);
+                }
+            });
 
-            // Notify user that cancellation was approved
-            // $order->user->notify(new OrderCancelledNotification($order, true));
+            $this->restoreProductStock($order);
 
             return $order->fresh();
         });
@@ -379,13 +456,11 @@ class OrderService
         }
 
         $order->update([
-            'status' => 'paid', // or previous status
+            'status'                    => 'paid',
             'cancellation_requested_at' => null,
-            'cancellation_reason' => null,
-            'cancellation_type' => null,
+            'cancellation_reason'       => null,
+            'cancellation_type'         => null,
         ]);
-
-        $order->user->notify(new OrderCancellationDeniedNotification($order, $reason));
 
         return $order->fresh();
     }
@@ -395,48 +470,45 @@ class OrderService
      */
     public function vendorCancelOrder(Order $order, int $vendorId, string $reason): Order
     {
-        // Verify this vendor owns products in this order
         $hasVendorProducts = $order->items()
             ->where(function ($q) use ($vendorId) {
                 $q->whereHas('product', function ($query) use ($vendorId) {
                     $query->where('vendor_id', $vendorId);
                 })
-                    ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
-                        $query->where('vendor_id', $vendorId);
-                    });
+                ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
+                    $query->where('vendor_id', $vendorId);
+                });
             })
             ->exists();
 
-        if (! $hasVendorProducts) {
+        if (!$hasVendorProducts) {
             throw new \Exception('You do not have permission to cancel this order');
         }
 
         return DB::transaction(function () use ($order, $reason) {
-            // Process refund BEFORE updating order status
             $this->processRefund($order);
 
             $order->update([
-                'status' => 'cancelled',
-                'cancellation_type' => 'vendor_initiated',
-                'cancelled_by' => 'vendor',
-                'cancellation_reason' => $reason,
+                'status'                    => 'cancelled',
+                'cancellation_type'         => 'vendor_initiated',
+                'cancelled_by'              => 'vendor',
+                'cancellation_reason'       => $reason,
                 'cancellation_requested_at' => now(),
             ]);
 
-            // Cancel service bookings if any
             $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
                 if ($item->serviceBooking) {
                     $item->serviceBooking->update(['status' => 'cancelled']);
                 }
             });
 
-            // Restore product stock if applicable
-            $this->restoreProductStock($order);
+            $order->items()->whereNotNull('practitioner_offering_booking_id')->each(function ($item) {
+                if ($item->practitionerOfferingBooking) {
+                    $item->practitionerOfferingBooking->update(['status' => 'cancelled']);
+                }
+            });
 
-            // Notify user about vendor cancellation
-            // if ($order->user) {
-            //     $order->user->notify(new \App\Notifications\VendorCancelledOrderNotification($order, $reason));
-            // }
+            $this->restoreProductStock($order);
 
             return $order->fresh();
         });
@@ -459,18 +531,17 @@ class OrderService
                 $order->currency
             );
 
-            // Store refund information
             $order->update([
-                'refund_id' => $refund['refund_id'],
+                'refund_id'     => $refund['refund_id'],
                 'refund_status' => $refund['status'],
-                'refunded_at' => now(),
+                'refunded_at'   => now(),
                 'refund_amount' => $refund['amount'],
             ]);
 
             Log::info("Refund processed for order {$order->id}", [
                 'refund_id' => $refund['refund_id'],
-                'amount' => $refund['amount'],
-                'currency' => $refund['currency'],
+                'amount'    => $refund['amount'],
+                'currency'  => $refund['currency'],
             ]);
 
         } catch (\Exception $e) {
@@ -491,13 +562,9 @@ class OrderService
         });
     }
 
-    /**
-     * Notify vendors about immediate cancellation
-     */
     protected function notifyVendorsOfCancellation(Order $order): void
     {
         $vendorIds = $order->getVendorIds();
-
         foreach ($vendorIds as $vendorId) {
             $vendor = \App\Models\Vendor::find($vendorId);
             if ($vendor && $vendor->user) {
@@ -506,13 +573,9 @@ class OrderService
         }
     }
 
-    /**
-     * Notify vendors about cancellation request (needs approval)
-     */
     protected function notifyVendorsOfCancellationRequest(Order $order): void
     {
         $vendorIds = $order->getVendorIds();
-
         foreach ($vendorIds as $vendorId) {
             $vendor = \App\Models\Vendor::find($vendorId);
             if ($vendor && $vendor->user) {
@@ -525,11 +588,10 @@ class OrderService
     {
         $validStatuses = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled'];
 
-        if (! in_array($status, $validStatuses)) {
+        if (!in_array($status, $validStatuses)) {
             throw new \Exception('Invalid order status');
         }
 
-        // If vendor is updating to cancelled status, it's approving a cancellation
         if ($status === 'cancelled' && $vendorId && $order->status === 'cancellation_requested') {
             return $this->approveCancellation($order, $vendorId);
         }
@@ -539,31 +601,25 @@ class OrderService
         return $order->fresh();
     }
 
-    /**
-     * Get vendor orders with cancellation requests
-     * Fixed to handle both product and service orders
-     */
     public function getVendorOrders(int $vendorId, ?string $status = null, int $perPage = 15): LengthAwarePaginator
     {
         $query = Order::where(function ($q) use ($vendorId) {
-            // Orders with product items from this vendor
             $q->whereHas('items.product', function ($productQuery) use ($vendorId) {
                 $productQuery->where('vendor_id', $vendorId);
             })
-            // OR orders with service items from this vendor
-                ->orWhereHas('items.serviceSlot', function ($serviceQuery) use ($vendorId) {
-                    $serviceQuery->whereHas('product', function ($productQuery) use ($vendorId) {
-                        $productQuery->where('vendor_id', $vendorId);
-                    });
+            ->orWhereHas('items.serviceSlot', function ($serviceQuery) use ($vendorId) {
+                $serviceQuery->whereHas('product', function ($productQuery) use ($vendorId) {
+                    $productQuery->where('vendor_id', $vendorId);
                 });
+            });
         })
-            ->with([
-                'items.product',
-                'items.variant',
-                'items.serviceSlot.product', // Important: load product through serviceSlot
-                'address',
-                'user',
-            ]);
+        ->with([
+            'items.product',
+            'items.variant',
+            'items.serviceSlot.product',
+            'address',
+            'user',
+        ]);
 
         if ($status) {
             $query->where('status', $status);
