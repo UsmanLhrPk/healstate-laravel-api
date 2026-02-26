@@ -17,21 +17,28 @@ class PractitionerOfferingBookingService
             $slot = PractitionerOfferingSlot::findOrFail($data['practitioner_offering_slot_id']);
 
             if ($this->checkTimeOverlap($slot->id, $data['booking_date'], $data['start_time'], $data['end_time'])) {
-                throw new \Exception('Time slot is already booked');
+                throw new \Exception('This time slot has already been booked. Please choose a different time.');
             }
 
             if (! $this->checkAvailabilitySchedule($slot->id, $data['booking_date'], $data['start_time'], $data['end_time'])) {
                 throw new \Exception('Practitioner is not available at this time');
             }
 
-            $data['user_id'] = $userId;
-            return PractitionerOfferingBooking::create($data);
+            try {
+                $data['user_id'] = $userId;
+
+                return PractitionerOfferingBooking::create($data);
+            } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+                // Race condition — two requests passed checkTimeOverlap simultaneously
+                throw new \Exception('This time slot has already been booked. Please choose a different time.');
+            }
         });
     }
 
     public function cancelBooking(PractitionerOfferingBooking $booking): PractitionerOfferingBooking
     {
         DB::transaction(fn () => $booking->update(['status' => 'cancelled']));
+
         return $booking->fresh();
     }
 
@@ -47,8 +54,8 @@ class PractitionerOfferingBookingService
     public function getPractitionerBookings(int $profileId, int $perPage = 15): LengthAwarePaginator
     {
         return PractitionerOfferingBooking::whereHas('slot.offering', function ($q) use ($profileId) {
-                $q->where('practitioner_profile_id', $profileId);
-            })
+            $q->where('practitioner_profile_id', $profileId);
+        })
             ->with(['slot.offering.subcategory', 'user'])
             ->orderBy('booking_date', 'desc')
             ->orderBy('start_time', 'desc')
@@ -62,8 +69,8 @@ class PractitionerOfferingBookingService
             ->whereIn('status', ['pending', 'confirmed'])
             ->where(function ($q) use ($start, $end) {
                 $q->whereBetween('start_time', [$start, $end])
-                  ->orWhereBetween('end_time', [$start, $end])
-                  ->orWhere(fn ($q2) => $q2->where('start_time', '<=', $start)->where('end_time', '>=', $end));
+                    ->orWhereBetween('end_time', [$start, $end])
+                    ->orWhere(fn ($q2) => $q2->where('start_time', '<=', $start)->where('end_time', '>=', $end));
             })
             ->exists();
     }
@@ -76,10 +83,14 @@ class PractitionerOfferingBookingService
             ->where('day_of_week', $dayOfWeek)
             ->get();
 
-        if ($availabilities->isEmpty()) return false;
+        if ($availabilities->isEmpty()) {
+            return false;
+        }
 
         foreach ($availabilities as $a) {
-            if ($start >= $a->start_time && $end <= $a->end_time) return true;
+            if ($start >= $a->start_time && $end <= $a->end_time) {
+                return true;
+            }
         }
 
         return false;

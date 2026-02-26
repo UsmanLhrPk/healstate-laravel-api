@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Cart;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cart\CheckoutRequest;
 use App\Models\Address;
-use App\Models\PractitionerOfferingBooking;
 use App\Models\ServiceBooking;
 use App\Notifications\OrderConfirmationNotification;
 use App\Notifications\ServiceBookingConfirmationNotification;
@@ -134,14 +133,15 @@ class CheckoutController extends Controller
                 return response()->json(['message' => 'Cart is empty'], 422);
             }
 
-            $orders              = [];
-            $allPractBookings    = [];
-            $allServiceBookings  = [];
+            $orders = [];
 
             // ── Determine payment data ─────────────────────────────────────
             $paymentIntents = $request->has('payment_method_id')
-                // Legacy single-currency format
-                ? [['currency' => $cartGrouped->keys()->first(), 'payment_method_id' => $request->payment_method_id]]
+                ? [[
+                    'currency'          => $cartGrouped->keys()->first(),
+                    'payment_method_id' => $request->payment_method_id,
+                    'payment_intent_id' => null,
+                  ]]
                 : ($request->payment_intents ?? []);
 
             if (empty($paymentIntents)) {
@@ -151,7 +151,8 @@ class CheckoutController extends Controller
             // ── One order per currency ─────────────────────────────────────
             foreach ($paymentIntents as $paymentData) {
                 $currency        = $paymentData['currency'];
-                $paymentMethodId = $paymentData['payment_method_id'];
+                $paymentIntentId = $paymentData['payment_intent_id'] ?? null;
+                $paymentMethodId = $paymentData['payment_method_id'] ?? null;
 
                 if (! isset($cartGrouped[$currency])) {
                     continue;
@@ -159,12 +160,14 @@ class CheckoutController extends Controller
 
                 $currencyData = $cartGrouped[$currency];
 
+                // createOrderForCurrency handles ALL booking creation internally
+                // including double-booking guards — do NOT create bookings again here
                 $order = $this->orderService->createOrderForCurrency(
                     $userId,
                     $sessionId,
                     $currency,
                     [
-                        'payment_method_id' => $paymentMethodId,
+                        'payment_intent_id' => $paymentIntentId ?? $paymentMethodId,
                         'order_notes'       => $request->order_notes,
                         'currency'          => $currency,
                         'currency_symbol'   => $currencyData['currency_symbol'],
@@ -172,18 +175,11 @@ class CheckoutController extends Controller
                     $address
                 );
 
-                // ── Create bookings for items in this order ────────────────
-                [$practBookings, $serviceBookings] = $this->createBookingsForOrder(
+                $order = $this->orderService->markOrderAsPaid(
                     $order,
-                    $currencyData['items'],
-                    $userId,
-                    $request->order_notes
+                    $paymentIntentId ?? $paymentMethodId
                 );
 
-                $allPractBookings   = array_merge($allPractBookings,   $practBookings);
-                $allServiceBookings = array_merge($allServiceBookings, $serviceBookings);
-
-                $order = $this->orderService->markOrderAsPaid($order, $paymentMethodId);
                 $orders[] = $order;
             }
 
@@ -197,21 +193,13 @@ class CheckoutController extends Controller
                 foreach ($orders as $order) {
                     $user->notify(new OrderConfirmationNotification($order));
                 }
-
-                foreach ($allServiceBookings as $booking) {
-                    $user->notify(new ServiceBookingConfirmationNotification($booking));
-                }
-
-                // Add healer booking notifications here if you create one later
             }
 
             return $this->jsonWithSessionCookie([
                 'message' => count($orders) > 1 ? 'Orders placed successfully' : 'Order placed successfully',
                 'data'    => [
-                    'orders'                => $orders,
-                    'practitioner_bookings' => $allPractBookings  ?: null,
-                    'service_bookings'      => $allServiceBookings ?: null,
-                    'total_orders'          => count($orders),
+                    'orders'      => $orders,
+                    'total_orders' => count($orders),
                 ],
             ], $request, $sessionId, 201);
         });
@@ -226,58 +214,6 @@ class CheckoutController extends Controller
         $payment = $this->paymentService->confirmPayment($request->payment_intent_id);
 
         return response()->json(['data' => $payment]);
-    }
-
-    // ── Private: booking creation ─────────────────────────────────────────────
-
-    /**
-     * Create PractitionerOfferingBookings and legacy ServiceBookings for
-     * cart items that belong to the given order.
-     *
-     * Returns [practitionerBookings[], serviceBookings[]]
-     */
-    private function createBookingsForOrder($order, $cartItems, ?int $userId, ?string $orderNotes): array
-    {
-        $practBookings   = [];
-        $serviceBookings = [];
-
-        foreach ($cartItems as $item) {
-
-            // ── Healer / practitioner offering slot ────────────────────────
-            if ($item->isPractitionerBooking()) {
-                $booking = PractitionerOfferingBooking::create([
-                    'practitioner_offering_slot_id' => $item->practitioner_offering_slot_id,
-                    'user_id'                       => $userId,
-                    'booking_date'                  => $item->booking_date,
-                    'start_time'                    => $item->start_time,
-                    'end_time'                      => $item->end_time,
-                    'status'                        => 'confirmed',
-                ]);
-
-                $practBookings[] = $booking;
-                continue;
-            }
-
-            // ── Legacy vendor service slot ─────────────────────────────────
-            if ($item->isServiceBooking()) {
-                $booking = ServiceBooking::create([
-                    'service_slot_id' => $item->service_slot_id,
-                    'user_id'         => $userId,
-                    'booking_date'    => $item->booking_date,
-                    'start_time'      => $item->start_time,
-                    'end_time'        => $item->end_time,
-                    'status'          => 'confirmed',
-                    'order_id'        => $order->id,
-                    'total_price'     => ($item->serviceSlot?->price ?? 0) * $item->quantity,
-                    'quantity'        => $item->quantity,
-                    'notes'           => $orderNotes,
-                ]);
-
-                $serviceBookings[] = $booking;
-            }
-        }
-
-        return [$practBookings, $serviceBookings];
     }
 
     // ── Utility ───────────────────────────────────────────────────────────────
