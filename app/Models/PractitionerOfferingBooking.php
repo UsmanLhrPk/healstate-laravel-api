@@ -50,4 +50,8 @@ class PractitionerOfferingBooking extends Model
     {
         return $this->status === 'cancelled';
     }
+    public function offering(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+{
+    return $this->belongsTo(PractitionerOffering::class, 'practitioner_offering_slot_id');
+}
 }

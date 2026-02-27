@@ -11,7 +11,6 @@ use App\Services\PractitionerApplicationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * @group Practitioner Applications
@@ -460,21 +459,21 @@ class PractitionerApplicationController extends Controller
             $query->where('primary_category_id', $request->category_id);
         }
 
-        $sortBy    = $request->get('sort_by', 'submitted_at');
+        $sortBy = $request->get('sort_by', 'submitted_at');
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $perPage      = $request->get('per_page', 15);
+        $perPage = $request->get('per_page', 15);
         $applications = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
-            'data'    => PractitionerApplicationResource::collection($applications),
-            'meta'    => [
+            'data' => PractitionerApplicationResource::collection($applications),
+            'meta' => [
                 'current_page' => $applications->currentPage(),
-                'last_page'    => $applications->lastPage(),
-                'per_page'     => $applications->perPage(),
-                'total'        => $applications->total(),
+                'last_page' => $applications->lastPage(),
+                'per_page' => $applications->perPage(),
+                'total' => $applications->total(),
             ],
         ]);
     }
@@ -502,17 +501,20 @@ class PractitionerApplicationController extends Controller
      *   "message": "Unauthorized. Admin access required."
      * }
      */
-    public function downloadDocument(ApplicationDocument $document): BinaryFileResponse|JsonResponse
-    {
-        $path = Storage::disk('local')->path($document->file_path);
-
-        if (! file_exists($path)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'File not found.',
-            ], 404);
-        }
-
-        return response()->download($path, $document->file_name);
+    public function downloadDocument(ApplicationDocument $document): \Symfony\Component\HttpFoundation\StreamedResponse|JsonResponse
+{
+    if (! auth('admin')->check()) {
+        return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
     }
+
+    \Log::info('Document:', $document->toArray());
+    \Log::info('File exists:', [Storage::disk('private')->exists($document->file_path)]);
+    \Log::info('File path:', [$document->file_path]);
+
+    if (! Storage::disk('private')->exists($document->file_path)) {
+        return response()->json(['success' => false, 'message' => 'File not found.'], 404);
+    }
+
+    return Storage::disk('private')->download($document->file_path, $document->file_name);
+}
 }

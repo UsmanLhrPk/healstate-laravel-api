@@ -10,6 +10,7 @@ use App\Http\Controllers\Practitioners\PractitionerOfferingBookingController;
 use App\Http\Controllers\Practitioners\PractitionerOfferingController;
 use App\Http\Controllers\Practitioners\PractitionerProfileController;
 use App\Http\Controllers\Practitioners\ServiceCategoryController;
+use App\Http\Controllers\Practitioners\PractitionerReviewController;
 use App\Http\Controllers\Vendors\BookingController;
 use App\Http\Controllers\Vendors\MarketplaceController;
 use App\Http\Controllers\Vendors\ProductController;
@@ -46,6 +47,7 @@ Route::prefix('practitioners')->group(function () {
     Route::get('/profiles/{id}', [PractitionerProfileController::class, 'show']);
     Route::get('/profiles/top-rated', [PractitionerProfileController::class, 'topRated']);
     Route::get('/profiles/category/{categoryId}', [PractitionerProfileController::class, 'byCategory']);
+    Route::get('/profiles/{profileId}/reviews', [PractitionerReviewController::class, 'index']);
 
     // Offerings — public listing & detail
     Route::get('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'index']);
@@ -152,12 +154,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/applications/my-application', [PractitionerApplicationController::class, 'myApplication']);
         Route::get('/applications/check-pending', [PractitionerApplicationController::class, 'checkPendingStatus']);
         Route::get('/applications/{id}', [PractitionerApplicationController::class, 'show']);
-        Route::get('/practitioners/documents/{document}/download', [PractitionerApplicationController::class, 'downloadDocument']);
 
         // Profile Management
         Route::get('/my-profile', [PractitionerProfileController::class, 'myProfile']);
         Route::put('/profiles/{id}', [PractitionerProfileController::class, 'update']);
         Route::post('/profiles/{id}/toggle-active', [PractitionerProfileController::class, 'toggleActive']);
+        Route::post('/profiles/{profileId}/reviews', [PractitionerReviewController::class, 'store']);
+        Route::get('/profiles/{profileId}/reviews/eligibility', [PractitionerReviewController::class, 'checkEligibility']);
 
         // Offering CRUD
         Route::post('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'store']);
@@ -180,7 +183,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-bookings', [PractitionerOfferingBookingController::class, 'practitionerIndex']);
         Route::post('/my-bookings/{booking}/approve-cancellation', [PractitionerOfferingBookingController::class, 'approveCancellation']); // NEW
         Route::post('/my-bookings/{booking}/deny-cancellation', [PractitionerOfferingBookingController::class, 'denyCancellation']);       // NEWBookingController::class, 'cancel']);
-
 
     });
 });
@@ -205,6 +207,8 @@ Route::prefix('admin')->group(function () {
             Route::get('/applications/{id}', [PractitionerApplicationController::class, 'show']);
             Route::get('/applications/pending', [PractitionerApplicationController::class, 'pendingApplications']);
             Route::post('/applications/{id}/review', [PractitionerApplicationController::class, 'review']);
+            Route::get('/documents/{document}/download', [PractitionerApplicationController::class, 'downloadDocument']);
+
         });
 
         Route::prefix('vendors')->group(function () {
