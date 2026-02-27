@@ -45,7 +45,7 @@ class PractitionerReviewController extends Controller
 
         // Check user has a completed booking with this practitioner
         $hasCompletedBooking = PractitionerOfferingBooking::where('user_id', $userId)
-            ->where('status', 'completed')
+            ->whereIn('status', ['completed', 'confirmed'])
             ->whereHas('offering', fn ($q) =>
                 $q->where('practitioner_profile_id', $profile->id)
             )
@@ -97,7 +97,7 @@ class PractitionerReviewController extends Controller
         $profile = PractitionerProfile::findOrFail($profileId);
 
         $hasCompletedBooking = PractitionerOfferingBooking::where('user_id', $userId)
-            ->where('status', 'completed')
+            ->whereIn('status', ['completed', 'confirmed'])
             ->whereHas('offering', fn ($q) =>
                 $q->where('practitioner_profile_id', $profile->id)
             )
