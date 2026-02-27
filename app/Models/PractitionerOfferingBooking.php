@@ -17,10 +17,13 @@ class PractitionerOfferingBooking extends Model
         'start_time',
         'end_time',
         'status',
+        'cancellation_reason',        // ADD
+        'cancellation_requested_at',  // ADD
     ];
 
     protected $casts = [
         'booking_date' => 'date',
+        'cancellation_requested_at' => 'datetime', // ADD
     ];
 
     public function slot(): BelongsTo
@@ -33,7 +36,18 @@ class PractitionerOfferingBooking extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function isPending(): bool   { return $this->status === 'pending'; }
-    public function isConfirmed(): bool { return $this->status === 'confirmed'; }
-    public function isCancelled(): bool { return $this->status === 'cancelled'; }
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isConfirmed(): bool
+    {
+        return $this->status === 'confirmed';
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === 'cancelled';
+    }
 }

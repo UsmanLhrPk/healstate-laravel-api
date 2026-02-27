@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Practitioners\ReviewApplicationRequest;
 use App\Http\Requests\Practitioners\StorePractitionerApplicationRequest;
 use App\Http\Resources\Practitioners\PractitionerApplicationResource;
+use App\Models\ApplicationDocument;
 use App\Services\PractitionerApplicationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
  * @group Practitioner Applications
@@ -219,7 +222,6 @@ class PractitionerApplicationController extends Controller
      */
     public function pendingApplications(Request $request): JsonResponse
     {
-        // Check if user is admin (using admin guard)
         if (! auth('admin')->check()) {
             return response()->json([
                 'success' => false,
@@ -269,7 +271,6 @@ class PractitionerApplicationController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        // Check if user is admin or owns the application
         $application = $this->applicationService->getApplicationById($id);
 
         if (! $application) {
@@ -279,7 +280,6 @@ class PractitionerApplicationController extends Controller
             ], 404);
         }
 
-        // Authorization check
         if (! auth('admin')->check() && $application->user_id !== $request->user()->id) {
             return response()->json([
                 'success' => false,
@@ -423,19 +423,7 @@ class PractitionerApplicationController extends Controller
      *
      * @response 200 {
      *   "success": true,
-     *   "data": [
-     *     {
-     *       "id": 1,
-     *       "user": {
-     *         "id": 123,
-     *         "name": "Jane Smith",
-     *         "email": "jane@example.com"
-     *       },
-     *       "status": "pending",
-     *       "professional_title": "Licensed Massage Therapist",
-     *       "submitted_at": "2024-02-08T14:30:00Z"
-     *     }
-     *   ],
+     *   "data": [...],
      *   "meta": {
      *     "current_page": 1,
      *     "last_page": 3,
@@ -464,33 +452,67 @@ class PractitionerApplicationController extends Controller
             'reviewer',
         ]);
 
-        // Filter by status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter by category
         if ($request->has('category_id')) {
             $query->where('primary_category_id', $request->category_id);
         }
 
-        // Sort
-        $sortBy = $request->get('sort_by', 'submitted_at');
+        $sortBy    = $request->get('sort_by', 'submitted_at');
         $sortOrder = $request->get('sort_order', 'desc');
         $query->orderBy($sortBy, $sortOrder);
 
-        $perPage = $request->get('per_page', 15);
+        $perPage      = $request->get('per_page', 15);
         $applications = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
-            'data' => PractitionerApplicationResource::collection($applications),
-            'meta' => [
+            'data'    => PractitionerApplicationResource::collection($applications),
+            'meta'    => [
                 'current_page' => $applications->currentPage(),
-                'last_page' => $applications->lastPage(),
-                'per_page' => $applications->perPage(),
-                'total' => $applications->total(),
+                'last_page'    => $applications->lastPage(),
+                'per_page'     => $applications->perPage(),
+                'total'        => $applications->total(),
             ],
         ]);
+    }
+
+    /**
+     * Download Application Document (Admin)
+     *
+     * Download a credential document uploaded by a practitioner applicant.
+     * Files are stored privately and served through this authenticated endpoint.
+     * Admin access required.
+     *
+     * @authenticated
+     *
+     * @urlParam document integer required The document ID. Example: 1
+     *
+     * @response 200 scenario="File download" {
+     *   Binary file content with appropriate Content-Disposition header.
+     * }
+     * @response 404 {
+     *   "success": false,
+     *   "message": "File not found."
+     * }
+     * @response 403 {
+     *   "success": false,
+     *   "message": "Unauthorized. Admin access required."
+     * }
+     */
+    public function downloadDocument(ApplicationDocument $document): BinaryFileResponse|JsonResponse
+    {
+        $path = Storage::disk('local')->path($document->file_path);
+
+        if (! file_exists($path)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File not found.',
+            ], 404);
+        }
+
+        return response()->download($path, $document->file_name);
     }
 }

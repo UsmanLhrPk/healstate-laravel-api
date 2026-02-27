@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ApplicationDocument;
 
 class ApplicationDocument extends Model
 {
     const UPDATED_AT = null;
+
     const CREATED_AT = 'uploaded_at';
 
     protected $fillable = [
@@ -38,7 +40,7 @@ class ApplicationDocument extends Model
      */
     public function getUrlAttribute(): string
     {
-        return Storage::url($this->file_path);
+        return '/api/admin/practitioners/documents/'.$this->id.'/download';
     }
 
     /**
