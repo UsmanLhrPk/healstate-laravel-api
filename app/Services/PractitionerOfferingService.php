@@ -71,7 +71,7 @@ class PractitionerOfferingService
     public function getOfferingWithDetails(int $id): ?PractitionerOffering
     {
         return PractitionerOffering::with([
-            'practitionerProfile', 'subcategory', 'slots', 'slots.availability',
+            'practitionerProfile.user', 'subcategory', 'slots', 'slots.availability',
         ])->find($id);
     }
 
