@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\CheckoutController;
@@ -48,12 +48,14 @@ Route::prefix('practitioners')->group(function () {
     Route::get('/profiles/top-rated', [PractitionerProfileController::class, 'topRated']);
     Route::get('/profiles/category/{categoryId}', [PractitionerProfileController::class, 'byCategory']);
     Route::get('/profiles/{profileId}/reviews', [PractitionerReviewController::class, 'index']);
+    Route::get('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'profileOfferings']);
 
-    // Offerings — public listing & detail
-    Route::get('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'index']);
-    Route::get('/offerings', [PractitionerOfferingController::class, 'bySubcategory']); // ?subcategory_id=X
-    Route::get('/offerings/all', [PractitionerOfferingController::class, 'index']);
-    Route::get('/offerings/{offering}', [PractitionerOfferingController::class, 'show']);
+    // ⚠️  Literal-segment routes MUST come before the {offering} wildcard.
+    // Laravel matches routes in registration order — "browse" would be treated
+    // as an offering ID if {offering} is registered first.
+    Route::get('/offerings/browse', [PractitionerOfferingController::class, 'browse']); // public marketplace
+    Route::get('/offerings', [PractitionerOfferingController::class, 'bySubcategory']);  // ?subcategory_id=X
+    Route::get('/offerings/{offering}', [PractitionerOfferingController::class, 'show']); // ← wildcard last
 
     // Slot availability — public so customers can browse before booking
     Route::get('/offering-slots/{slot}/availability', [PractitionerOfferingBookingController::class, 'availability']);
@@ -162,7 +164,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/profiles/{profileId}/reviews', [PractitionerReviewController::class, 'store']);
         Route::get('/profiles/{profileId}/reviews/eligibility', [PractitionerReviewController::class, 'checkEligibility']);
 
-        // Offering CRUD
+        // ⚠️  /offerings/all MUST be registered before PUT/DELETE /offerings/{offering}
+        // so Laravel doesn't try to resolve "all" as a model ID when a GET comes in.
+        Route::get('/offerings/all', [PractitionerOfferingController::class, 'index']); // dashboard, auth-scoped
+
+        // Offering CRUD — wildcard routes after the literal /all
         Route::post('/profiles/{profile}/offerings', [PractitionerOfferingController::class, 'store']);
         Route::put('/offerings/{offering}', [PractitionerOfferingController::class, 'update']);
         Route::delete('/offerings/{offering}', [PractitionerOfferingController::class, 'destroy']);
@@ -173,17 +179,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/offering-slots/{slot}/schedule', [PractitionerOfferingAvailabilityController::class, 'destroy']);
 
         // Bookings — customer side
-        // Bookings — customer side
         Route::post('/bookings', [PractitionerOfferingBookingController::class, 'store']);
         Route::get('/bookings', [PractitionerOfferingBookingController::class, 'index']);
         Route::patch('/bookings/{booking}/cancel', [PractitionerOfferingBookingController::class, 'cancel']);
-        Route::post('/bookings/{booking}/request-cancellation', [PractitionerOfferingBookingController::class, 'requestCancellation']); // NEW
+        Route::post('/bookings/{booking}/request-cancellation', [PractitionerOfferingBookingController::class, 'requestCancellation']);
 
         // Bookings — practitioner's incoming
         Route::get('/my-bookings', [PractitionerOfferingBookingController::class, 'practitionerIndex']);
-        Route::post('/my-bookings/{booking}/approve-cancellation', [PractitionerOfferingBookingController::class, 'approveCancellation']); // NEW
-        Route::post('/my-bookings/{booking}/deny-cancellation', [PractitionerOfferingBookingController::class, 'denyCancellation']);       // NEWBookingController::class, 'cancel']);
-
+        Route::post('/my-bookings/{booking}/approve-cancellation', [PractitionerOfferingBookingController::class, 'approveCancellation']);
+        Route::post('/my-bookings/{booking}/deny-cancellation', [PractitionerOfferingBookingController::class, 'denyCancellation']);
     });
 });
 
@@ -208,7 +212,6 @@ Route::prefix('admin')->group(function () {
             Route::get('/applications/pending', [PractitionerApplicationController::class, 'pendingApplications']);
             Route::post('/applications/{id}/review', [PractitionerApplicationController::class, 'review']);
             Route::get('/documents/{document}/download', [PractitionerApplicationController::class, 'downloadDocument']);
-
         });
 
         Route::prefix('vendors')->group(function () {
