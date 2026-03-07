@@ -189,12 +189,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-bookings', [PractitionerOfferingBookingController::class, 'practitionerIndex']);
         Route::post('/my-bookings/{booking}/approve-cancellation', [PractitionerOfferingBookingController::class, 'approveCancellation']);
         Route::post('/my-bookings/{booking}/deny-cancellation', [PractitionerOfferingBookingController::class, 'denyCancellation']);
-        
+
         Route::prefix('availability')->group(function () {
-            Route::get('/', [PractitionerAvailabilityController::class, 'index']);   // GET  all schedule blocks
-            Route::post('/repeat', [PractitionerAvailabilityController::class, 'repeat']);  // POST repeat schedule
-            Route::post('/skip', [PractitionerAvailabilityController::class, 'skip']);    // POST skip a date
-            Route::delete('/skip', [PractitionerAvailabilityController::class, 'unskip']); // DELETE unskip a date
+            Route::get('/', [PractitionerAvailabilityController::class, 'index']);
+            Route::post('/repeat', [PractitionerAvailabilityController::class, 'repeat']);
+            Route::get('/check-skip', [PractitionerAvailabilityController::class, 'checkSkip']); 
+            Route::post('/skip', [PractitionerAvailabilityController::class, 'skip']);
+            Route::delete('/skip', [PractitionerAvailabilityController::class, 'unskip']);
         });
     });
 });

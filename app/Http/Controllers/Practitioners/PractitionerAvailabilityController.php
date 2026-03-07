@@ -13,114 +13,105 @@ class PractitionerAvailabilityController extends Controller
         protected PractitionerAvailabilityService $availabilityService
     ) {}
 
-    /**
-     * GET /practitioners/availability
-     * Returns all schedule blocks for the authenticated healer.
-     */
+    // ─── GET /availability ───────────────────────────────────────────────────
+
     public function index(): JsonResponse
     {
         $profile = auth()->user()->practitionerProfile;
-        if (! $profile) {
-            return response()->json(['message' => 'Practitioner profile not found'], 404);
-        }
+        if (! $profile) return response()->json(['message' => 'Practitioner profile not found'], 404);
 
-        $schedule = $this->availabilityService->getUpcomingSchedule($profile);
-
-        return response()->json([
-            'data' => $schedule->map(fn ($block) => $this->formatBlock($block)),
-        ]);
+        $blocks = $this->availabilityService->getUpcomingSchedule($profile);
+        return response()->json(['data' => $blocks]);
     }
 
-    /**
-     * POST /practitioners/availability/repeat
-     * Appends a new week block after the last existing one.
-     */
+    // ─── POST /availability/repeat ───────────────────────────────────────────
+
     public function repeat(): JsonResponse
     {
         $profile = auth()->user()->practitionerProfile;
-        if (! $profile) {
-            return response()->json(['message' => 'Practitioner profile not found'], 404);
-        }
+        if (! $profile) return response()->json(['message' => 'Practitioner profile not found'], 404);
 
         try {
             $block = $this->availabilityService->repeat($profile);
-
-            return response()->json([
-                'message' => 'Schedule repeated successfully.',
-                'data'    => $this->formatBlock($block),
-            ]);
+            return response()->json(['message' => 'Schedule repeated successfully', 'data' => $block], 201);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 
-    /**
-     * POST /practitioners/availability/skip
-     * Body: { "date": "Y-m-d" }
-     * Skips a specific date from the schedule.
-     */
+    // ─── GET /availability/check-skip?date=YYYY-MM-DD ────────────────────────
+    // Frontend calls this BEFORE confirming skip, to show how many bookings get cancelled.
+
+    public function checkSkip(Request $request): JsonResponse
+    {
+        $profile = auth()->user()->practitionerProfile;
+        if (! $profile) return response()->json(['message' => 'Practitioner profile not found'], 404);
+
+        $request->validate(['date' => 'required|date_format:Y-m-d']);
+        $date = $request->input('date');
+
+        $targetDate = \Carbon\Carbon::parse($date)->startOfDay();
+        $cutoff     = \Carbon\Carbon::now()->addHours(24);
+
+        if ($targetDate->lessThan($cutoff)) {
+            return response()->json([
+                'can_skip'          => false,
+                'reason'            => 'This date is within 24 hours and cannot be skipped.',
+                'affected_bookings' => 0,
+            ]);
+        }
+
+        $affected = $this->availabilityService->getAffectedBookingsCount($profile, $date);
+
+        return response()->json([
+            'can_skip'          => true,
+            'affected_bookings' => $affected,
+            'date'              => $date,
+        ]);
+    }
+
+    // ─── POST /availability/skip ─────────────────────────────────────────────
+
     public function skip(Request $request): JsonResponse
     {
         $profile = auth()->user()->practitionerProfile;
-        if (! $profile) {
-            return response()->json(['message' => 'Practitioner profile not found'], 404);
-        }
+        if (! $profile) return response()->json(['message' => 'Practitioner profile not found'], 404);
 
         $validated = $request->validate([
-            'date' => ['required', 'date_format:Y-m-d'],
+            'date'   => 'required|date_format:Y-m-d',
+            'reason' => 'required|string|min:10|max:500',
         ]);
 
         try {
-            $this->availabilityService->skipDate($profile, $validated['date']);
-
+            $result = $this->availabilityService->skipDate(
+                $profile,
+                $validated['date'],
+                $validated['reason'],
+            );
             return response()->json([
-                'message' => "Date {$validated['date']} skipped successfully.",
+                'message'            => 'Date skipped successfully',
+                'data'               => $result['schedule'],
+                'cancelled_bookings' => $result['cancelled_bookings'],
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 
-    /**
-     * DELETE /practitioners/availability/skip
-     * Body: { "date": "Y-m-d" }
-     * Removes a skip from a specific date.
-     */
+    // ─── DELETE /availability/skip ───────────────────────────────────────────
+
     public function unskip(Request $request): JsonResponse
     {
         $profile = auth()->user()->practitionerProfile;
-        if (! $profile) {
-            return response()->json(['message' => 'Practitioner profile not found'], 404);
-        }
+        if (! $profile) return response()->json(['message' => 'Practitioner profile not found'], 404);
 
-        $validated = $request->validate([
-            'date' => ['required', 'date_format:Y-m-d'],
-        ]);
+        $validated = $request->validate(['date' => 'required|date_format:Y-m-d']);
 
         try {
-            $this->availabilityService->unskipDate($profile, $validated['date']);
-
-            return response()->json([
-                'message' => "Skip removed for {$validated['date']}.",
-            ]);
+            $block = $this->availabilityService->unskipDate($profile, $validated['date']);
+            return response()->json(['message' => 'Date restored successfully', 'data' => $block]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
-    }
-
-    // ── Private Helpers ────────────────────────────────────────────────────────
-
-    private function formatBlock($block): array
-    {
-        return [
-            'id'              => $block->id,
-            'week_start_date' => $block->week_start_date->format('Y-m-d'),
-            'week_end_date'   => $block->week_end_date->format('Y-m-d'),
-            'weekly_pattern'  => $block->weekly_pattern,
-            'is_active'       => $block->is_active,
-            'skipped_dates'   => $block->skipped_dates ?? [],
-            'source'          => $block->source,
-            'created_at'      => $block->created_at->format('Y-m-d H:i:s'),
-        ];
     }
 }
