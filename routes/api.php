@@ -5,12 +5,13 @@ use App\Http\Controllers\Cart\CheckoutController;
 use App\Http\Controllers\Forums\CommentController;
 use App\Http\Controllers\Forums\ForumController;
 use App\Http\Controllers\Practitioners\PractitionerApplicationController;
+use App\Http\Controllers\Practitioners\PractitionerAvailabilityController;
 use App\Http\Controllers\Practitioners\PractitionerOfferingAvailabilityController;
 use App\Http\Controllers\Practitioners\PractitionerOfferingBookingController;
 use App\Http\Controllers\Practitioners\PractitionerOfferingController;
 use App\Http\Controllers\Practitioners\PractitionerProfileController;
-use App\Http\Controllers\Practitioners\ServiceCategoryController;
 use App\Http\Controllers\Practitioners\PractitionerReviewController;
+use App\Http\Controllers\Practitioners\ServiceCategoryController;
 use App\Http\Controllers\Vendors\BookingController;
 use App\Http\Controllers\Vendors\MarketplaceController;
 use App\Http\Controllers\Vendors\ProductController;
@@ -188,6 +189,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my-bookings', [PractitionerOfferingBookingController::class, 'practitionerIndex']);
         Route::post('/my-bookings/{booking}/approve-cancellation', [PractitionerOfferingBookingController::class, 'approveCancellation']);
         Route::post('/my-bookings/{booking}/deny-cancellation', [PractitionerOfferingBookingController::class, 'denyCancellation']);
+        
+        Route::prefix('availability')->group(function () {
+            Route::get('/', [PractitionerAvailabilityController::class, 'index']);   // GET  all schedule blocks
+            Route::post('/repeat', [PractitionerAvailabilityController::class, 'repeat']);  // POST repeat schedule
+            Route::post('/skip', [PractitionerAvailabilityController::class, 'skip']);    // POST skip a date
+            Route::delete('/skip', [PractitionerAvailabilityController::class, 'unskip']); // DELETE unskip a date
+        });
     });
 });
 

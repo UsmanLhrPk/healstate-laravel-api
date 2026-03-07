@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class PractitionerOfferingAvailabilityService
 {
+    public function __construct(
+        protected PractitionerAvailabilityService $healerAvailabilityService
+    ) {}
+
     public function storeSchedule(PractitionerOfferingSlot $slot, array $scheduleData): array
     {
         DB::beginTransaction();
@@ -63,26 +67,63 @@ class PractitionerOfferingAvailabilityService
         PractitionerOfferingAvailability::where('practitioner_offering_slot_id', $slot->id)->delete();
     }
 
+    /**
+     * Get available booking slots for a given date range.
+     *
+     * For each date:
+     *  1. Get the offering slot's own schedule (day-of-week pattern)
+     *  2. Filter those times against the healer's live availability schedule
+     *  3. Filter out already-booked times
+     *
+     * If the healer has no live schedule, the date shows as unavailable.
+     */
     public function getAvailableSlots(PractitionerOfferingSlot $slot, string $startDate, string $endDate): array
     {
+        // Load the offering's own weekly schedule
         $weeklySchedule = PractitionerOfferingAvailability::where('practitioner_offering_slot_id', $slot->id)
-            ->orderBy('day_of_week')->orderBy('start_time')->get()->groupBy('day_of_week');
+            ->orderBy('day_of_week')->orderBy('start_time')
+            ->get()->groupBy('day_of_week');
 
+        // Load existing bookings in the date range
         $bookings = PractitionerOfferingBooking::where('practitioner_offering_slot_id', $slot->id)
             ->whereBetween('booking_date', [$startDate, $endDate])
-            ->whereIn('status', ['pending', 'confirmed'])->get();
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->get();
+
+        // Get the healer's profile ID via the offering
+        $profileId = $slot->offering->practitioner_profile_id;
 
         $result = [];
+
         for ($date = Carbon::parse($startDate); $date->lte(Carbon::parse($endDate)); $date->addDay()) {
             $dateString = $date->format('Y-m-d');
             $dayOfWeek  = $date->dayOfWeek;
 
+            // ── Step 1: Check offering slot schedule ──────────────────────────
             if (! isset($weeklySchedule[$dayOfWeek])) {
-                $result[] = ['date' => $dateString, 'available_times' => []];
+                $result[] = ['date' => $dateString, 'available_times' => [], 'reason' => 'not_in_offering_schedule'];
                 continue;
             }
 
-            $dateBookings   = $bookings->filter(fn ($b) => Carbon::parse($b->booking_date)->format('Y-m-d') === $dateString);
+            // ── Step 2: Check healer live availability ────────────────────────
+            $healerSlots = $this->healerAvailabilityService->getAvailableTimesForDate($profileId, $dateString);
+
+            if ($healerSlots === null) {
+                // No healer schedule covering this date at all
+                $result[] = ['date' => $dateString, 'available_times' => [], 'reason' => 'healer_no_schedule'];
+                continue;
+            }
+
+            if (empty($healerSlots)) {
+                // Healer schedule exists but day is unavailable (skipped or not in pattern)
+                $result[] = ['date' => $dateString, 'available_times' => [], 'reason' => 'healer_unavailable'];
+                continue;
+            }
+
+            // ── Step 3: Intersect offering schedule with healer availability ──
+            $dateBookings   = $bookings->filter(
+                fn ($b) => Carbon::parse($b->booking_date)->format('Y-m-d') === $dateString
+            );
             $availableTimes = [];
 
             foreach ($weeklySchedule[$dayOfWeek] as $block) {
@@ -93,11 +134,27 @@ class PractitionerOfferingAvailabilityService
                     $slotStart = $current->format('H:i:s');
                     $slotEnd   = $current->copy()->addMinutes($slot->duration)->format('H:i:s');
 
+                    // Check against healer availability
+                    $healerCoversThisSlot = collect($healerSlots)->contains(function ($ts) use ($slotStart, $slotEnd) {
+                        $healerStart = Carbon::parse($ts['start_time']);
+                        $healerEnd   = Carbon::parse($ts['end_time']);
+                        return Carbon::parse($slotStart)->gte($healerStart)
+                            && Carbon::parse($slotEnd)->lte($healerEnd);
+                    });
+
+                    if (! $healerCoversThisSlot) {
+                        $current->addMinutes(30);
+                        continue;
+                    }
+
+                    // Check against existing bookings
                     $isBooked = $dateBookings->contains(
                         fn ($b) => $slotStart < $b->end_time && $slotEnd > $b->start_time
                     );
 
-                    if (! $isBooked) $availableTimes[] = substr($slotStart, 0, 5);
+                    if (! $isBooked) {
+                        $availableTimes[] = substr($slotStart, 0, 5);
+                    }
 
                     $current->addMinutes(30);
                 }

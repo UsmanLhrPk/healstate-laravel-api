@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\DB;
 
 class PractitionerApplicationService
 {
+    public function __construct(
+        protected PractitionerAvailabilityService $availabilityService
+    ) {}
+
     /**
      * Submit a new practitioner application.
      */
@@ -85,14 +89,14 @@ class PractitionerApplicationService
     }
 
     /**
-     * Approve an application and create a fully-populated practitioner profile.
-     *
-     * BUG FIX: Previously the profile was created with only user_id, application_id,
-     * and approved_at — all other fields were left null. Now we copy every relevant
-     * field from the application into the profile at creation time.
+     * Approve an application, create the practitioner profile,
+     * and seed the live availability schedule (doubled).
      */
-    public function approveApplication(PractitionerApplication $application, Admin $admin, ?string $adminNotes = null): PractitionerProfile
-    {
+    public function approveApplication(
+        PractitionerApplication $application,
+        Admin $admin,
+        ?string $adminNotes = null
+    ): PractitionerProfile {
         return DB::transaction(function () use ($application, $admin, $adminNotes) {
             $application->update([
                 'status'      => 'approved',
@@ -105,8 +109,6 @@ class PractitionerApplicationService
             $profile = PractitionerProfile::create([
                 'user_id'               => $application->user_id,
                 'application_id'        => $application->id,
-
-                // ── Copied from application ──────────────────────────
                 'phone_number'          => $application->phone_number,
                 'professional_title'    => $application->professional_title,
                 'years_experience'      => $application->years_experience,
@@ -117,12 +119,8 @@ class PractitionerApplicationService
                 'service_description'   => $application->service_description,
                 'availability_schedule' => $application->availability_schedule,
                 'timezone'              => $application->timezone,
-                // ────────────────────────────────────────────────────
-
-                // Default operational state
                 'is_active'             => true,
                 'is_accepting_clients'  => true,
-
                 'approved_at'           => now(),
             ]);
 
@@ -130,6 +128,16 @@ class PractitionerApplicationService
             $serviceIds = $application->services->pluck('id')->toArray();
             if (! empty($serviceIds)) {
                 $profile->services()->attach($serviceIds);
+            }
+
+            // ── Seed live availability schedule ──────────────────────────────
+            // Takes the weekly pattern from the application and creates two
+            // consecutive week blocks (the automatic duplication requirement).
+            if (! empty($application->availability_schedule)) {
+                $this->availabilityService->createFromApplication(
+                    $profile,
+                    $application->availability_schedule
+                );
             }
 
             $application->user->update(['is_practitioner' => true]);
@@ -227,7 +235,7 @@ class PractitionerApplicationService
 
     protected function sendNewApplicationAdminEmail(PractitionerApplication $application): void
     {
-        $admins = Admin::all();
+        $admins = \App\Models\Admin::all();
         foreach ($admins as $admin) {
             $admin->notify(new NewApplicationAdminNotification($application));
         }

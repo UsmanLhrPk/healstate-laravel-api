@@ -13,19 +13,38 @@ use Illuminate\Support\Facades\Log;
 
 class PractitionerOfferingBookingService
 {
+    public function __construct(
+        protected PractitionerAvailabilityService $availabilityService
+    ) {}
+
     public function createBooking(int $userId, array $data): PractitionerOfferingBooking
     {
         return DB::transaction(function () use ($userId, $data) {
-            $slot = PractitionerOfferingSlot::findOrFail($data['practitioner_offering_slot_id']);
+            $slot = PractitionerOfferingSlot::with('offering.practitionerProfile')
+                ->findOrFail($data['practitioner_offering_slot_id']);
 
+            // ── 1. Check for existing booking overlap ─────────────────────────
             if ($this->checkTimeOverlap($slot->id, $data['booking_date'], $data['start_time'], $data['end_time'])) {
                 throw new \Exception('This time slot has already been booked. Please choose a different time.');
             }
 
-            if (! $this->checkAvailabilitySchedule($slot->id, $data['booking_date'], $data['start_time'], $data['end_time'])) {
-                throw new \Exception('Practitioner is not available at this time');
+            // ── 2. Check offering slot schedule (offering-level availability) ──
+            if (! $this->checkOfferingSlotSchedule($slot->id, $data['booking_date'], $data['start_time'], $data['end_time'])) {
+                throw new \Exception('This offering is not available at the requested time.');
             }
 
+            // ── 3. Check healer availability schedule ─────────────────────────
+            $profileId = $slot->offering->practitioner_profile_id;
+            if (! $this->availabilityService->isAvailable(
+                $profileId,
+                $data['booking_date'],
+                $data['start_time'],
+                $data['end_time']
+            )) {
+                throw new \Exception('The healer is not available at the requested time.');
+            }
+
+            // ── 4. Create the booking ─────────────────────────────────────────
             try {
                 $data['user_id'] = $userId;
                 $booking = PractitionerOfferingBooking::create($data);
@@ -33,7 +52,7 @@ class PractitionerOfferingBookingService
                 throw new \Exception('This time slot was just booked by someone else. Please choose a different time.');
             }
 
-            // Send confirmation email to customer
+            // ── 5. Send confirmation ──────────────────────────────────────────
             try {
                 $booking->user->notify(new PractitionerBookingConfirmationNotification($booking));
             } catch (\Exception $e) {
@@ -58,7 +77,6 @@ class PractitionerOfferingBookingService
             'cancellation_requested_at' => now(),
         ]);
 
-        // Notify the healer
         try {
             $healer = $booking->slot->offering->practitionerProfile->user;
             $healer->notify(new PractitionerBookingCancellationRequestNotification($booking));
@@ -73,7 +91,6 @@ class PractitionerOfferingBookingService
     {
         $booking->update(['status' => 'cancelled']);
 
-        // Notify the customer
         try {
             $booking->user->notify(new PractitionerBookingCancelledNotification($booking, true));
         } catch (\Exception $e) {
@@ -91,7 +108,6 @@ class PractitionerOfferingBookingService
             'cancellation_requested_at' => null,
         ]);
 
-        // Notify the customer
         try {
             $booking->user->notify(new PractitionerBookingCancelledNotification($booking, false, $reason));
         } catch (\Exception $e) {
@@ -102,17 +118,17 @@ class PractitionerOfferingBookingService
     }
 
     public function getUserBookings(int $userId, int $perPage = 15, ?string $status = null): LengthAwarePaginator
-{
-    $query = PractitionerOfferingBooking::where('user_id', $userId)
-        ->with(['slot.offering.practitionerProfile.user', 'slot.offering'])
-        ->latest();
+    {
+        $query = PractitionerOfferingBooking::where('user_id', $userId)
+            ->with(['slot.offering.practitionerProfile.user', 'slot.offering'])
+            ->latest();
 
-    if ($status) {
-        $query->where('status', $status);
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        return $query->paginate($perPage);
     }
-
-    return $query->paginate($perPage);
-}
 
     public function getPractitionerBookings(int $profileId, int $perPage = 15, ?string $status = null): LengthAwarePaginator
     {
@@ -143,8 +159,26 @@ class PractitionerOfferingBookingService
             ->exists();
     }
 
-    protected function checkAvailabilitySchedule(int $slotId, string $date, string $startTime, string $endTime): bool
+    /**
+     * Check whether the offering slot's own schedule covers this date/time.
+     * This is the offering-level check (separate from healer availability).
+     */
+    protected function checkOfferingSlotSchedule(int $slotId, string $date, string $startTime, string $endTime): bool
     {
-        return true; // Existing logic preserved
+        // If no offering slot schedule exists, treat as available
+        // (offering schedule is optional — healer schedule is the primary gate)
+        $hasSchedule = \App\Models\PractitionerOfferingAvailability::where('practitioner_offering_slot_id', $slotId)
+            ->exists();
+
+        if (! $hasSchedule) return true;
+
+        // Use the existing availability service logic
+        $dayOfWeek = \Carbon\Carbon::parse($date)->dayOfWeek;
+
+        return \App\Models\PractitionerOfferingAvailability::where('practitioner_offering_slot_id', $slotId)
+            ->where('day_of_week', $dayOfWeek)
+            ->where('start_time', '<=', $startTime)
+            ->where('end_time', '>=', $endTime)
+            ->exists();
     }
 }
