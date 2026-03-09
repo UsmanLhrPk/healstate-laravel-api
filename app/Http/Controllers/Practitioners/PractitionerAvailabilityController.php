@@ -114,4 +114,39 @@ class PractitionerAvailabilityController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
+
+    // ─── PUT /availability/pattern ───────────────────────────────────────────
+    // Update the weekly pattern (days + hours) across all future blocks.
+    // Bookings on days/times that are removed get cancelled + refunded + emailed.
+
+    public function updatePattern(Request $request): JsonResponse
+    {
+        $profile = auth()->user()->practitionerProfile;
+        if (! $profile) return response()->json(['message' => 'Practitioner profile not found'], 404);
+
+        $validated = $request->validate([
+            'pattern'          => 'required|array',
+            'pattern.*.is_available'          => 'required|boolean',
+            'pattern.*.time_slots'            => 'array',
+            'pattern.*.time_slots.*.start_time' => 'required_if:pattern.*.is_available,true|date_format:H:i',
+            'pattern.*.time_slots.*.end_time'   => 'required_if:pattern.*.is_available,true|date_format:H:i',
+            'pattern.*.slot_duration_minutes' => 'sometimes|integer|min:15',
+            'reason' => 'required|string|min:10|max:500',
+        ]);
+
+        try {
+            $result = $this->availabilityService->updatePattern(
+                $profile,
+                $validated['pattern'],
+                $validated['reason'],
+            );
+            return response()->json([
+                'message'            => "Schedule updated across {$result['updated_blocks']} block(s).",
+                'updated_blocks'     => $result['updated_blocks'],
+                'cancelled_bookings' => $result['cancelled_bookings'],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
 }

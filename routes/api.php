@@ -193,9 +193,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('availability')->group(function () {
             Route::get('/', [PractitionerAvailabilityController::class, 'index']);
             Route::post('/repeat', [PractitionerAvailabilityController::class, 'repeat']);
-            Route::get('/check-skip', [PractitionerAvailabilityController::class, 'checkSkip']); 
+            Route::get('/check-skip', [PractitionerAvailabilityController::class, 'checkSkip']); // NEW
             Route::post('/skip', [PractitionerAvailabilityController::class, 'skip']);
             Route::delete('/skip', [PractitionerAvailabilityController::class, 'unskip']);
+            Route::put('/pattern', [PractitionerAvailabilityController::class, 'updatePattern']); // NEW
         });
     });
 });

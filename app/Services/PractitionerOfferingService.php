@@ -102,4 +102,4 @@ class PractitionerOfferingService
         }
         return $paths;
     }
-}
+}   

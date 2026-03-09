@@ -239,6 +239,139 @@ class PractitionerAvailabilityService
 
     // ─── Private helpers ─────────────────────────────────────────────────────
 
+
+    // ─── Update weekly pattern across ALL future blocks ───────────────────────
+
+    /**
+     * Update the weekly_pattern for all active blocks from today forward.
+     *
+     * Rules:
+     * - Only future blocks (week_end_date >= today) are updated.
+     * - Past blocks are left unchanged.
+     * - For any day that is being removed (was available, now not), every future
+     *   booking on that day is cancelled + refunded + customer emailed.
+     * - The reason is included in the cancellation notification.
+     *
+     * Returns:
+     *   ['updated_blocks' => int, 'cancelled_bookings' => int]
+     */
+    public function updatePattern(PractitionerProfile $profile, array $newPattern, string $reason): array
+    {
+        $today = Carbon::today()->toDateString();
+
+        $futureBlocks = PractitionerAvailabilitySchedule::forProfile($profile->id)
+            ->active()
+            ->where('week_end_date', '>=', $today)
+            ->get();
+
+        if ($futureBlocks->isEmpty()) {
+            throw new \Exception('No upcoming schedule blocks to update.');
+        }
+
+        return DB::transaction(function () use ($futureBlocks, $newPattern, $reason, $profile, $today) {
+
+            $cancelledTotal = 0;
+
+            foreach ($futureBlocks as $block) {
+                $oldPattern = $block->weekly_pattern ?? [];
+
+                // Find days that are being disabled or having hours reduced
+                $removedDates = $this->getDatesAffectedByPatternChange(
+                    $block, $oldPattern, $newPattern, $today
+                );
+
+                // Cancel bookings on removed/narrowed dates
+                foreach ($removedDates as $date) {
+                    $bookings = PractitionerOfferingBooking::whereHas(
+                        'slot.offering',
+                        fn ($q) => $q->where('practitioner_profile_id', $profile->id)
+                    )
+                    ->where('booking_date', $date)
+                    ->whereNotIn('status', ['cancelled', 'completed'])
+                    ->with(['user', 'slot.offering'])
+                    ->get();
+
+                    foreach ($bookings as $booking) {
+                        $booking->update([
+                            'status'                    => 'cancelled',
+                            'cancellation_reason'       => 'Healer updated their schedule: ' . $reason,
+                            'cancellation_requested_at' => now(),
+                        ]);
+                        $cancelledTotal++;
+                        $this->processBookingRefund($booking);
+
+                        try {
+                            $booking->user->notify(
+                                new \App\Notifications\HealerDaySkippedBookingCancelledNotification(
+                                    booking:    $booking,
+                                    reason:     'Schedule updated: ' . $reason,
+                                    healerName: $profile->user->name ?? 'Your healer',
+                                )
+                            );
+                        } catch (\Exception $e) {
+                            Log::warning("Failed to send schedule-update cancellation email for booking #{$booking->id}: " . $e->getMessage());
+                        }
+                    }
+                }
+
+                // Update the block pattern
+                $block->update(['weekly_pattern' => $newPattern]);
+            }
+
+            return [
+                'updated_blocks'    => $futureBlocks->count(),
+                'cancelled_bookings' => $cancelledTotal,
+            ];
+        });
+    }
+
+    /**
+     * Get all future dates within a block that are affected by a pattern change.
+     * A date is affected if:
+     *  - Its day is being disabled entirely, OR
+     *  - Its day's time range is being narrowed (bookings outside new range become invalid)
+     */
+    private function getDatesAffectedByPatternChange(
+        PractitionerAvailabilitySchedule $block,
+        array $oldPattern,
+        array $newPattern,
+        string $today
+    ): array {
+        $affected = [];
+        $cursor   = Carbon::parse(max($block->week_start_date->toDateString(), $today));
+        $end      = Carbon::parse($block->week_end_date->toDateString());
+
+        while ($cursor->lte($end)) {
+            $dateStr = $cursor->toDateString();
+            $dayName = strtolower($cursor->format('l'));
+
+            $wasAvailable = ($oldPattern[$dayName]['is_available'] ?? false);
+            $nowAvailable = ($newPattern[$dayName]['is_available'] ?? false);
+
+            if ($wasAvailable) {
+                if (! $nowAvailable) {
+                    // Day fully removed
+                    $affected[] = $dateStr;
+                } else {
+                    // Check if hours narrowed — only flag if there are bookings outside new range
+                    $oldStart = $oldPattern[$dayName]['time_slots'][0]['start_time'] ?? '00:00';
+                    $oldEnd   = $oldPattern[$dayName]['time_slots'][0]['end_time']   ?? '23:59';
+                    $newStart = $newPattern[$dayName]['time_slots'][0]['start_time'] ?? '00:00';
+                    $newEnd   = $newPattern[$dayName]['time_slots'][0]['end_time']   ?? '23:59';
+
+                    if ($newStart > $oldStart || $newEnd < $oldEnd) {
+                        // Hours narrowed — we'll check actual bookings when we get there
+                        $affected[] = $dateStr;
+                    }
+                }
+            }
+
+            $cursor->addDay();
+        }
+
+        return $affected;
+    }
+
     private function getBlockForDate(int $profileId, string $date): ?PractitionerAvailabilitySchedule
     {
         return PractitionerAvailabilitySchedule::forProfile($profileId)
