@@ -1,209 +1,38 @@
-name: 'Practitioner Profiles'
-description: |-
-
-  APIs for browsing and managing practitioner profiles
+name: Endpoints
+description: ''
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/practitioners/profiles
+    uri: 'api/practitioners/profiles/{profileId}/reviews'
     metadata:
       custom: []
-      groupName: 'Practitioner Profiles'
-      groupDescription: |-
-
-        APIs for browsing and managing practitioner profiles
+      groupName: Endpoints
+      groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'List All Practitioners'
-      description: |-
-        Get a paginated list of all active practitioner profiles with filtering,
-        searching, and sorting capabilities. Public endpoint, no authentication required.
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      category_id:
-        custom: []
-        name: category_id
-        description: 'Filter by primary service category.'
-        required: false
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      service_id:
-        custom: []
-        name: service_id
-        description: 'Filter by specific service subcategory.'
-        required: false
-        example: 5
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      accepting_clients:
-        custom: []
-        name: accepting_clients
-        description: 'Only show practitioners accepting new clients.'
-        required: false
-        example: true
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      search:
-        custom: []
-        name: search
-        description: 'Search by practitioner name or professional title.'
-        required: false
-        example: massage
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      sort_by:
-        custom: []
-        name: sort_by
-        description: 'Sort field: "created_at", "rating", or "bookings".'
-        required: false
-        example: rating
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      sort_order:
-        custom: []
-        name: sort_order
-        description: 'Sort order: "asc" or "desc".'
-        required: false
-        example: desc
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      per_page:
-        custom: []
-        name: per_page
-        description: 'Results per page (1-100).'
-        required: false
-        example: 20
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      category_id: 1
-      service_id: 5
-      accepting_clients: true
-      search: massage
-      sort_by: rating
-      sort_order: desc
-      per_page: 20
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "success": true,
-            "data": [
-              {
-                "id": 1,
-                "user_id": 123,
-                "user": {
-                  "id": 123,
-                  "name": "Jane Smith"
-                },
-                "phone_number": "+1234567890",
-                "professional_title": "Licensed Massage Therapist",
-                "years_experience": "5-10",
-                "bio": "Experienced therapist...",
-                "primary_category": {
-                  "id": 1,
-                  "name": "Body-Based Services"
-                },
-                "services": [
-                  {
-                    "id": 1,
-                    "name": "Massage Therapy"
-                  }
-                ],
-                "is_accepting_clients": true,
-                "statistics": {
-                  "total_bookings": 45,
-                  "average_rating": 4.85,
-                  "total_reviews": 23
-                },
-                "approved_at": "2024-01-15T10:30:00Z"
-              }
-            ],
-            "meta": {
-              "current_page": 1,
-              "last_page": 5,
-              "per_page": 20,
-              "total": 87
-            }
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/practitioners/profiles/{id}'
-    metadata:
-      custom: []
-      groupName: 'Practitioner Profiles'
-      groupDescription: |-
-
-        APIs for browsing and managing practitioner profiles
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Get Practitioner Profile'
-      description: |-
-        Retrieve detailed information about a specific practitioner.
-        Public endpoint, no authentication required.
+      title: 'List reviews for a practitioner profile.'
+      description: 'Public endpoint.'
       authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      id:
+      profileId:
         custom: []
-        name: id
-        description: 'The practitioner profile ID.'
+        name: profileId
+        description: ''
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      profileId: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -212,59 +41,14 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: |-
-          {
-            "success": true,
-            "data": {
-              "id": 1,
-              "user": {
-                "id": 123,
-                "name": "Jane Smith"
-              },
-              "professional_title": "Licensed Massage Therapist",
-              "years_experience": "5-10",
-              "bio": "I am an experienced massage therapist...",
-              "license_number": "LMT123456",
-              "issuing_organization": "State Board of Massage",
-              "primary_category": {
-                "id": 1,
-                "name": "Body-Based Services"
-              },
-              "services": [
-                {"id": 1, "name": "Massage Therapy"},
-                {"id": 2, "name": "Acupuncture"}
-              ],
-              "service_description": "I specialize in deep tissue massage...",
-              "availability_schedule": {
-                "monday": {"morning": true, "afternoon": false, "evening": true},
-                "tuesday": {"morning": true, "afternoon": true, "evening": false}
-              },
-              "timezone": "America/New_York",
-              "is_active": true,
-              "is_accepting_clients": true,
-              "profile_image_url": "https://example.com/image.jpg",
-              "statistics": {
-                "total_bookings": 45,
-                "average_rating": 4.85,
-                "total_reviews": 23
-              },
-              "approved_at": "2024-01-15T10:30:00Z",
-              "created_at": "2024-01-15T10:30:00Z"
-            }
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 404
-        content: |-
-          {
-            "success": false,
-            "message": "Practitioner profile not found."
-          }
-        headers: []
-        description: ''
+        status: 500
+        content: '{"message":"Server error","error":"An unexpected error occurred. Please try again later."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
     responseFields: []
     auth: []
     controller: null
@@ -274,405 +58,116 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/practitioners/profiles/top-rated
+    uri: 'api/practitioners/offering-slots/{slot_id}/availability'
     metadata:
       custom: []
-      groupName: 'Practitioner Profiles'
-      groupDescription: |-
-
-        APIs for browsing and managing practitioner profiles
+      groupName: Endpoints
+      groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get Top Rated Practitioners'
-      description: |-
-        Retrieve a list of the highest-rated practitioners.
-        Only includes active practitioners accepting clients.
-        Public endpoint, no authentication required.
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      limit:
-        custom: []
-        name: limit
-        description: 'Number of practitioners to return (1-50).'
-        required: false
-        example: 10
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      limit: 10
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "success": true,
-            "data": [
-              {
-                "id": 1,
-                "user": {
-                  "id": 123,
-                  "name": "Jane Smith"
-                },
-                "professional_title": "Licensed Massage Therapist",
-                "statistics": {
-                  "average_rating": 4.95,
-                  "total_reviews": 120,
-                  "total_bookings": 250
-                }
-              }
-            ]
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/practitioners/profiles/category/{categoryId}'
-    metadata:
-      custom: []
-      groupName: 'Practitioner Profiles'
-      groupDescription: |-
-
-        APIs for browsing and managing practitioner profiles
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Get Practitioners by Category'
-      description: |-
-        Retrieve practitioners in a specific service category.
-        Only includes active practitioners accepting clients, sorted by rating.
-        Public endpoint, no authentication required.
+      title: ''
+      description: ''
       authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      categoryId:
+      slot_id:
         custom: []
-        name: categoryId
-        description: 'The service category ID.'
+        name: slot_id
+        description: 'The ID of the slot.'
         required: true
         example: 1
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      categoryId: 1
-    queryParameters:
-      limit:
-        custom: []
-        name: limit
-        description: 'Number of practitioners to return (1-50).'
-        required: false
-        example: 10
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      limit: 10
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "success": true,
-            "data": [
-              {
-                "id": 1,
-                "professional_title": "Licensed Massage Therapist",
-                "primary_category": {
-                  "id": 1,
-                  "name": "Body-Based Services"
-                },
-                "statistics": {
-                  "average_rating": 4.85,
-                  "total_reviews": 23
-                }
-              }
-            ]
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/practitioners/my-profile
-    metadata:
-      custom: []
-      groupName: 'Practitioner Profiles'
-      groupDescription: |-
-
-        APIs for browsing and managing practitioner profiles
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Get My Practitioner Profile'
-      description: |-
-        Retrieve the authenticated user's practitioner profile.
-        User must be an approved practitioner.
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "success": true,
-            "data": {
-              "id": 1,
-              "professional_title": "Licensed Massage Therapist",
-              "is_active": true,
-              "is_accepting_clients": true,
-              "statistics": {
-                "total_bookings": 45,
-                "average_rating": 4.85,
-                "total_reviews": 23
-              }
-            }
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 404
-        content: |-
-          {
-            "success": false,
-            "message": "You do not have a practitioner profile."
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-    uri: 'api/practitioners/profiles/{id}'
-    metadata:
-      custom: []
-      groupName: 'Practitioner Profiles'
-      groupDescription: |-
-
-        APIs for browsing and managing practitioner profiles
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Update Practitioner Profile'
-      description: |-
-        Update the practitioner profile information.
-        Users can only update their own profile. Admins can update any profile.
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The profile ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
+      slot_id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      phone_number:
+      start_date:
         custom: []
-        name: phone_number
-        description: 'optional Phone number.'
-        required: false
-        example: '+1234567890'
+        name: start_date
+        description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>.'
+        required: true
+        example: '2026-03-09'
         type: string
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
-      professional_title:
+      end_date:
         custom: []
-        name: professional_title
-        description: 'optional Professional title.'
-        required: false
-        example: 'Licensed Massage Therapist'
+        name: end_date
+        description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Must be a date after or equal to <code>start_date</code>.'
+        required: true
+        example: '2052-04-01'
         type: string
         enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      bio:
-        custom: []
-        name: bio
-        description: 'optional Bio (max 500 characters).'
-        required: false
-        example: 'Updated bio text...'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      service_description:
-        custom: []
-        name: service_description
-        description: 'optional Service description (max 1000 characters).'
-        required: false
-        example: 'I specialize in...'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      availability_schedule:
-        custom: []
-        name: availability_schedule
-        description: 'optional Weekly availability.'
-        required: false
-        example:
-          monday:
-            morning: true
-        type: object
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      timezone:
-        custom: []
-        name: timezone
-        description: 'optional Timezone.'
-        required: false
-        example: America/Los_Angeles
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      is_accepting_clients:
-        custom: []
-        name: is_accepting_clients
-        description: 'optional Whether accepting new clients.'
-        required: false
-        example: true
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      service_subcategories:
-        custom: []
-        name: service_subcategories
-        description: 'optional Array of service subcategory IDs.'
-        required: false
-        example:
-          - 1
-          - 2
-          - 3
-        type: 'string[]'
-        enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      phone_number: '+1234567890'
-      professional_title: 'Licensed Massage Therapist'
-      bio: 'Updated bio text...'
-      service_description: 'I specialize in...'
-      availability_schedule:
-        monday:
-          morning: true
-      timezone: America/Los_Angeles
-      is_accepting_clients: true
-      service_subcategories:
-        - 1
-        - 2
-        - 3
+      start_date: '2026-03-09'
+      end_date: '2052-04-01'
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: |-
-          {
-            "success": true,
-            "message": "Profile updated successfully.",
-            "data": {
-              "id": 1,
-              "professional_title": "Licensed Massage Therapist",
-              "bio": "Updated bio..."
-            }
-          }
-        headers: []
-        description: ''
+        content: '{"booked":[]}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/cart
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
-        status: 403
-        content: |-
-          {
-            "success": false,
-            "message": "Unauthorized."
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 404
-        content: |-
-          {
-            "success": false,
-            "message": "Profile not found."
-          }
-        headers: []
-        description: ''
+        status: 200
+        content: '{"data":{"items":[],"count":0,"totals":{"subtotal":0,"shipping":0,"commission_fee":0,"total":0,"currency":"USD","currency_symbol":"$","has_multiple_currencies":false,"currencies":[]}}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+          set-cookie: 'cart_session_id=b86ba09a-6892-4c63-81be-0c4ca833d6ae; expires=Wed, 08 Apr 2026 13:56:35 GMT; Max-Age=2592000; path=/; httponly; samesite=lax'
+        description: null
     responseFields: []
     auth: []
     controller: null
@@ -682,39 +177,266 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'api/practitioners/profiles/{id}/toggle-active'
+    uri: api/cart
     metadata:
       custom: []
-      groupName: 'Practitioner Profiles'
-      groupDescription: |-
-
-        APIs for browsing and managing practitioner profiles
+      groupName: Endpoints
+      groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Toggle Profile Active Status'
-      description: |-
-        Activate or deactivate a practitioner profile.
-        Users can toggle their own profile. Admins can toggle any profile.
-        Inactive profiles are hidden from public listings.
-      authenticated: true
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The <code>id</code> of an existing record in the products table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      variant_id:
+        custom: []
+        name: variant_id
+        description: 'The <code>id</code> of an existing record in the product_variants table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      practitioner_offering_slot_id:
+        custom: []
+        name: practitioner_offering_slot_id
+        description: 'The <code>id</code> of an existing record in the practitioner_offering_slots table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      service_slot_id:
+        custom: []
+        name: service_slot_id
+        description: 'The <code>id</code> of an existing record in the service_slots table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      booking_date:
+        custom: []
+        name: booking_date
+        description: 'Must be a valid date. Must be a date after or equal to <code>today</code>.'
+        required: false
+        example: '2052-04-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      start_time:
+        custom: []
+        name: start_time
+        description: 'Must match the regex /^\d{1,2}:\d{2}(:\d{2})?$/.'
+        required: false
+        example: '42:55'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      end_time:
+        custom: []
+        name: end_time
+        description: 'Must match the regex /^\d{1,2}:\d{2}(:\d{2})?$/.'
+        required: false
+        example: '42:55'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      quantity:
+        custom: []
+        name: quantity
+        description: 'Must be at least 1. Must not be greater than 99.'
+        required: true
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      product_id: 16
+      variant_id: 16
+      practitioner_offering_slot_id: 16
+      service_slot_id: 16
+      booking_date: '2052-04-01'
+      start_time: '42:55'
+      end_time: '42:55'
+      quantity: 5
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/cart/{cart_id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      id:
+      cart_id:
         custom: []
-        name: id
-        description: 'The profile ID.'
+        name: cart_id
+        description: 'The ID of the cart.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      cart_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/cart/{cart_id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      cart_id:
+        custom: []
+        name: cart_id
+        description: 'The ID of the cart.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      cart_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: api/cart
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/cart/count
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -724,37 +446,1612 @@ endpoints:
       -
         custom: []
         status: 200
-        content: |-
-          {
-            "success": true,
-            "message": "Profile status updated.",
-            "data": {
-              "id": 1,
-              "is_active": false
-            }
-          }
-        headers: []
+        content: '{"data":{"count":0}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/checkout/payment-intent
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/checkout/process
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      payment_method_id:
+        custom: []
+        name: payment_method_id
+        description: 'This field is required when <code>payment_intents</code> is not present.'
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_intents:
+        custom: []
+        name: payment_intents
+        description: 'This field is required when <code>payment_method_id</code> is not present. Must have at least 1 items.'
+        required: false
+        example: null
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      order_notes:
+        custom: []
+        name: order_notes
+        description: 'Must not be greater than 1000 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      address:
+        custom: []
+        name: address
         description: ''
+        required: true
+        example: []
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.name:
+        custom: []
+        name: address.name
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.phone:
+        custom: []
+        name: address.phone
+        description: 'Must be at least 10 characters. Must not be greater than 20 characters.'
+        required: true
+        example: ngzmiyvdljnikhwa
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.email:
+        custom: []
+        name: address.email
+        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        required: true
+        example: breitenberg.gilbert@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.street_address:
+        custom: []
+        name: address.street_address
+        description: 'Must not be greater than 500 characters.'
+        required: true
+        example: u
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.city:
+        custom: []
+        name: address.city
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: w
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.state_province:
+        custom: []
+        name: address.state_province
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: p
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.postal_code:
+        custom: []
+        name: address.postal_code
+        description: 'Must not be greater than 20 characters.'
+        required: true
+        example: wlvqwrsitcpscqld
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      address.country:
+        custom: []
+        name: address.country
+        description: 'Must not be greater than 2 characters.'
+        required: false
+        example: zs
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'payment_intents[].payment_method_id':
+        custom: []
+        name: 'payment_intents[].payment_method_id'
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'payment_intents[].currency':
+        custom: []
+        name: 'payment_intents[].currency'
+        description: 'Must be 3 characters.'
+        required: true
+        example: ngz
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      payment_method_id: architecto
+      order_notes: 'n'
+      address:
+        name: b
+        phone: ngzmiyvdljnikhwa
+        email: breitenberg.gilbert@example.com
+        street_address: u
+        city: w
+        state_province: p
+        postal_code: wlvqwrsitcpscqld
+        country: zs
+      payment_intents:
+        -
+          payment_method_id: architecto
+          currency: ngz
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/checkout/verify-payment
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      payment_intent_id:
+        custom: []
+        name: payment_intent_id
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      payment_intent_id: architecto
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/vendor/orders
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get all orders for vendor'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
-        status: 403
-        content: |-
-          {
-            "success": false,
-            "message": "Unauthorized."
-          }
-        headers: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/vendor/orders/{order_id}/status'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update order status'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      status:
+        custom: []
+        name: status
         description: ''
+        required: true
+        example: processing
+        type: string
+        enumValues:
+          - processing
+          - shipped
+          - delivered
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      status: processing
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/vendor/orders/{order_id}/cancel'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Vendor cancels order'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      reason:
+        custom: []
+        name: reason
+        description: 'Must not be greater than 500 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/vendor/orders/{order_id}/approve-cancellation'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Approve cancellation request'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/vendor/orders/{order_id}/deny-cancellation'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Deny cancellation request'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The ID of the order.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      reason:
+        custom: []
+        name: reason
+        description: 'Must not be greater than 500 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/practitioners/profiles/{profileId}/reviews'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Submit a review for a practitioner.'
+      description: 'Requires auth + a completed booking with this practitioner.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      profileId:
+        custom: []
+        name: profileId
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      profileId: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      rating:
+        custom: []
+        name: rating
+        description: 'Must be at least 1. Must not be greater than 5.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      comment:
+        custom: []
+        name: comment
+        description: 'Must not be greater than 1000 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      rating: 1
+      comment: 'n'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/profiles/{profileId}/reviews/eligibility'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Check if the current user can review this practitioner.'
+      description: 'Returns eligibility + whether they already reviewed.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      profileId:
+        custom: []
+        name: profileId
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      profileId: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
       -
         custom: []
-        status: 404
-        content: |-
-          {
-            "success": false,
-            "message": "Profile not found."
-          }
-        headers: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/practitioners/offering-slots/{slot_id}/schedule'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      slot_id:
+        custom: []
+        name: slot_id
+        description: 'The ID of the slot.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      slot_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      schedule:
+        custom: []
+        name: schedule
+        description: 'Must have at least 1 items.'
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'schedule[].day_of_week':
+        custom: []
+        name: 'schedule[].day_of_week'
+        description: 'Must be between 0 and 6.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'schedule[].is_available':
+        custom: []
+        name: 'schedule[].is_available'
         description: ''
+        required: true
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'schedule[].time_slots':
+        custom: []
+        name: 'schedule[].time_slots'
+        description: ''
+        required: false
+        example: null
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'schedule[].time_slots[].start_time':
+        custom: []
+        name: 'schedule[].time_slots[].start_time'
+        description: 'Must be a valid date in the format <code>H:i</code>.'
+        required: true
+        example: '13:56'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'schedule[].time_slots[].end_time':
+        custom: []
+        name: 'schedule[].time_slots[].end_time'
+        description: 'Must be a valid date in the format <code>H:i</code>. Must be a date after <code>schedule.*.time_slots.*.start_time</code>.'
+        required: true
+        example: '2052-04-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      schedule:
+        -
+          day_of_week: 1
+          is_available: true
+          time_slots:
+            -
+              start_time: '13:56'
+              end_time: '2052-04-01'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/offering-slots/{slot_id}/schedule'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      slot_id:
+        custom: []
+        name: slot_id
+        description: 'The ID of the slot.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      slot_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/practitioners/offering-slots/{slot_id}/schedule'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      slot_id:
+        custom: []
+        name: slot_id
+        description: 'The ID of the slot.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      slot_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/practitioners/bookings
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      practitioner_offering_slot_id:
+        custom: []
+        name: practitioner_offering_slot_id
+        description: 'The <code>id</code> of an existing record in the practitioner_offering_slots table.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      booking_date:
+        custom: []
+        name: booking_date
+        description: 'Must be a valid date. Must be a date after or equal to <code>today</code>.'
+        required: true
+        example: '2052-04-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      start_time:
+        custom: []
+        name: start_time
+        description: 'Must be a valid date in the format <code>H:i:s</code>.'
+        required: true
+        example: '13:56:36'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      end_time:
+        custom: []
+        name: end_time
+        description: 'Must be a valid date in the format <code>H:i:s</code>. Must be a date after <code>start_time</code>.'
+        required: true
+        example: '2052-04-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      practitioner_offering_slot_id: architecto
+      booking_date: '2052-04-01'
+      start_time: '13:56:36'
+      end_time: '2052-04-01'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/practitioners/bookings
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/practitioners/bookings/{booking_id}/cancel'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      booking_id:
+        custom: []
+        name: booking_id
+        description: 'The ID of the booking.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      booking_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/practitioners/bookings/{booking_id}/request-cancellation'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      booking_id:
+        custom: []
+        name: booking_id
+        description: 'The ID of the booking.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      booking_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      reason:
+        custom: []
+        name: reason
+        description: 'Must not be greater than 500 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/practitioners/my-bookings
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/practitioners/my-bookings/{booking_id}/approve-cancellation'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      booking_id:
+        custom: []
+        name: booking_id
+        description: 'The ID of the booking.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      booking_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/practitioners/my-bookings/{booking_id}/deny-cancellation'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      booking_id:
+        custom: []
+        name: booking_id
+        description: 'The ID of the booking.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      booking_id: 16
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      reason:
+        custom: []
+        name: reason
+        description: 'Must not be greater than 500 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/practitioners/availability
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/practitioners/availability/repeat
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/practitioners/availability/check-skip
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date:
+        custom: []
+        name: date
+        description: 'Must be a valid date in the format <code>Y-m-d</code>.'
+        required: true
+        example: '2026-03-09'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date: '2026-03-09'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/practitioners/availability/skip
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date:
+        custom: []
+        name: date
+        description: 'Must be a valid date in the format <code>Y-m-d</code>.'
+        required: true
+        example: '2026-03-09'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      reason:
+        custom: []
+        name: reason
+        description: 'Must be at least 10 characters. Must not be greater than 500 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date: '2026-03-09'
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: api/practitioners/availability/skip
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      date:
+        custom: []
+        name: date
+        description: 'Must be a valid date in the format <code>Y-m-d</code>.'
+        required: true
+        example: '2026-03-09'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      date: '2026-03-09'
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: api/practitioners/availability/pattern
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      pattern:
+        custom: []
+        name: pattern
+        description: ''
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      reason:
+        custom: []
+        name: reason
+        description: 'Must be at least 10 characters. Must not be greater than 500 characters.'
+        required: true
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'pattern[].is_available':
+        custom: []
+        name: 'pattern[].is_available'
+        description: ''
+        required: true
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'pattern[].time_slots':
+        custom: []
+        name: 'pattern[].time_slots'
+        description: ''
+        required: false
+        example: null
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'pattern[].time_slots[].start_time':
+        custom: []
+        name: 'pattern[].time_slots[].start_time'
+        description: 'This field is required when <code>pattern.*.is_available</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
+        required: false
+        example: '13:56'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'pattern[].time_slots[].end_time':
+        custom: []
+        name: 'pattern[].time_slots[].end_time'
+        description: 'This field is required when <code>pattern.*.is_available</code> is <code>true</code>. Must be a valid date in the format <code>H:i</code>.'
+        required: false
+        example: '13:56'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'pattern[].slot_duration_minutes':
+        custom: []
+        name: 'pattern[].slot_duration_minutes'
+        description: 'Must be at least 15.'
+        required: false
+        example: 30
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      pattern:
+        -
+          is_available: false
+          time_slots:
+            -
+              start_time: '13:56'
+              end_time: '13:56'
+          slot_duration_minutes: 30
+      reason: b
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/user
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: "Get the authenticated user's data."
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: 'http://localhost:3000'
+          access-control-allow-credentials: 'true'
+        description: null
     responseFields: []
     auth: []
     controller: null

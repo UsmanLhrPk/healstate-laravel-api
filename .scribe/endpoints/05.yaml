@@ -1,276 +1,75 @@
-name: 'Service Bookings'
+name: Marketplace
 description: |-
 
-  APIs for managing service bookings and availability
+  APIs for browsing marketplace products from approved vendors.
+  Only products from vendors with an approved status are listed.
+  Practitioner services are browsed separately via Practitioner Offerings.
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: 'api/slots/{slot_id}/availability'
+    uri: api/marketplace
     metadata:
       custom: []
-      groupName: 'Service Bookings'
+      groupName: Marketplace
       groupDescription: |-
 
-        APIs for managing service bookings and availability
+        APIs for browsing marketplace products from approved vendors.
+        Only products from vendors with an approved status are listed.
+        Practitioner services are browsed separately via Practitioner Offerings.
       subgroup: ''
       subgroupDescription: ''
-      title: 'Check Slot Availability'
-      description: 'Get available and booked time slots for a date range.'
+      title: 'Get Marketplace Products'
+      description: |-
+        Retrieve a paginated list of active products from approved vendors.
+        Supports filtering by category, search, and sorting.
+        Public endpoint, no authentication required.
       authenticated: false
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      slot_id:
-        custom: []
-        name: slot_id
-        description: 'The ID of the slot.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      slot:
-        custom: []
-        name: slot
-        description: 'The service slot ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      slot_id: 1
-      slot: 1
-    queryParameters:
-      start_date:
-        custom: []
-        name: start_date
-        description: 'date Start date (YYYY-MM-DD).'
-        required: true
-        example: '2024-01-01'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      end_date:
-        custom: []
-        name: end_date
-        description: 'date End date (YYYY-MM-DD).'
-        required: true
-        example: '2024-01-07'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      start_date: '2024-01-01'
-      end_date: '2024-01-07'
-    bodyParameters:
-      start_date:
-        custom: []
-        name: start_date
-        description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>.'
-        required: true
-        example: '2026-02-08'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      end_date:
-        custom: []
-        name: end_date
-        description: 'Must be a valid date. Must be a valid date in the format <code>Y-m-d</code>. Must be a date after or equal to <code>start_date</code>.'
-        required: true
-        example: '2052-03-03'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      start_date: '2026-02-08'
-      end_date: '2052-03-03'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "data": {
-              "2024-01-01": {
-                "date": "2024-01-01",
-                "booked_slots": [
-                  {
-                    "start_time": "09:00:00",
-                    "end_time": "10:00:00"
-                  },
-                  {
-                    "start_time": "14:00:00",
-                    "end_time": "15:00:00"
-                  }
-                ]
-              },
-              "2024-01-02": {
-                "date": "2024-01-02",
-                "booked_slots": []
-              }
-            }
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/bookings
-    metadata:
-      custom: []
-      groupName: 'Service Bookings'
-      groupDescription: |-
-
-        APIs for managing service bookings and availability
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Create Booking'
-      description: 'Book a service time slot. Prevents overlapping bookings.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      service_slot_id:
-        custom: []
-        name: service_slot_id
-        description: 'The service slot ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      booking_date:
-        custom: []
-        name: booking_date
-        description: 'Booking date (YYYY-MM-DD).'
-        required: true
-        example: '2024-01-15'
-        type: date
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      start_time:
-        custom: []
-        name: start_time
-        description: 'Start time (HH:MM:SS).'
-        required: true
-        example: '10:00:00'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      end_time:
-        custom: []
-        name: end_time
-        description: 'End time (HH:MM:SS).'
-        required: true
-        example: '11:00:00'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      service_slot_id: 1
-      booking_date: '2024-01-15'
-      start_time: '10:00:00'
-      end_time: '11:00:00'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 201
-        content: |-
-          {
-            "message": "Booking created successfully",
-            "data": {
-              "id": 1,
-              "service_slot_id": 1,
-              "user_id": 1,
-              "booking_date": "2024-01-15",
-              "start_time": "10:00:00",
-              "end_time": "11:00:00",
-              "status": "pending",
-              "created_at": "2024-01-01T00:00:00.000000Z"
-            }
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 422
-        content: |-
-          {
-            "message": "Time slot is already booked"
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/bookings
-    metadata:
-      custom: []
-      groupName: 'Service Bookings'
-      groupDescription: |-
-
-        APIs for managing service bookings and availability
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'List User Bookings'
-      description: 'Get all bookings for the authenticated user with pagination.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
     queryParameters:
+      category:
+        custom: []
+        name: category
+        description: 'Filter by vendor category.'
+        required: false
+        example: Photography
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      search:
+        custom: []
+        name: search
+        description: 'Search in product title, brief, and description.'
+        required: false
+        example: wedding
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort results. Allowed values: latest, price_low, price_high, rating. Default: latest.'
+        required: false
+        example: latest
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
       page:
         custom: []
         name: page
-        description: 'Page number.'
+        description: 'Page number for pagination. Default: 1.'
         required: false
         example: 1
         type: integer
@@ -281,19 +80,100 @@ endpoints:
       per_page:
         custom: []
         name: per_page
-        description: 'Items per page (max 100).'
+        description: 'Items per page. Default: 12.'
         required: false
-        example: 15
+        example: 12
         type: integer
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanQueryParameters:
+      category: Photography
+      search: wedding
+      sort: latest
       page: 1
-      per_page: 15
-    bodyParameters: []
-    cleanBodyParameters: []
+      per_page: 12
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: ''
+        required: false
+        example: product
+        type: string
+        enumValues:
+          - product
+          - service
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      search:
+        custom: []
+        name: search
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: ''
+        required: false
+        example: price_high
+        type: string
+        enumValues:
+          - latest
+          - price_low
+          - price_high
+          - rating
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Must be at least 1.'
+        required: false
+        example: 67
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Must be at least 1. Must not be greater than 50.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      type: product
+      category: b
+      search: 'n'
+      sort: price_high
+      page: 67
+      per_page: 16
     fileParameters: []
     responses:
       -
@@ -304,120 +184,37 @@ endpoints:
             "data": [
               {
                 "id": 1,
-                "service_slot_id": 1,
-                "booking_date": "2024-01-15",
-                "start_time": "10:00:00",
-                "end_time": "11:00:00",
-                "status": "confirmed",
-                "service_slot": {
-                  "id": 1,
-                  "duration": 60,
-                  "price": "150.00",
-                  "product": {
+                "vendor_id": 1,
+                "title": "Yoga Mat Pro",
+                "brief": "Premium non-slip yoga mat",
+                "description": "High-density foam with alignment lines...",
+                "image_url": "https://example.com/image.jpg",
+                "active": true,
+                "variants": [
+                  {
                     "id": 1,
-                    "title": "Web Development Consultation",
-                    "vendor": {
-                      "id": 1,
-                      "business_name": "Tech Solutions Inc"
-                    }
+                    "name": "Large",
+                    "price": "49.99",
+                    "stock": 100
                   }
-                }
+                ],
+                "vendor": {
+                  "id": 1,
+                  "business_name": "Wellness Supplies Co",
+                  "category": ["Wellness", "Fitness"],
+                  "city": "New York",
+                  "average_rating": 4.8,
+                  "review_count": 127,
+                  "is_verified": true
+                },
+                "min_price": "49.99",
+                "created_at": "2024-01-15T10:00:00.000000Z"
               }
             ],
-            "links": {
-              "first": "http://localhost/api/bookings?page=1",
-              "last": "http://localhost/api/bookings?page=2",
-              "prev": null,
-              "next": "http://localhost/api/bookings?page=2"
-            },
-            "meta": {
-              "current_page": 1,
-              "from": 1,
-              "last_page": 2,
-              "per_page": 15,
-              "to": 15,
-              "total": 28
-            }
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PATCH
-    uri: 'api/bookings/{booking_id}/cancel'
-    metadata:
-      custom: []
-      groupName: 'Service Bookings'
-      groupDescription: |-
-
-        APIs for managing service bookings and availability
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Cancel Booking'
-      description: 'Cancel a booking. Only the booking owner can cancel.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      booking_id:
-        custom: []
-        name: booking_id
-        description: 'The ID of the booking.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      booking:
-        custom: []
-        name: booking
-        description: 'The booking ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      booking_id: 1
-      booking: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "message": "Booking cancelled successfully",
-            "data": {
-              "id": 1,
-              "status": "cancelled",
-              "updated_at": "2024-01-02T00:00:00.000000Z"
-            }
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 403
-        content: |-
-          {
-            "message": "Unauthorized"
+            "current_page": 1,
+            "last_page": 3,
+            "per_page": 12,
+            "total": 32
           }
         headers: []
         description: ''

@@ -1,23 +1,108 @@
-name: 'Order Management'
+name: 'Admin Authentication'
 description: |-
 
-  APIs for managing orders
+  APIs for admin authentication (separate from regular users)
 endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/orders
+      - POST
+    uri: api/admin/login
     metadata:
       custom: []
-      groupName: 'Order Management'
+      groupName: 'Admin Authentication'
       groupDescription: |-
 
-        APIs for managing orders
+        APIs for admin authentication (separate from regular users)
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get User Orders'
-      description: 'Retrieve all orders for the authenticated user.'
+      title: 'Admin Login'
+      description: |-
+        Authenticate an admin and receive a bearer token.
+        Use this token with the admin guard for admin-only endpoints.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: 'Admin email address.'
+        required: true
+        example: admin@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'Admin password.'
+        required: true
+        example: password
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      email: admin@example.com
+      password: password
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "token": "2|xxxxxxxxxxxxxxxxxxxxxxxx",
+            "admin": {
+              "id": 1,
+              "name": "Admin User",
+              "email": "admin@example.com"
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "message": "The provided credentials are incorrect.",
+            "errors": {
+              "email": ["The provided credentials are incorrect."]
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/admin/logout
+    metadata:
+      custom: []
+      groupName: 'Admin Authentication'
+      groupDescription: |-
+
+        APIs for admin authentication (separate from regular users)
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Admin Logout'
+      description: 'Logout and invalidate the current admin token.'
       authenticated: true
       deprecated: false
     headers:
@@ -36,18 +121,7 @@ endpoints:
         status: 200
         content: |-
           {
-            "data": [
-              {
-                "id": 1,
-                "order_number": "ORD-ABC123",
-                "total": 107.17,
-                "status": "paid",
-                "cancellation_type": null,
-                "can_cancel_immediately": true,
-                "time_remaining_minutes": 25,
-                "created_at": "2024-01-01T00:00:00.000000Z"
-              }
-            ]
+            "message": "Logged out successfully"
           }
         headers: []
         description: ''
@@ -60,48 +134,24 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/orders/{order_id}'
+    uri: api/admin/user
     metadata:
       custom: []
-      groupName: 'Order Management'
+      groupName: 'Admin Authentication'
       groupDescription: |-
 
-        APIs for managing orders
+        APIs for admin authentication (separate from regular users)
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get Order Details'
-      description: 'Retrieve detailed information about a specific order.'
+      title: 'Get Current Admin'
+      description: "Get the currently authenticated admin user's information."
       authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      order:
-        custom: []
-        name: order
-        description: 'The order ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-      order: 1
+    urlParameters: []
+    cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -113,230 +163,16 @@ endpoints:
         status: 200
         content: |-
           {
-            "data": {
+            "admin": {
               "id": 1,
-              "order_number": "ORD-ABC123",
-              "total": 107.17,
-              "status": "paid",
-              "cancellation_type": null,
-              "cancellation_requested_at": null,
-              "cancellation_reason": null,
-              "items": [],
-              "address": {}
-            },
-            "cancellation_info": {
-              "can_cancel_immediately": true,
-              "can_request_cancellation": true,
-              "time_remaining_minutes": 25,
-              "cancellation_deadline": "2024-01-01T00:30:00.000000Z"
+              "name": "Admin User",
+              "email": "admin@example.com",
+              "email_verified_at": "2024-02-08T10:00:00Z",
+              "created_at": "2024-02-08T10:00:00Z"
             }
           }
         headers: []
         description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'api/orders/{order_id}/cancellation-status'
-    metadata:
-      custom: []
-      groupName: 'Order Management'
-      groupDescription: |-
-
-        APIs for managing orders
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Check Cancellation Status'
-      description: 'Check if an order can be cancelled and what type of cancellation is available.'
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      order:
-        custom: []
-        name: order
-        description: 'The order ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-      order: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "can_cancel_immediately": true,
-            "can_request_cancellation": true,
-            "time_remaining_minutes": 25,
-            "cancellation_deadline": "2024-01-01T00:30:00.000000Z",
-            "current_status": "paid",
-            "message": "You can cancel this order immediately for the next 25 minutes."
-          }
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "can_cancel_immediately": false,
-            "can_request_cancellation": true,
-            "time_remaining_minutes": 0,
-            "cancellation_deadline": "2024-01-01T00:30:00.000000Z",
-            "current_status": "paid",
-            "message": "You can request cancellation. The vendor will need to approve your request."
-          }
-        headers: []
-        description: 'After 30 Minutes'
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'api/orders/{order_id}/cancel'
-    metadata:
-      custom: []
-      groupName: 'Order Management'
-      groupDescription: |-
-
-        APIs for managing orders
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Cancel Order'
-      description: |-
-        Cancel an order immediately (within 30 minutes) or request cancellation (after 30 minutes).
-
-        - **Within 30 minutes**: Order is cancelled immediately
-        - **After 30 minutes**: Cancellation request is sent to vendor for approval
-      authenticated: true
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      order:
-        custom: []
-        name: order
-        description: 'The order ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-      order: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      reason:
-        custom: []
-        name: reason
-        description: 'optional Reason for cancellation.'
-        required: false
-        example: 'Changed my mind'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      reason: 'Changed my mind'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "message": "Order cancelled successfully",
-            "cancellation_type": "immediate",
-            "data": {
-              "id": 1,
-              "order_number": "ORD-ABC123",
-              "status": "cancelled",
-              "cancellation_type": "immediate",
-              "cancelled_by": "user",
-              "cancellation_reason": "Changed my mind",
-              "cancellation_requested_at": "2024-01-01T00:15:00.000000Z"
-            }
-          }
-        headers: []
-        description: 'Immediate Cancellation'
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "message": "Cancellation request sent to vendor. You will be notified once the vendor responds.",
-            "cancellation_type": "requested",
-            "data": {
-              "id": 1,
-              "order_number": "ORD-ABC123",
-              "status": "cancellation_requested",
-              "cancellation_type": "requested",
-              "cancellation_reason": "Changed my mind",
-              "cancellation_requested_at": "2024-01-01T01:00:00.000000Z"
-            }
-          }
-        headers: []
-        description: 'Cancellation Request'
-      -
-        custom: []
-        status: 400
-        content: |-
-          {
-            "message": "Order cannot be cancelled at this time"
-          }
-        headers: []
-        description: 'Cannot Cancel'
     responseFields: []
     auth: []
     controller: null

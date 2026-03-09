@@ -13,11 +13,19 @@ class Forum extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // Forum type constants — single source of truth used by model, service, and request
+    const TYPE_GENERAL = 'general';
+    const TYPE_HEALER  = 'healer';
+    const TYPE_VENDOR  = 'vendor';
+
+    const TYPES = [self::TYPE_GENERAL, self::TYPE_HEALER, self::TYPE_VENDOR];
+
     protected $fillable = [
         'title',
         'content',
         'category',
         'sub_category',
+        'forum_type',
         'author_id',
         'status',
         'views',
@@ -27,7 +35,6 @@ class Forum extends Model
         'views' => 'integer',
     ];
 
-    // Append dynamic attributes to JSON
     protected $appends = [
         'comments_count',
         'likes_count',
@@ -38,7 +45,6 @@ class Forum extends Model
     {
         parent::boot();
 
-        // Automatically set status to 'flagged' when flags reach 10
         static::updated(function ($forum) {
             $flagsCount = $forum->flags()->count();
             if ($flagsCount >= 10 && $forum->status === 'approved') {
@@ -48,7 +54,10 @@ class Forum extends Model
         });
     }
 
+    // -------------------------------------------------------------------------
     // Relationships
+    // -------------------------------------------------------------------------
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
@@ -74,27 +83,23 @@ class Forum extends Model
         return $this->morphMany(View::class, 'viewable');
     }
 
-    // Dynamic Count Accessors - Always return real counts from database
-    
-    /**
-     * Get comments count (handles both single and double backslashes)
-     */
+    // -------------------------------------------------------------------------
+    // Dynamic count accessors
+    // -------------------------------------------------------------------------
+
     public function getCommentsCountAttribute(): int
     {
         return DB::table('comments')
             ->where('commentable_id', $this->id)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('commentable_type', 'App\Models\Forum')
                       ->orWhere('commentable_type', 'App\\Models\\Forum');
             })
-            ->whereNull('parent_id')  // Only count top-level comments
+            ->whereNull('parent_id')
             ->whereNull('deleted_at')
             ->count();
     }
 
-    /**
-     * Get likes count
-     */
     public function getLikesCountAttribute(): int
     {
         return DB::table('likes')
@@ -103,9 +108,6 @@ class Forum extends Model
             ->count();
     }
 
-    /**
-     * Get flags count
-     */
     public function getFlagsCountAttribute(): int
     {
         return DB::table('flags')
@@ -114,7 +116,10 @@ class Forum extends Model
             ->count();
     }
 
+    // -------------------------------------------------------------------------
     // Helper methods
+    // -------------------------------------------------------------------------
+
     public function incrementViews(): void
     {
         $this->increment('views');
@@ -134,35 +139,12 @@ class Forum extends Model
         $cacheKey = "forum_{$this->id}_user_{$userId}_last_view";
         $lastView = cache()->get($cacheKey);
 
-        \Log::info('🔍 Checking view cooldown', [
-            'forum_id' => $this->id,
-            'user_id' => $userId,
-            'cache_key' => $cacheKey,
-            'last_view' => $lastView,
-            'has_cached_view' => ! is_null($lastView),
-        ]);
-
-        // Only record if no view in the last 2 hours
         if ($lastView) {
-            \Log::info('❌ View blocked - still in cooldown', [
-                'last_view_time' => $lastView,
-                'minutes_since_last_view' => now()->diffInMinutes($lastView),
-            ]);
-
             return false;
         }
 
-        // Increment views
         $this->increment('views');
-
-        // Cache for 2 hours (120 minutes)
         cache()->put($cacheKey, now(), now()->addHours(2));
-
-        \Log::info('✅ View recorded successfully', [
-            'forum_id' => $this->id,
-            'new_view_count' => $this->views + 1,
-            'cooldown_until' => now()->addHours(2),
-        ]);
 
         return true;
     }
@@ -176,36 +158,17 @@ class Forum extends Model
         return $this->likes()->where('user_id', $userId)->exists();
     }
 
-    /**
-     * Toggle like for a user
-     * Creates a like record if not exists, deletes if exists
-     * 
-     * @param int $userId
-     * @return array ['liked' => bool, 'like_count' => int]
-     */
     public function toggleLike(int $userId): array
     {
-        $like = $this->likes()
-            ->where('user_id', $userId)
-            ->first();
-        
+        $like = $this->likes()->where('user_id', $userId)->first();
+
         if ($like) {
-            // Unlike - delete the record
             $like->delete();
-            return [
-                'liked' => false,
-                'like_count' => $this->likes_count, // Uses accessor
-            ];
-        } else {
-            // Like - create a record
-            $this->likes()->create([
-                'user_id' => $userId,
-            ]);
-            return [
-                'liked' => true,
-                'like_count' => $this->likes_count, // Uses accessor
-            ];
+            return ['liked' => false, 'like_count' => $this->likes_count];
         }
+
+        $this->likes()->create(['user_id' => $userId]);
+        return ['liked' => true, 'like_count' => $this->likes_count];
     }
 
     public function isFlaggedBy(?int $userId): bool
@@ -217,7 +180,10 @@ class Forum extends Model
         return $this->flags()->where('user_id', $userId)->exists();
     }
 
+    // -------------------------------------------------------------------------
     // Scopes
+    // -------------------------------------------------------------------------
+
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
@@ -231,6 +197,11 @@ class Forum extends Model
     public function scopeBySubCategory($query, string $subCategory)
     {
         return $query->where('sub_category', $subCategory);
+    }
+
+    public function scopeByForumType($query, string $forumType)
+    {
+        return $query->where('forum_type', $forumType);
     }
 
     public function scopePopular($query)

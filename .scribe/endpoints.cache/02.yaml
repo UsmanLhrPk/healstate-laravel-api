@@ -31,7 +31,7 @@ endpoints:
         name: vendor_id
         description: 'The ID of the vendor.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -49,7 +49,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      vendor_id: 1
+      vendor_id: 16
       vendor: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -71,6 +71,7 @@ endpoints:
               "average_rating": 4.5,
               "review_count": 20,
               "is_verified": true,
+              "status": "approved",
               "products": []
             }
           }
@@ -229,7 +230,7 @@ endpoints:
         status: 201
         content: |-
           {
-            "message": "Vendor created successfully",
+            "message": "Vendor created successfully. Pending admin approval.",
             "data": {
               "id": 1,
               "user_id": 1,
@@ -237,6 +238,7 @@ endpoints:
               "brief": "We provide IT consulting services",
               "category": ["IT", "Consulting"],
               "website": "https://techsolutions.com",
+              "status": "pending",
               "verified_at": null,
               "created_at": "2024-01-01T00:00:00.000000Z"
             }
@@ -274,7 +276,7 @@ endpoints:
         name: vendor_id
         description: 'The ID of the vendor.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -292,7 +294,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      vendor_id: 1
+      vendor_id: 16
       vendor: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -392,7 +394,7 @@ endpoints:
         name: currency
         description: ''
         required: false
-        example: EUR
+        example: USD
         type: string
         enumValues:
           - USD
@@ -412,7 +414,7 @@ endpoints:
       city: Boston
       state_province: MA
       postal_code: '02101'
-      currency: EUR
+      currency: USD
     fileParameters: []
     responses:
       -
@@ -460,7 +462,7 @@ endpoints:
         name: vendor_id
         description: 'The ID of the vendor.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -478,7 +480,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      vendor_id: 1
+      vendor_id: 16
       vendor: 1
     queryParameters: []
     cleanQueryParameters: []
@@ -505,6 +507,288 @@ endpoints:
         content: |-
           {
             "message": "Unauthorized"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/admin/vendors
+    metadata:
+      custom: []
+      groupName: 'Vendor Management'
+      groupDescription: |-
+
+        APIs for managing vendors
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List All Vendors (Admin)'
+      description: 'Retrieve all vendors with optional status filtering. Admin access required.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      status:
+        custom: []
+        name: status
+        description: 'Filter by status: "pending", "approved", or "rejected".'
+        required: false
+        example: pending
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Number of results per page.'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      status: pending
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "business_name": "Tech Solutions Inc",
+                "status": "pending",
+                "user": { "id": 1, "name": "John Doe", "email": "john@example.com" },
+                "created_at": "2024-01-01T00:00:00.000000Z"
+              }
+            ],
+            "meta": { "current_page": 1, "last_page": 3, "per_page": 15, "total": 42 }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "message": "Unauthorized."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/admin/vendors/{id}'
+    metadata:
+      custom: []
+      groupName: 'Vendor Management'
+      groupDescription: |-
+
+        APIs for managing vendors
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Vendor Details (Admin)'
+      description: 'Retrieve full details of any vendor including review history. Admin access required.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The vendor ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "business_name": "Tech Solutions Inc",
+              "status": "pending",
+              "user": { "id": 1, "name": "John Doe", "email": "john@example.com" },
+              "admin_notes": null,
+              "rejection_reason": null,
+              "reviewed_at": null
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "message": "Vendor not found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/admin/vendors/{id}/review'
+    metadata:
+      custom: []
+      groupName: 'Vendor Management'
+      groupDescription: |-
+
+        APIs for managing vendors
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Review Vendor (Admin)'
+      description: |-
+        Approve or reject a vendor application. Admin access required.
+        When approved, verified_at is set and the vendor becomes publicly visible.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The vendor ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      action:
+        custom: []
+        name: action
+        description: 'Action to take: "approve" or "reject".'
+        required: true
+        example: approve
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      rejection_reason:
+        custom: []
+        name: rejection_reason
+        description: 'optional Reason for rejection (required if action is "reject").'
+        required: false
+        example: 'Insufficient business information provided.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      admin_notes:
+        custom: []
+        name: admin_notes
+        description: 'optional Internal notes not shown to vendor owner.'
+        required: false
+        example: 'Follow up in 30 days.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      action: approve
+      rejection_reason: 'Insufficient business information provided.'
+      admin_notes: 'Follow up in 30 days.'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Vendor approved successfully.",
+            "data": { "id": 1, "status": "approved", "verified_at": "2024-01-01T00:00:00.000000Z" }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Vendor rejected.",
+            "data": { "id": 1, "status": "rejected", "rejection_reason": "Insufficient information." }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 400
+        content: |-
+          {
+            "success": false,
+            "message": "Vendor has already been reviewed."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Vendor not found."
           }
         headers: []
         description: ''
