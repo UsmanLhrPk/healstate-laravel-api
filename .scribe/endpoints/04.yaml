@@ -29,7 +29,7 @@ endpoints:
         name: vendor_id
         description: 'The ID of the vendor.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -47,7 +47,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      vendor_id: 1
+      vendor_id: 16
       vendor: 1
     queryParameters:
       page:
@@ -156,7 +156,7 @@ endpoints:
         name: vendor_id
         description: 'The ID of the vendor.'
         required: true
-        example: 1
+        example: 16
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -174,7 +174,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      vendor_id: 1
+      vendor_id: 16
       vendor: 1
     queryParameters: []
     cleanQueryParameters: []

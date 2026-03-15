@@ -1,25 +1,26 @@
-name: Marketplace
+name: 'Service Categories'
 description: |-
 
-  APIs for browsing marketplace products and services
+  APIs for browsing practitioner service categories and subcategories
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/marketplace
+    uri: api/practitioners/categories
     metadata:
       custom: []
-      groupName: Marketplace
+      groupName: 'Service Categories'
       groupDescription: |-
 
-        APIs for browsing marketplace products and services
+        APIs for browsing practitioner service categories and subcategories
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get Marketplace Products'
+      title: 'Get All Service Categories'
       description: |-
-        Retrieve paginated list of all active products and services from verified vendors.
-        Supports filtering by type, category, search, and sorting.
+        Retrieve all active service categories with optional subcategories.
+        Returns the 5 main categories: Body-Based, Mind-Based, Spirit-Based,
+        Frequency & Technology, and Integrated Services.
       authenticated: false
       deprecated: false
     headers:
@@ -28,159 +29,21 @@ endpoints:
     urlParameters: []
     cleanUrlParameters: []
     queryParameters:
-      type:
+      include_subcategories:
         custom: []
-        name: type
-        description: 'Filter by product type. Allowed values: product, service.'
+        name: include_subcategories
+        description: 'Include subcategories in response. Defaults to true.'
         required: false
-        example: product
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      category:
-        custom: []
-        name: category
-        description: 'Filter by vendor category.'
-        required: false
-        example: Photography
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      search:
-        custom: []
-        name: search
-        description: 'Search in title and brief.'
-        required: false
-        example: wedding
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      sort:
-        custom: []
-        name: sort
-        description: 'Sort results. Allowed values: latest, price_low, price_high, rating. Default: latest.'
-        required: false
-        example: latest
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      page:
-        custom: []
-        name: page
-        description: 'Page number for pagination. Default: 1.'
-        required: false
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      per_page:
-        custom: []
-        name: per_page
-        description: 'Items per page. Default: 12.'
-        required: false
-        example: 12
-        type: integer
+        example: true
+        type: boolean
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      type: product
-      category: Photography
-      search: wedding
-      sort: latest
-      page: 1
-      per_page: 12
-    bodyParameters:
-      type:
-        custom: []
-        name: type
-        description: ''
-        required: false
-        example: service
-        type: string
-        enumValues:
-          - product
-          - service
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      category:
-        custom: []
-        name: category
-        description: 'Must not be greater than 255 characters.'
-        required: false
-        example: b
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      search:
-        custom: []
-        name: search
-        description: 'Must not be greater than 255 characters.'
-        required: false
-        example: 'n'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      sort:
-        custom: []
-        name: sort
-        description: ''
-        required: false
-        example: price_high
-        type: string
-        enumValues:
-          - latest
-          - price_low
-          - price_high
-          - rating
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      page:
-        custom: []
-        name: page
-        description: 'Must be at least 1.'
-        required: false
-        example: 67
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      per_page:
-        custom: []
-        name: per_page
-        description: 'Must be at least 1. Must not be greater than 50.'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      type: service
-      category: b
-      search: 'n'
-      sort: price_high
-      page: 67
-      per_page: 16
+      include_subcategories: true
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses:
       -
@@ -188,41 +51,247 @@ endpoints:
         status: 200
         content: |-
           {
+            "success": true,
             "data": [
               {
                 "id": 1,
-                "vendor_id": 1,
-                "title": "Professional Photography Session",
-                "brief": "Capture your special moments",
-                "description": "Full description here",
-                "type": "service",
-                "image_url": "https://example.com/image.jpg",
-                "active": true,
-                "variants": [],
-                "service_slots": [
+                "name": "Body-Based Services",
+                "slug": "body-based-services",
+                "description": "Physical healing modalities that work with the body",
+                "display_order": 1,
+                "is_active": true,
+                "active_subcategories": [
                   {
                     "id": 1,
-                    "duration": 60,
-                    "price": "150.00"
+                    "category_id": 1,
+                    "name": "Massage Therapy",
+                    "slug": "massage-therapy",
+                    "display_order": 1,
+                    "is_active": true
                   }
-                ],
-                "vendor": {
-                  "id": 1,
-                  "business_name": "Pixel Perfect Studios",
-                  "category": ["Photography", "Videography"],
-                  "city": "New York",
-                  "average_rating": 4.8,
-                  "review_count": 127,
-                  "is_verified": true
-                },
-                "min_price": "150.00",
-                "created_at": "2024-01-15T10:00:00.000000Z"
+                ]
               }
-            ],
-            "current_page": 1,
-            "last_page": 3,
-            "per_page": 12,
-            "total": 32
+            ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Service Categories'
+      groupDescription: |-
+
+        APIs for browsing practitioner service categories and subcategories
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Category by ID'
+      description: 'Retrieve a specific service category with its subcategories.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The category ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "name": "Body-Based Services",
+              "slug": "body-based-services",
+              "description": "Physical healing modalities",
+              "active_subcategories": [
+                {
+                  "id": 1,
+                  "name": "Massage Therapy",
+                  "slug": "massage-therapy"
+                }
+              ]
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Category not found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/categories/slug/{slug}'
+    metadata:
+      custom: []
+      groupName: 'Service Categories'
+      groupDescription: |-
+
+        APIs for browsing practitioner service categories and subcategories
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Category by Slug'
+      description: 'Retrieve a service category using its URL-friendly slug.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      slug:
+        custom: []
+        name: slug
+        description: 'The category slug.'
+        required: true
+        example: body-based-services
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      slug: body-based-services
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "name": "Body-Based Services",
+              "slug": "body-based-services",
+              "active_subcategories": []
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Category not found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/categories/{categoryId}/subcategories'
+    metadata:
+      custom: []
+      groupName: 'Service Categories'
+      groupDescription: |-
+
+        APIs for browsing practitioner service categories and subcategories
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Category Subcategories'
+      description: 'Retrieve all subcategories for a specific service category.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      categoryId:
+        custom: []
+        name: categoryId
+        description: 'The category ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      categoryId: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "category_id": 1,
+                "name": "Massage Therapy",
+                "slug": "massage-therapy",
+                "description": null,
+                "display_order": 1,
+                "is_active": true
+              },
+              {
+                "id": 2,
+                "category_id": 1,
+                "name": "Acupuncture",
+                "slug": "acupuncture",
+                "display_order": 2,
+                "is_active": true
+              }
+            ]
           }
         headers: []
         description: ''

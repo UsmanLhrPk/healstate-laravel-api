@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Admin;
 use App\Models\Vendor;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,7 @@ class VendorService
     {
         return DB::transaction(function () use ($userId, $data) {
             $data['user_id'] = $userId;
+            $data['status'] = Vendor::STATUS_PENDING;
             return Vendor::create($data);
         });
     }
@@ -19,12 +21,39 @@ class VendorService
     public function updateVendor(Vendor $vendor, array $data): Vendor
     {
         DB::transaction(function () use ($vendor, $data) {
-            // Only update fillable fields
             $fillableData = array_intersect_key($data, array_flip($vendor->getFillable()));
             $vendor->update($fillableData);
         });
 
         return $vendor->fresh();
+    }
+
+    public function approveVendor(Vendor $vendor, Admin $admin, ?string $adminNotes = null): Vendor
+    {
+        $vendor->update([
+            'status' => Vendor::STATUS_APPROVED,
+            'verified_at' => now(),
+            'reviewed_by' => $admin->id,
+            'reviewed_at' => now(),
+            'admin_notes' => $adminNotes,
+            'rejection_reason' => null,
+        ]);
+
+        return $vendor->fresh(['user', 'reviewer']);
+    }
+
+    public function rejectVendor(Vendor $vendor, Admin $admin, string $rejectionReason, ?string $adminNotes = null): Vendor
+    {
+        $vendor->update([
+            'status' => Vendor::STATUS_REJECTED,
+            'verified_at' => null,
+            'reviewed_by' => $admin->id,
+            'reviewed_at' => now(),
+            'rejection_reason' => $rejectionReason,
+            'admin_notes' => $adminNotes,
+        ]);
+
+        return $vendor->fresh(['user', 'reviewer']);
     }
 
     public function verifyVendor(Vendor $vendor): Vendor
@@ -35,7 +64,7 @@ class VendorService
 
     public function getVendorWithDetails(int $vendorId): ?Vendor
     {
-        return Vendor::with(['products', 'reviews'])
+        return Vendor::with(['products', 'reviews', 'user', 'reviewer'])
             ->withCount('reviews')
             ->find($vendorId);
     }
@@ -49,11 +78,16 @@ class VendorService
             ->paginate($perPage);
     }
 
-    public function getAllVendors(int $perPage = 15): LengthAwarePaginator
+    public function getAllVendors(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
-        return Vendor::with(['products', 'reviews'])
+        $query = Vendor::with(['user', 'reviews', 'reviewer'])
             ->withCount('reviews')
-            ->latest()
-            ->paginate($perPage);
+            ->latest();
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return $query->paginate($perPage);
     }
 }

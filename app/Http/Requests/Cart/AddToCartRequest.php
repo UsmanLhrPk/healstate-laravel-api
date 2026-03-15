@@ -14,10 +14,15 @@ class AddToCartRequest extends FormRequest
 
     public function rules(): array
     {
+        $isPractitionerBooking = $this->filled('practitioner_offering_slot_id');
+        $isLegacyService       = $this->filled('service_slot_id');
+        $isBooking             = $isPractitionerBooking || $isLegacyService;
+
         return [
-            // Product fields
+            // ── Physical product fields ───────────────────────────────────
             'product_id' => [
-                'required_without:service_slot_id',
+                Rule::requiredIf(! $isBooking),
+                'nullable',
                 'integer',
                 'exists:products,id',
             ],
@@ -25,42 +30,53 @@ class AddToCartRequest extends FormRequest
                 'nullable',
                 'integer',
                 'exists:product_variants,id',
-                // Variant is required only when adding a product (not a service)
-                Rule::requiredIf(function () {
-                    return $this->filled('product_id') && !$this->filled('service_slot_id');
-                }),
             ],
-            
-            // Service fields
+
+            // ── Healer / practitioner slot (new) ──────────────────────────
+            'practitioner_offering_slot_id' => [
+                'nullable',
+                'integer',
+                'exists:practitioner_offering_slots,id',
+                // Must not be sent alongside the legacy service_slot_id
+                Rule::prohibitedIf($isLegacyService),
+            ],
+
+            // ── Legacy vendor service slot (kept for backward compat) ─────
             'service_slot_id' => [
-                'required_without:product_id',
+                'nullable',
                 'integer',
                 'exists:service_slots,id',
+                Rule::prohibitedIf($isPractitionerBooking),
             ],
+
+            // ── Shared booking fields ─────────────────────────────────────
             'booking_date' => [
-                'required_if:service_slot_id,*',
+                Rule::requiredIf($isBooking),
+                'nullable',
                 'date',
                 'after_or_equal:today',
             ],
             'start_time' => [
-                'required_if:service_slot_id,*',
-                'date_format:H:i:s',
+                Rule::requiredIf($isBooking),
+                'nullable',
+                // Accept both "H:i" (frontend) and "H:i:s" (legacy) formats
+                'regex:/^\d{1,2}:\d{2}(:\d{2})?$/',
             ],
             'end_time' => [
-                'required_if:service_slot_id,*',
-                'date_format:H:i:s',
-                'after:start_time',
+                Rule::requiredIf($isBooking),
+                'nullable',
+                'regex:/^\d{1,2}:\d{2}(:\d{2})?$/',
             ],
-            
-            // Quantity
+
+            // ── Quantity ──────────────────────────────────────────────────
             'quantity' => [
                 'required',
                 'integer',
                 'min:1',
-                function ($attribute, $value, $fail) {
-                    // Services should always have quantity 1
-                    if ($this->filled('service_slot_id') && $value != 1) {
-                        $fail('Services can only have quantity of 1.');
+                'max:99',
+                function ($attribute, $value, $fail) use ($isBooking) {
+                    if ($isBooking && $value != 1) {
+                        $fail('Bookings can only have a quantity of 1.');
                     }
                 },
             ],
@@ -70,38 +86,43 @@ class AddToCartRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'product_id.required_without' => 'Either product_id or service_slot_id is required.',
-            'service_slot_id.required_without' => 'Either product_id or service_slot_id is required.',
-            'variant_id.required_if' => 'Variant ID is required when adding a product.',
-            'booking_date.required_if' => 'Booking date is required for services.',
-            'start_time.required_if' => 'Start time is required for services.',
-            'end_time.required_if' => 'End time is required for services.',
-            'end_time.after' => 'End time must be after start time.',
+            'product_id.required'                          => 'A product_id or slot ID is required.',
+            'practitioner_offering_slot_id.prohibited'     => 'Cannot send both practitioner_offering_slot_id and service_slot_id.',
+            'service_slot_id.prohibited'                   => 'Cannot send both practitioner_offering_slot_id and service_slot_id.',
+            'booking_date.required'                        => 'Booking date is required for service bookings.',
+            'start_time.required'                          => 'Start time is required for service bookings.',
+            'start_time.regex'                             => 'Start time must be in H:i or H:i:s format (e.g. 10:00 or 10:00:00).',
+            'end_time.required'                            => 'End time is required for service bookings.',
+            'end_time.regex'                               => 'End time must be in H:i or H:i:s format (e.g. 11:00 or 11:00:00).',
         ];
     }
 
+    /**
+     * Normalise times to H:i:s before validation so the DB time column
+     * always receives a consistent format, and force quantity = 1 for bookings.
+     */
     protected function prepareForValidation(): void
     {
-        // Force quantity to 1 for services
-        if ($this->filled('service_slot_id')) {
-            $this->merge([
-                'quantity' => 1,
-            ]);
+        $patch = [];
+
+        // Normalise "10:00" → "10:00:00" for DB storage
+        foreach (['start_time', 'end_time'] as $field) {
+            if ($this->filled($field)) {
+                $time = $this->input($field);
+                // If only H:i, append seconds
+                if (preg_match('/^\d{1,2}:\d{2}$/', $time)) {
+                    $patch[$field] = $time . ':00';
+                }
+            }
         }
-    }
-}
 
-class UpdateCartItemRequest extends FormRequest
-{
-    public function authorize(): bool
-    {
-        return true;
-    }
+        // Bookings are always quantity 1
+        if ($this->filled('practitioner_offering_slot_id') || $this->filled('service_slot_id')) {
+            $patch['quantity'] = 1;
+        }
 
-    public function rules(): array
-    {
-        return [
-            'quantity' => ['required', 'integer', 'min:1', 'max:99'],
-        ];
+        if (! empty($patch)) {
+            $this->merge($patch);
+        }
     }
 }

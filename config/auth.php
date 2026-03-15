@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'admin' => [
+            'driver' => 'sanctum',  // ✅ CORRECT - for API tokens
+            'provider' => 'admins',  // ✅ CORRECT - use admins table
+        ],
     ],
 
     /*
@@ -69,6 +73,10 @@ return [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
     ],
 
     /*

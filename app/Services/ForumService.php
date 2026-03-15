@@ -3,22 +3,23 @@
 namespace App\Services;
 
 use App\Models\Forum;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ForumService
 {
     /**
-     * Get paginated list of forums with filters
+     * Get paginated list of forums, optionally filtered by type.
      */
     public function getForums(
-        ?string $category = null,
+        ?string $category    = null,
         ?string $subCategory = null,
-        string $sort = 'latest',
-        int $perPage = 10
+        ?string $forumType   = null,
+        string  $sort        = 'latest',
+        int     $perPage     = 10
     ): LengthAwarePaginator {
         $query = Forum::with(['author:id,name,email'])
-            ->withCount(['comments', 'likes', 'flags'])
-            ->where('status', 'approved'); // Only show approved forums
+            ->where('status', 'approved');
 
         if ($category) {
             $query->byCategory($category);
@@ -26,6 +27,12 @@ class ForumService
 
         if ($subCategory) {
             $query->bySubCategory($subCategory);
+        }
+
+        // Filter by forum_type when explicitly requested.
+        // When null, all types are returned (e.g. landing page / search).
+        if ($forumType && in_array($forumType, Forum::TYPES)) {
+            $query->byForumType($forumType);
         }
 
         if ($sort === 'popular') {
@@ -38,18 +45,12 @@ class ForumService
     }
 
     /**
-     * Get single forum with comments
-     * UPDATED: No longer auto-records views - frontend handles this after 30 seconds
+     * Get single forum with paginated comments.
      */
     public function getForumWithComments(int $forumId, ?int $userId = null): array
     {
         $forum = Forum::with(['author:id,name,email'])
-            ->withCount(['comments', 'likes', 'flags'])
             ->findOrFail($forumId);
-
-        // REMOVED: Don't auto-record views anymore
-        // Views are now recorded by the frontend after 30 seconds of active viewing
-        // via the /forums/{id}/view endpoint
 
         $comments = $forum->comments()
             ->with(['author:id,name,email'])
@@ -65,36 +66,48 @@ class ForumService
                 ->limit(3)
                 ->get()
                 ->map(function ($reply) use ($userId) {
-                    $reply->is_liked = $reply->isLikedBy($userId);
+                    $reply->is_liked   = $reply->isLikedBy($userId);
                     $reply->is_flagged = $reply->isFlaggedBy($userId);
-
                     return $reply;
                 });
 
-            $comment->is_liked = $comment->isLikedBy($userId);
+            $comment->is_liked   = $comment->isLikedBy($userId);
             $comment->is_flagged = $comment->isFlaggedBy($userId);
 
             return $comment;
         });
 
-        $forum->is_liked = $forum->isLikedBy($userId);
+        $forum->is_liked   = $forum->isLikedBy($userId);
         $forum->is_flagged = $forum->isFlaggedBy($userId);
 
         return [
-            'forum' => $forum,
+            'forum'    => $forum,
             'comments' => $comments,
         ];
     }
 
     /**
-     * Create a new forum
+     * Create a new forum.
+     *
+     * Business rules:
+     *   - forum_type 'healer' → author must be a practitioner (is_practitioner === true)
+     *   - forum_type 'vendor' → author must be an approved vendor
+     *   - forum_type 'general' → any authenticated user
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function createForum(array $data, int $authorId): Forum
     {
+        $user      = User::findOrFail($authorId);
+        $forumType = $data['forum_type'] ?? Forum::TYPE_GENERAL;
+
+        $this->authorizeForumType($user, $forumType);
+
         $forum = Forum::create([
             ...$data,
-            'author_id' => $authorId,
-            'status' => 'approved',
+            'author_id'  => $authorId,
+            'forum_type' => $forumType,
+            'status'     => 'approved',
         ]);
 
         $forum->load(['author:id,name,email']);
@@ -103,7 +116,29 @@ class ForumService
     }
 
     /**
-     * Delete a forum
+     * Throw if the user is not allowed to post in the requested forum type.
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    private function authorizeForumType(User $user, string $forumType): void
+    {
+        if ($forumType === Forum::TYPE_HEALER && ! $user->isPractitioner()) {
+            throw new \Illuminate\Auth\Access\AuthorizationException(
+                'Only verified healers can post in the Healers forum.'
+            );
+        }
+
+        if ($forumType === Forum::TYPE_VENDOR && ! $user->is_vendor) {
+            throw new \Illuminate\Auth\Access\AuthorizationException(
+                'Only verified vendors can post in the Vendors forum.'
+            );
+        }
+    }
+
+    /**
+     * Delete a forum (soft-delete). Only the author may delete their own forum.
+     *
+     * @throws \Exception
      */
     public function deleteForum(int $forumId, int $userId): void
     {
@@ -116,17 +151,11 @@ class ForumService
         $forum->delete();
     }
 
-    /**
-     * Check if forum exists
-     */
     public function forumExists(int $forumId): bool
     {
         return Forum::where('id', $forumId)->exists();
     }
 
-    /**
-     * Get forum by ID
-     */
     public function getForumById(int $forumId): Forum
     {
         return Forum::findOrFail($forumId);

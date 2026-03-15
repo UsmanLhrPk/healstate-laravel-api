@@ -13,9 +13,14 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
         'session_id',
+        // Physical products
         'product_id',
         'variant_id',
+        // Legacy vendor service slots (kept for backward compat)
         'service_slot_id',
+        // Healer / practitioner offering slots
+        'practitioner_offering_slot_id',
+        // Shared booking fields (used by both slot types)
         'booking_date',
         'start_time',
         'end_time',
@@ -23,11 +28,15 @@ class Cart extends Model
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
-        'booking_date' => 'date',     
-        'start_time' => 'datetime:H:i:s', 
-        'end_time' => 'datetime:H:i:s',   
+        'quantity'     => 'integer',
+        'booking_date' => 'date',
+        // Store as plain strings so "10:00" round-trips correctly
+        // (casting to datetime:H:i:s would prepend today's date)
+        'start_time'   => 'string',
+        'end_time'     => 'string',
     ];
+
+    // ── Relations ────────────────────────────────────────────────────────────
 
     public function user(): BelongsTo
     {
@@ -44,8 +53,35 @@ class Cart extends Model
         return $this->belongsTo(ProductVariant::class);
     }
 
+    /** Legacy vendor service slot */
     public function serviceSlot(): BelongsTo
     {
         return $this->belongsTo(ServiceSlot::class);
+    }
+
+    /** Healer / practitioner offering slot */
+    public function practitionerOfferingSlot(): BelongsTo
+    {
+        return $this->belongsTo(PractitionerOfferingSlot::class);
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /** True when this cart row represents a healer booking */
+    public function isPractitionerBooking(): bool
+    {
+        return ! is_null($this->practitioner_offering_slot_id);
+    }
+
+    /** True when this cart row represents a legacy vendor service booking */
+    public function isServiceBooking(): bool
+    {
+        return ! is_null($this->service_slot_id);
+    }
+
+    /** True when this cart row represents a physical product */
+    public function isProduct(): bool
+    {
+        return ! is_null($this->product_id);
     }
 }

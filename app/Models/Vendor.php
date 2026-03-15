@@ -21,16 +21,25 @@ class Vendor extends Model
         'city',
         'state_province',
         'postal_code',
-        'currency', // Add this
+        'currency',
         'verified_at',
+        'status',
+        'rejection_reason',
+        'admin_notes',
+        'reviewed_by',
+        'reviewed_at',
     ];
 
     protected $casts = [
         'category' => 'array',
         'verified_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
-    // Add currency constants
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+
     public const CURRENCY_USD = 'USD';
     public const CURRENCY_EUR = 'EUR';
     public const CURRENCY_GBP = 'GBP';
@@ -44,6 +53,11 @@ class Vendor extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'reviewed_by');
     }
 
     public function products(): HasMany
@@ -71,7 +85,21 @@ class Vendor extends Model
         return !is_null($this->verified_at);
     }
 
-    // Add currency helper methods
+    public function isPending(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === self::STATUS_APPROVED;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === self::STATUS_REJECTED;
+    }
+
     public function getCurrencySymbol(): string
     {
         return self::CURRENCIES[$this->currency]['symbol'] ?? '$';

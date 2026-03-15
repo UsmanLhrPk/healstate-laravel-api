@@ -1,20 +1,27 @@
-name: Endpoints
-description: ''
+name: 'Practitioner Applications'
+description: |-
+
+  APIs for managing practitioner/healer applications
 endpoints:
   -
     custom: []
     httpMethods:
-      - GET
-    uri: api/vendor/orders
+      - POST
+    uri: api/practitioners/applications
     metadata:
       custom: []
-      groupName: Endpoints
-      groupDescription: ''
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get all orders for vendor'
-      description: ''
-      authenticated: false
+      title: 'Submit Practitioner Application'
+      description: |-
+        Submit a new application to become a practitioner on the platform.
+        Users can upload up to 5 credential documents (PDF/JPG, max 5MB each).
+        Only one pending application is allowed per user.
+      authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
@@ -23,231 +30,415 @@ endpoints:
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
+    bodyParameters:
+      phone_number:
         custom: []
-        status: 401
-        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: 'http://localhost:3000'
-          access-control-allow-credentials: 'true'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PATCH
-    uri: 'api/vendor/orders/{order_id}/status'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Update order status'
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
+        name: phone_number
+        description: "The practitioner's phone number."
         required: true
-        example: 7
+        example: '+1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      professional_title:
+        custom: []
+        name: professional_title
+        description: 'Professional title or credentials.'
+        required: true
+        example: 'Licensed Massage Therapist'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      years_experience:
+        custom: []
+        name: years_experience
+        description: 'Years of experience.'
+        required: true
+        example: 5-10
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      bio:
+        custom: []
+        name: bio
+        description: 'Bio/About me (max 500 characters).'
+        required: true
+        example: 'Experienced massage therapist specializing in...'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      credentials:
+        custom: []
+        name: credentials
+        description: 'Array of credential files (1-5 files).'
+        required: true
+        example:
+          -
+            file: ...
+            document_type: license
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      primary_category_id:
+        custom: []
+        name: primary_category_id
+        description: 'Primary service category ID.'
+        required: true
+        example: 1
         type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      selected_services:
+        custom: []
+        name: selected_services
+        description: 'The <code>id</code> of an existing record in the service_subcategories table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      status:
+      service_description:
         custom: []
-        name: status
+        name: service_description
+        description: 'Description of services offered (max 1000 characters).'
+        required: true
+        example: 'I specialize in deep tissue massage...'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      availability_schedule:
+        custom: []
+        name: availability_schedule
+        description: 'Weekly availability schedule.'
+        required: true
+        example:
+          monday:
+            morning: true
+            afternoon: false
+            evening: true
+        type: object
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      availability_schedule.schedule_type:
+        custom: []
+        name: availability_schedule.schedule_type
         description: ''
         required: true
-        example: processing
+        example: date_range
         type: string
         enumValues:
-          - processing
-          - shipped
-          - delivered
+          - date_range
+          - weekly
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-    cleanBodyParameters:
-      status: processing
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'api/vendor/orders/{order_id}/cancel'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Vendor cancels order'
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
+      availability_schedule.start_date:
         custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      reason:
-        custom: []
-        name: reason
-        description: 'Must not be greater than 500 characters.'
-        required: true
-        example: b
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      reason: b
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'api/vendor/orders/{order_id}/approve-cancellation'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Approve cancellation request'
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses: []
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'api/vendor/orders/{order_id}/deny-cancellation'
-    metadata:
-      custom: []
-      groupName: Endpoints
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Deny cancellation request'
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      order_id:
-        custom: []
-        name: order_id
-        description: 'The ID of the order.'
-        required: true
-        example: 7
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      order_id: 7
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      reason:
-        custom: []
-        name: reason
-        description: 'Must not be greater than 500 characters.'
+        name: availability_schedule.start_date
+        description: 'This field is required when <code>availability_schedule.schedule_type</code> is <code>date_range</code>. Must be a valid date.'
         required: false
-        example: b
+        example: '2026-03-09T13:56:36'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      availability_schedule.end_date:
+        custom: []
+        name: availability_schedule.end_date
+        description: 'This field is required when <code>availability_schedule.schedule_type</code> is <code>date_range</code>. Must be a valid date. Must be a date after or equal to <code>availability_schedule.start_date</code>.'
+        required: false
+        example: '2052-04-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      availability_schedule.days:
+        custom: []
+        name: availability_schedule.days
+        description: ''
+        required: true
+        example:
+          - []
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      timezone:
+        custom: []
+        name: timezone
+        description: Timezone.
+        required: true
+        example: America/New_York
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      terms_agreed:
+        custom: []
+        name: terms_agreed
+        description: 'Must agree to terms of service.'
+        required: true
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'credentials[].file':
+        custom: []
+        name: 'credentials[].file'
+        description: 'Must be a file. Must be at least 1 kilobyte. Must not be greater than 5120 kilobytes.'
+        required: true
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'credentials[].license_number':
+        custom: []
+        name: 'credentials[].license_number'
+        description: 'Must not be greater than 100 characters.'
+        required: true
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'credentials[].issuing_organization':
+        custom: []
+        name: 'credentials[].issuing_organization'
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: g
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'availability_schedule.days[].is_available':
+        custom: []
+        name: 'availability_schedule.days[].is_available'
+        description: ''
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'availability_schedule.days[].slot_duration_minutes':
+        custom: []
+        name: 'availability_schedule.days[].slot_duration_minutes'
+        description: ''
+        required: true
+        example: '60'
+        type: integer
+        enumValues:
+          - '15'
+          - '30'
+          - '45'
+          - '60'
+          - '90'
+          - '120'
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'availability_schedule.days[].time_slots':
+        custom: []
+        name: 'availability_schedule.days[].time_slots'
+        description: ''
+        required: false
+        example: null
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'availability_schedule.days[].time_slots[].start_time':
+        custom: []
+        name: 'availability_schedule.days[].time_slots[].start_time'
+        description: 'Must match the regex /^\d{2}:\d{2}$/.'
+        required: false
+        example: '64:25'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'availability_schedule.days[].time_slots[].end_time':
+        custom: []
+        name: 'availability_schedule.days[].time_slots[].end_time'
+        description: 'Must match the regex /^\d{2}:\d{2}$/.'
+        required: false
+        example: '64:25'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      license_number:
+        custom: []
+        name: license_number
+        description: 'optional License or certification number.'
+        required: false
+        example: LMT123456
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      issuing_organization:
+        custom: []
+        name: issuing_organization
+        description: 'optional Issuing organization name.'
+        required: false
+        example: 'State Board of Massage'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'credentials.*.file':
+        custom: []
+        name: 'credentials.*.file'
+        description: 'Credential document file (PDF/JPG/PNG, max 5MB).'
+        required: true
+        example: null
+        type: file
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'credentials.*.document_type':
+        custom: []
+        name: 'credentials.*.document_type'
+        description: 'Type of document.'
+        required: true
+        example: license
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      service_subcategories:
+        custom: []
+        name: service_subcategories
+        description: 'Array of service subcategory IDs.'
+        required: true
+        example:
+          - 1
+          - 2
+          - 3
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
-      reason: b
+      phone_number: '+1234567890'
+      professional_title: 'Licensed Massage Therapist'
+      years_experience: 5-10
+      bio: 'Experienced massage therapist specializing in...'
+      credentials:
+        -
+          file: ...
+          document_type: license
+      primary_category_id: 1
+      selected_services:
+        - 16
+      service_description: 'I specialize in deep tissue massage...'
+      availability_schedule:
+        monday:
+          morning: true
+          afternoon: false
+          evening: true
+        schedule_type: date_range
+        start_date: '2026-03-09T13:56:36'
+        end_date: '2052-04-01'
+        days:
+          -
+            is_available: true
+            slot_duration_minutes: '60'
+            time_slots:
+              -
+                start_time: '64:25'
+                end_time: '64:25'
+      timezone: America/New_York
+      terms_agreed: true
+      license_number: LMT123456
+      issuing_organization: 'State Board of Massage'
+      service_subcategories:
+        - 1
+        - 2
+        - 3
     fileParameters: []
-    responses: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+            "success": true,
+            "message": "Application submitted successfully. We will review within 3-5 business days.",
+            "data": {
+              "id": 1,
+              "user_id": 123,
+              "status": "pending",
+              "professional_title": "Licensed Massage Therapist",
+              "submitted_at": "2024-02-08T14:30:00Z"
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "You already have a pending application."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: |-
+          {
+            "success": false,
+            "message": "Validation failed",
+            "errors": {
+              "bio": ["The bio must not exceed 500 characters."],
+              "credentials": ["At least one credential document is required."]
+            }
+          }
+        headers: []
+        description: ''
     responseFields: []
     auth: []
     controller: null
@@ -257,16 +448,18 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/user
+    uri: api/practitioners/applications/my-application
     metadata:
       custom: []
-      groupName: Endpoints
-      groupDescription: ''
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
       subgroup: ''
       subgroupDescription: ''
-      title: "Get the authenticated user's data."
-      description: ''
-      authenticated: false
+      title: 'Get My Application'
+      description: "Retrieve the current authenticated user's latest practitioner application."
+      authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
@@ -281,14 +474,694 @@ endpoints:
     responses:
       -
         custom: []
-        status: 401
-        content: '{"message":"Unauthenticated","error":"You must be authenticated to access this resource"}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: 'http://localhost:3000'
-          access-control-allow-credentials: 'true'
-        description: null
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "user_id": 123,
+              "status": "pending",
+              "professional_title": "Licensed Massage Therapist",
+              "years_experience": "5-10",
+              "primary_category": {
+                "id": 1,
+                "name": "Body-Based Services"
+              },
+              "services": [
+                {"id": 1, "name": "Massage Therapy"}
+              ],
+              "documents": [
+                {
+                  "id": 1,
+                  "file_name": "license.pdf",
+                  "document_type": "license",
+                  "file_size_mb": 1.2
+                }
+              ],
+              "rejection_reason": null,
+              "reviewed_at": null,
+              "submitted_at": "2024-02-08T14:30:00Z"
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "No application found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/practitioners/applications/check-pending
+    metadata:
+      custom: []
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Check Pending Application Status'
+      description: |-
+        Check if the current user has a pending practitioner application.
+        Useful for determining whether to show the application form.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "has_pending_application": true
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "has_pending_application": false
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/applications/{id}'
+    metadata:
+      custom: []
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Application Details'
+      description: |-
+        Retrieve details of a specific practitioner application.
+        Users can only view their own applications. Admins can view any application.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The application ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "user_id": 123,
+              "status": "pending",
+              "professional_title": "Licensed Massage Therapist",
+              "bio": "Experienced therapist...",
+              "documents": [],
+              "submitted_at": "2024-02-08T14:30:00Z"
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "Unauthorized."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Application not found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/admin/practitioners/applications
+    metadata:
+      custom: []
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get All Applications (Admin)'
+      description: |-
+        Retrieve all practitioner applications with filtering and sorting options.
+        Admin access required.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      status:
+        custom: []
+        name: status
+        description: 'Filter by status: "pending", "approved", or "rejected".'
+        required: false
+        example: pending
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Filter by primary category ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      sort_by:
+        custom: []
+        name: sort_by
+        description: 'Field to sort by.'
+        required: false
+        example: submitted_at
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      sort_order:
+        custom: []
+        name: sort_order
+        description: 'Sort order: "asc" or "desc".'
+        required: false
+        example: desc
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Number of results per page.'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      status: pending
+      category_id: 1
+      sort_by: submitted_at
+      sort_order: desc
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [...],
+            "meta": {
+              "current_page": 1,
+              "last_page": 3,
+              "per_page": 15,
+              "total": 42
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "Unauthorized. Admin access required."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/admin/practitioners/applications/{id}'
+    metadata:
+      custom: []
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Application Details'
+      description: |-
+        Retrieve details of a specific practitioner application.
+        Users can only view their own applications. Admins can view any application.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The application ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "user_id": 123,
+              "status": "pending",
+              "professional_title": "Licensed Massage Therapist",
+              "bio": "Experienced therapist...",
+              "documents": [],
+              "submitted_at": "2024-02-08T14:30:00Z"
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "Unauthorized."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Application not found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/admin/practitioners/applications/pending
+    metadata:
+      custom: []
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Pending Applications (Admin)'
+      description: |-
+        Retrieve all pending practitioner applications for admin review.
+        Admin access required.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "user": {
+                  "id": 123,
+                  "name": "Jane Smith",
+                  "email": "jane@example.com"
+                },
+                "professional_title": "Licensed Massage Therapist",
+                "years_experience": "5-10",
+                "primary_category": {
+                  "id": 1,
+                  "name": "Body-Based Services"
+                },
+                "submitted_at": "2024-02-08T14:30:00Z"
+              }
+            ],
+            "count": 5
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "Unauthorized. Admin access required."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/admin/practitioners/applications/{id}/review'
+    metadata:
+      custom: []
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Review Application (Admin)'
+      description: |-
+        Approve or reject a practitioner application. Admin access required.
+        When approved, a practitioner profile is automatically created.
+        Email notifications are sent to the applicant.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The application ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      action:
+        custom: []
+        name: action
+        description: 'Action to take: "approve" or "reject".'
+        required: true
+        example: approve
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      rejection_reason:
+        custom: []
+        name: rejection_reason
+        description: 'optional Reason for rejection (required if action is "reject").'
+        required: false
+        example: 'Insufficient credentials provided.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      admin_notes:
+        custom: []
+        name: admin_notes
+        description: 'optional Internal notes not shown to applicant.'
+        required: false
+        example: 'Follow up in 6 months.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      action: approve
+      rejection_reason: 'Insufficient credentials provided.'
+      admin_notes: 'Follow up in 6 months.'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Application approved successfully.",
+            "data": {
+              "application": {
+                "id": 1,
+                "status": "approved",
+                "reviewed_by": 1,
+                "reviewed_at": "2024-02-08T15:00:00Z"
+              },
+              "profile_id": 1
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Application rejected.",
+            "data": {
+              "id": 1,
+              "status": "rejected",
+              "rejection_reason": "Insufficient credentials...",
+              "reviewed_at": "2024-02-08T15:00:00Z"
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 400
+        content: |-
+          {
+            "success": false,
+            "message": "Application has already been reviewed."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Application not found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/admin/practitioners/documents/{document_id}/download'
+    metadata:
+      custom: []
+      groupName: 'Practitioner Applications'
+      groupDescription: |-
+
+        APIs for managing practitioner/healer applications
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Download Application Document (Admin)'
+      description: |-
+        Download a credential document uploaded by a practitioner applicant.
+        Files are stored privately and served through this authenticated endpoint.
+        Admin access required.
+      authenticated: true
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      document_id:
+        custom: []
+        name: document_id
+        description: 'The ID of the document.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      document:
+        custom: []
+        name: document
+        description: 'The document ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      document_id: 1
+      document: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            Binary file content with appropriate Content-Disposition header.
+          }
+        headers: []
+        description: 'File download'
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "Unauthorized. Admin access required."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "File not found."
+          }
+        headers: []
+        description: ''
     responseFields: []
     auth: []
     controller: null

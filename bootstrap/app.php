@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -17,10 +18,18 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function () {
+            Route::middleware(['web', 'api'])
+                ->group(base_path('routes/auth.php'));
+
+            Route::middleware(['web', 'api'])
+                ->get('/sanctum/csrf-cookie', \Laravel\Sanctum\Http\Controllers\CsrfCookieController::class.'@show')
+                ->name('sanctum.csrf-cookie');
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: [
-            '*', // Exclude all routes from CSRF verification
+            '*',
         ]);
 
         $middleware->api(prepend: [
@@ -29,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
     })
     ->withMiddleware(function (Middleware $middleware) {
@@ -38,7 +48,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
-        // Handle Validation Errors (422)
         $exceptions->renderable(function (ValidationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
@@ -48,7 +57,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Handle Authentication Errors (401)
         $exceptions->renderable(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
@@ -58,7 +66,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Handle Authorization Errors (403)
         $exceptions->renderable(function (AccessDeniedHttpException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
@@ -68,7 +75,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Handle Method Not Allowed (405)
         $exceptions->renderable(function (MethodNotAllowedHttpException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json([
@@ -78,7 +84,6 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Handle Model Not Found (404)
         $exceptions->renderable(function (ModelNotFoundException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 $model = class_basename($e->getModel());
@@ -103,10 +108,8 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Handle Route Not Found (404)
         $exceptions->renderable(function (NotFoundHttpException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
-                // Check if this is wrapping a ModelNotFoundException
                 $previous = $e->getPrevious();
                 if ($previous instanceof ModelNotFoundException) {
                     $model = class_basename($previous->getModel());
@@ -137,12 +140,10 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
-        // Handle All Other Exceptions (500)
         $exceptions->renderable(function (Throwable $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 $statusCode = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 500;
 
-                // In debug mode, show detailed errors
                 if (config('app.debug')) {
                     return response()->json([
                         'message' => 'Server error',
@@ -153,7 +154,6 @@ return Application::configure(basePath: dirname(__DIR__))
                     ], $statusCode);
                 }
 
-                // In production, hide details
                 return response()->json([
                     'message' => 'Server error',
                     'error' => 'An unexpected error occurred. Please try again later.',

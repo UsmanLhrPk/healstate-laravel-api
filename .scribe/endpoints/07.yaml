@@ -1,24 +1,448 @@
-name: 'Cart Management'
+name: 'Practitioner Profiles'
 description: |-
 
-  APIs for managing shopping cart
+  APIs for browsing and managing practitioner profiles
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: api/cart
+    uri: api/practitioners/profiles
     metadata:
       custom: []
-      groupName: 'Cart Management'
+      groupName: 'Practitioner Profiles'
       groupDescription: |-
 
-        APIs for managing shopping cart
+        APIs for browsing and managing practitioner profiles
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get Cart'
-      description: "Retrieve all items in the user's cart."
+      title: 'List All Practitioners'
+      description: |-
+        Get a paginated list of all active practitioner profiles with filtering,
+        searching, and sorting capabilities. Public endpoint, no authentication required.
       authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Filter by primary service category.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      service_id:
+        custom: []
+        name: service_id
+        description: 'Filter by specific service subcategory.'
+        required: false
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      accepting_clients:
+        custom: []
+        name: accepting_clients
+        description: 'Only show practitioners accepting new clients.'
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      search:
+        custom: []
+        name: search
+        description: 'Search by practitioner name or professional title.'
+        required: false
+        example: massage
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      sort_by:
+        custom: []
+        name: sort_by
+        description: 'Sort field: "created_at", "rating", or "bookings".'
+        required: false
+        example: rating
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      sort_order:
+        custom: []
+        name: sort_order
+        description: 'Sort order: "asc" or "desc".'
+        required: false
+        example: desc
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Results per page (1-100).'
+        required: false
+        example: 20
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      category_id: 1
+      service_id: 5
+      accepting_clients: true
+      search: massage
+      sort_by: rating
+      sort_order: desc
+      per_page: 20
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "user_id": 123,
+                "user": {
+                  "id": 123,
+                  "name": "Jane Smith"
+                },
+                "phone_number": "+1234567890",
+                "professional_title": "Licensed Massage Therapist",
+                "years_experience": "5-10",
+                "bio": "Experienced therapist...",
+                "primary_category": {
+                  "id": 1,
+                  "name": "Body-Based Services"
+                },
+                "services": [
+                  {
+                    "id": 1,
+                    "name": "Massage Therapy"
+                  }
+                ],
+                "is_accepting_clients": true,
+                "statistics": {
+                  "total_bookings": 45,
+                  "average_rating": 4.85,
+                  "total_reviews": 23
+                },
+                "approved_at": "2024-01-15T10:30:00Z"
+              }
+            ],
+            "meta": {
+              "current_page": 1,
+              "last_page": 5,
+              "per_page": 20,
+              "total": 87
+            }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/profiles/{id}'
+    metadata:
+      custom: []
+      groupName: 'Practitioner Profiles'
+      groupDescription: |-
+
+        APIs for browsing and managing practitioner profiles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Practitioner Profile'
+      description: |-
+        Retrieve detailed information about a specific practitioner.
+        Public endpoint, no authentication required.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The practitioner profile ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "user": {
+                "id": 123,
+                "name": "Jane Smith"
+              },
+              "professional_title": "Licensed Massage Therapist",
+              "years_experience": "5-10",
+              "bio": "I am an experienced massage therapist...",
+              "license_number": "LMT123456",
+              "issuing_organization": "State Board of Massage",
+              "primary_category": {
+                "id": 1,
+                "name": "Body-Based Services"
+              },
+              "services": [
+                {"id": 1, "name": "Massage Therapy"},
+                {"id": 2, "name": "Acupuncture"}
+              ],
+              "service_description": "I specialize in deep tissue massage...",
+              "availability_schedule": {
+                "monday": {"morning": true, "afternoon": false, "evening": true},
+                "tuesday": {"morning": true, "afternoon": true, "evening": false}
+              },
+              "timezone": "America/New_York",
+              "is_active": true,
+              "is_accepting_clients": true,
+              "profile_image_url": "https://example.com/image.jpg",
+              "statistics": {
+                "total_bookings": 45,
+                "average_rating": 4.85,
+                "total_reviews": 23
+              },
+              "approved_at": "2024-01-15T10:30:00Z",
+              "created_at": "2024-01-15T10:30:00Z"
+            }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Practitioner profile not found."
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/practitioners/profiles/top-rated
+    metadata:
+      custom: []
+      groupName: 'Practitioner Profiles'
+      groupDescription: |-
+
+        APIs for browsing and managing practitioner profiles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Top Rated Practitioners'
+      description: |-
+        Retrieve a list of the highest-rated practitioners.
+        Only includes active practitioners accepting clients.
+        Public endpoint, no authentication required.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      limit:
+        custom: []
+        name: limit
+        description: 'Number of practitioners to return (1-50).'
+        required: false
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      limit: 10
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "user": {
+                  "id": 123,
+                  "name": "Jane Smith"
+                },
+                "professional_title": "Licensed Massage Therapist",
+                "statistics": {
+                  "average_rating": 4.95,
+                  "total_reviews": 120,
+                  "total_bookings": 250
+                }
+              }
+            ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/practitioners/profiles/category/{categoryId}'
+    metadata:
+      custom: []
+      groupName: 'Practitioner Profiles'
+      groupDescription: |-
+
+        APIs for browsing and managing practitioner profiles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get Practitioners by Category'
+      description: |-
+        Retrieve practitioners in a specific service category.
+        Only includes active practitioners accepting clients, sorted by rating.
+        Public endpoint, no authentication required.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      categoryId:
+        custom: []
+        name: categoryId
+        description: 'The service category ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      categoryId: 1
+    queryParameters:
+      limit:
+        custom: []
+        name: limit
+        description: 'Number of practitioners to return (1-50).'
+        required: false
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      limit: 10
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "professional_title": "Licensed Massage Therapist",
+                "primary_category": {
+                  "id": 1,
+                  "name": "Body-Based Services"
+                },
+                "statistics": {
+                  "average_rating": 4.85,
+                  "total_reviews": 23
+                }
+              }
+            ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/practitioners/my-profile
+    metadata:
+      custom: []
+      groupName: 'Practitioner Profiles'
+      groupDescription: |-
+
+        APIs for browsing and managing practitioner profiles
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get My Practitioner Profile'
+      description: |-
+        Retrieve the authenticated user's practitioner profile.
+        User must be an approved practitioner.
+      authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
@@ -36,153 +460,28 @@ endpoints:
         status: 200
         content: |-
           {
+            "success": true,
             "data": {
-              "items": [],
-              "count": 3,
-              "totals": {
-                "subtotal": 89.97,
-                "tax": 7.20,
-                "shipping": 10.00,
-                "total": 107.17
+              "id": 1,
+              "professional_title": "Licensed Massage Therapist",
+              "is_active": true,
+              "is_accepting_clients": true,
+              "statistics": {
+                "total_bookings": 45,
+                "average_rating": 4.85,
+                "total_reviews": 23
               }
             }
           }
         headers: []
         description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/cart
-    metadata:
-      custom: []
-      groupName: 'Cart Management'
-      groupDescription: |-
-
-        APIs for managing shopping cart
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Add Item to Cart'
-      description: 'Add a product to the shopping cart. Works for both authenticated and guest users.'
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      product_id:
-        custom: []
-        name: product_id
-        description: 'The product ID.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      variant_id:
-        custom: []
-        name: variant_id
-        description: 'optional The variant ID if applicable.'
-        required: false
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        deprecated: false
-      service_slot_id:
-        custom: []
-        name: service_slot_id
-        description: 'This field is required when <code>product_id</code> is not present. The <code>id</code> of an existing record in the service_slots table.'
-        required: false
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      booking_date:
-        custom: []
-        name: booking_date
-        description: 'This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date. Must be a date after or equal to <code>today</code>.'
-        required: false
-        example: '2052-02-20'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      start_time:
-        custom: []
-        name: start_time
-        description: 'This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>.'
-        required: false
-        example: '21:12:21'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      end_time:
-        custom: []
-        name: end_time
-        description: 'This field is required when <code>service_slot_id</code> is <code>*</code>. Must be a valid date in the format <code>H:i:s</code>. Must be a date after <code>start_time</code>.'
-        required: false
-        example: '2052-02-20'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      quantity:
-        custom: []
-        name: quantity
-        description: 'Quantity to add (1-99).'
-        required: true
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      product_id: 1
-      variant_id: 2
-      service_slot_id: 16
-      booking_date: '2052-02-20'
-      start_time: '21:12:21'
-      end_time: '2052-02-20'
-      quantity: 2
-    fileParameters: []
-    responses:
       -
         custom: []
-        status: 201
+        status: 404
         content: |-
           {
-            "message": "Item added to cart",
-            "data": {
-              "id": 1,
-              "product_id": 1,
-              "variant_id": 2,
-              "quantity": 2,
-              "product": {
-                "id": 1,
-                "name": "Product Name",
-                "price": 29.99
-              }
-            }
+            "success": false,
+            "message": "You do not have a practitioner profile."
           }
         headers: []
         description: ''
@@ -195,38 +494,29 @@ endpoints:
     custom: []
     httpMethods:
       - PUT
-    uri: 'api/cart/{cart_id}'
+    uri: 'api/practitioners/profiles/{id}'
     metadata:
       custom: []
-      groupName: 'Cart Management'
+      groupName: 'Practitioner Profiles'
       groupDescription: |-
 
-        APIs for managing shopping cart
+        APIs for browsing and managing practitioner profiles
       subgroup: ''
       subgroupDescription: ''
-      title: 'Update Cart Item'
-      description: 'Update the quantity of an item in the cart.'
-      authenticated: false
+      title: 'Update Practitioner Profile'
+      description: |-
+        Update the practitioner profile information.
+        Users can only update their own profile. Admins can update any profile.
+      authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      cart_id:
+      id:
         custom: []
-        name: cart_id
-        description: 'The ID of the cart.'
-        required: true
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      cart:
-        custom: []
-        name: cart
-        description: 'The cart item ID.'
+        name: id
+        description: 'The profile ID.'
         required: true
         example: 1
         type: integer
@@ -235,24 +525,117 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      cart_id: 2
-      cart: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      quantity:
+      phone_number:
         custom: []
-        name: quantity
-        description: 'New quantity (1-99).'
-        required: true
-        example: 3
-        type: integer
+        name: phone_number
+        description: 'optional Phone number.'
+        required: false
+        example: '+1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      professional_title:
+        custom: []
+        name: professional_title
+        description: 'optional Professional title.'
+        required: false
+        example: 'Licensed Massage Therapist'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      bio:
+        custom: []
+        name: bio
+        description: 'optional Bio (max 500 characters).'
+        required: false
+        example: 'Updated bio text...'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      service_description:
+        custom: []
+        name: service_description
+        description: 'optional Service description (max 1000 characters).'
+        required: false
+        example: 'I specialize in...'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      availability_schedule:
+        custom: []
+        name: availability_schedule
+        description: 'optional Weekly availability.'
+        required: false
+        example:
+          monday:
+            morning: true
+        type: object
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      timezone:
+        custom: []
+        name: timezone
+        description: 'optional Timezone.'
+        required: false
+        example: America/Los_Angeles
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      is_accepting_clients:
+        custom: []
+        name: is_accepting_clients
+        description: 'optional Whether accepting new clients.'
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      service_subcategories:
+        custom: []
+        name: service_subcategories
+        description: 'optional Array of service subcategory IDs.'
+        required: false
+        example:
+          - 1
+          - 2
+          - 3
+        type: 'string[]'
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      quantity: 3
+      phone_number: '+1234567890'
+      professional_title: 'Licensed Massage Therapist'
+      bio: 'Updated bio text...'
+      service_description: 'I specialize in...'
+      availability_schedule:
+        monday:
+          morning: true
+      timezone: America/Los_Angeles
+      is_accepting_clients: true
+      service_subcategories:
+        - 1
+        - 2
+        - 3
     fileParameters: []
     responses:
       -
@@ -260,11 +643,33 @@ endpoints:
         status: 200
         content: |-
           {
-            "message": "Cart updated successfully",
+            "success": true,
+            "message": "Profile updated successfully.",
             "data": {
               "id": 1,
-              "quantity": 3
+              "professional_title": "Licensed Massage Therapist",
+              "bio": "Updated bio..."
             }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "Unauthorized."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Profile not found."
           }
         headers: []
         description: ''
@@ -276,39 +681,31 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - DELETE
-    uri: 'api/cart/{cart_id}'
+      - POST
+    uri: 'api/practitioners/profiles/{id}/toggle-active'
     metadata:
       custom: []
-      groupName: 'Cart Management'
+      groupName: 'Practitioner Profiles'
       groupDescription: |-
 
-        APIs for managing shopping cart
+        APIs for browsing and managing practitioner profiles
       subgroup: ''
       subgroupDescription: ''
-      title: 'Remove Item from Cart'
-      description: 'Remove an item from the shopping cart.'
-      authenticated: false
+      title: 'Toggle Profile Active Status'
+      description: |-
+        Activate or deactivate a practitioner profile.
+        Users can toggle their own profile. Admins can toggle any profile.
+        Inactive profiles are hidden from public listings.
+      authenticated: true
       deprecated: false
     headers:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      cart_id:
+      id:
         custom: []
-        name: cart_id
-        description: 'The ID of the cart.'
-        required: true
-        example: 2
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      cart:
-        custom: []
-        name: cart
-        description: 'The cart item ID.'
+        name: id
+        description: 'The profile ID.'
         required: true
         example: 1
         type: integer
@@ -317,8 +714,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      cart_id: 2
-      cart: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -330,93 +726,32 @@ endpoints:
         status: 200
         content: |-
           {
-            "message": "Item removed from cart"
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: api/cart
-    metadata:
-      custom: []
-      groupName: 'Cart Management'
-      groupDescription: |-
-
-        APIs for managing shopping cart
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Clear Cart'
-      description: 'Remove all items from the cart.'
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
-            "message": "Cart cleared successfully"
-          }
-        headers: []
-        description: ''
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/cart/count
-    metadata:
-      custom: []
-      groupName: 'Cart Management'
-      groupDescription: |-
-
-        APIs for managing shopping cart
-      subgroup: ''
-      subgroupDescription: ''
-      title: 'Get Cart Count'
-      description: 'Get the number of items in cart (for badge display).'
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: |-
-          {
+            "success": true,
+            "message": "Profile status updated.",
             "data": {
-              "count": 5
+              "id": 1,
+              "is_active": false
             }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "Unauthorized."
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Profile not found."
           }
         headers: []
         description: ''

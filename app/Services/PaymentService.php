@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
 use Stripe\Exception\ApiErrorException;
+use Stripe\PaymentIntent;
+use Stripe\Stripe;
 
 class PaymentService
 {
@@ -21,7 +21,7 @@ class PaymentService
         try {
             // Stripe requires currency in lowercase
             $currency = strtolower($currency);
-            
+
             $paymentIntent = PaymentIntent::create([
                 'amount' => $this->convertToSmallestUnit($amount, $currency),
                 'currency' => $currency,
@@ -36,7 +36,7 @@ class PaymentService
                 'payment_intent_id' => $paymentIntent->id,
             ];
         } catch (ApiErrorException $e) {
-            throw new \Exception('Payment intent creation failed: ' . $e->getMessage());
+            throw new \Exception('Payment intent creation failed: '.$e->getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ class PaymentService
     {
         try {
             $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
-            
+
             // Get currency to convert back properly
             $currency = strtoupper($paymentIntent->currency);
 
@@ -55,7 +55,7 @@ class PaymentService
                 'currency' => $currency,
             ];
         } catch (ApiErrorException $e) {
-            throw new \Exception('Payment confirmation failed: ' . $e->getMessage());
+            throw new \Exception('Payment confirmation failed: '.$e->getMessage());
         }
     }
 
@@ -63,13 +63,13 @@ class PaymentService
     {
         try {
             $refundData = ['payment_intent' => $paymentIntentId];
-            
+
             if ($amount && $currency) {
-                $refundData['amount'] = $this->convertToSmallestUnit($amount, $currency);
+                $refundData['amount'] = $this->convertToSmallestUnit($amount, strtolower($currency));
             }
 
             $refund = \Stripe\Refund::create($refundData);
-            
+
             $refundCurrency = strtoupper($refund->currency);
 
             return [
@@ -78,8 +78,31 @@ class PaymentService
                 'amount' => $this->convertFromSmallestUnit($refund->amount, $refundCurrency),
                 'currency' => $refundCurrency,
             ];
+
         } catch (ApiErrorException $e) {
-            throw new \Exception('Refund failed: ' . $e->getMessage());
+            // Charge was already fully refunded — treat as success so the
+            // order can still be marked cancelled in our DB.
+            if ($e->getStripeCode() === 'charge_already_refunded') {
+                \Illuminate\Support\Facades\Log::warning(
+                    "Refund skipped — charge already refunded for payment intent: {$paymentIntentId}"
+                );
+
+                $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
+                $existingRefund = \Stripe\Refund::all(['payment_intent' => $paymentIntentId, 'limit' => 1])->first();
+                $refundCurrency = strtoupper($paymentIntent->currency);
+
+                return [
+                    'refund_id' => $existingRefund?->id ?? 'already_refunded',
+                    'status' => $existingRefund?->status ?? 'succeeded',
+                    'amount' => $this->convertFromSmallestUnit(
+                        $existingRefund?->amount ?? $paymentIntent->amount_received,
+                        $refundCurrency
+                    ),
+                    'currency' => $refundCurrency,
+                ];
+            }
+
+            throw new \Exception('Refund failed: '.$e->getMessage());
         }
     }
 
@@ -90,14 +113,14 @@ class PaymentService
     private function convertToSmallestUnit(float $amount, string $currency): int
     {
         $currency = strtoupper($currency);
-        
+
         // Zero-decimal currencies (no cents/pence)
         $zeroDecimalCurrencies = ['JPY', 'KRW', 'VND', 'CLP', 'ISK'];
-        
+
         if (in_array($currency, $zeroDecimalCurrencies)) {
             return (int) round($amount);
         }
-        
+
         // Standard currencies (cents/pence) - multiply by 100
         return (int) round($amount * 100);
     }
@@ -108,14 +131,14 @@ class PaymentService
     private function convertFromSmallestUnit(int $amount, string $currency): float
     {
         $currency = strtoupper($currency);
-        
+
         // Zero-decimal currencies
         $zeroDecimalCurrencies = ['JPY', 'KRW', 'VND', 'CLP', 'ISK'];
-        
+
         if (in_array($currency, $zeroDecimalCurrencies)) {
             return (float) $amount;
         }
-        
+
         // Standard currencies
         return $amount / 100;
     }
