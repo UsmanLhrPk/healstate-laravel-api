@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('title', 150);
             $table->string('slug', 170)->unique();
             $table->string('subtitle', 250)->nullable();
-            $table->unsignedInteger('category_id');
+            $table->foreignId('category_id')->constrained('service_categories')->restrictOnDelete();
             $table->text('description');
             $table->enum('difficulty_level', ['beginner', 'intermediate', 'advanced', 'all_levels']);
             $table->string('language', 10)->default('en');
@@ -30,17 +30,13 @@ return new class extends Migration
             $table->decimal('average_rating', 3, 2)->nullable();
             $table->unsignedInteger('total_reviews')->default(0);
             $table->unsignedInteger('total_duration_minutes')->default(0);
-            $table->unsignedInteger('reviewed_by')->nullable();
+            $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('reviewed_at')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->text('admin_notes')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->timestamp('submitted_at')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('service_categories')->onDelete('restrict');
-            $table->foreign('reviewed_by')->references('id')->on('users')->onDelete('set null');
 
             $table->index('user_id', 'idx_user');
             $table->index('category_id', 'idx_category');

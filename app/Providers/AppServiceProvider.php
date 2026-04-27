@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Comment;
+use App\Models\Course;
 use App\Models\Forum;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -10,6 +11,7 @@ use App\Models\ServiceBooking;
 use App\Models\ServiceSlot;
 use App\Models\Vendor;
 use App\Policies\ProductPolicy;
+use App\Policies\CoursePolicy;
 use App\Policies\ProductVariantPolicy;
 use App\Policies\ServiceBookingPolicy;
 use App\Policies\ServiceSlotPolicy;
@@ -44,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
         ServiceBooking::class => ServiceBookingPolicy::class,
         Address::class => AddressPolicy::class,
         Order::class => OrderPolicy::class,
+        Course::class => CoursePolicy::class,
     ];
 
     /**

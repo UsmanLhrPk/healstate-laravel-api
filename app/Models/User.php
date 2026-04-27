@@ -82,6 +82,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(\App\Models\PractitionerProfile::class);
     }
 
+    public function courses()
+    {
+        return $this->hasMany(\App\Models\Course::class);
+    }
+
+    public function courseEnrollments()
+    {
+        return $this->hasMany(\App\Models\CourseEnrollment::class);
+    }
+
     /**
      * Check if user has a pending practitioner application.
      */

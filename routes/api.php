@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Courses\CourseController;
+use App\Http\Controllers\Courses\CourseLessonController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\CheckoutController;
 use App\Http\Controllers\Forums\CommentController;
@@ -34,6 +36,7 @@ Route::get('/vendors/{vendor}', [VendorController::class, 'show']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/vendors/{vendor}/reviews', [ReviewController::class, 'index']);
 Route::get('/marketplace', [MarketplaceController::class, 'index']);
+Route::get('/courses', [CourseController::class, 'index']);
 
 // Practitioner public routes
 Route::prefix('practitioners')->group(function () {
@@ -121,6 +124,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Vendor Reviews
     Route::post('/vendors/{vendor}/reviews', [ReviewController::class, 'store']);
+
+    // Courses
+    Route::get('/my/courses', [CourseController::class, 'myCourses']);
+    Route::get('/my/course-enrollments', [CourseController::class, 'myEnrollments']);
+    Route::post('/courses', [CourseController::class, 'store']);
+    Route::put('/courses/{course}', [CourseController::class, 'update']);
+    Route::delete('/courses/{course}', [CourseController::class, 'destroy']);
+    Route::post('/courses/{course}/enroll', [CourseController::class, 'enroll']);
+    Route::get('/courses/{course}/my-enrollment', [CourseController::class, 'myEnrollment']);
+    Route::get('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'show']);
+    Route::patch('/courses/{course}/lessons/{lesson}/progress', [CourseLessonController::class, 'updateProgress']);
 
     // Addresses
     Route::prefix('addresses')->group(function () {
@@ -231,3 +245,5 @@ Route::prefix('admin')->group(function () {
         });
     });
 });
+
+Route::get('/courses/{course}', [CourseController::class, 'show']);
