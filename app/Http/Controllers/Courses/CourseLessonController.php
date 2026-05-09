@@ -54,7 +54,10 @@ class CourseLessonController extends Controller
             $request->user(),
             $course,
             $lesson,
-            $request->boolean('is_completed')
+            $request->boolean('is_completed'),
+            $request->input('watch_percent') !== null
+                ? (float) $request->input('watch_percent')
+                : null,
         );
 
         if (! $enrollment) {

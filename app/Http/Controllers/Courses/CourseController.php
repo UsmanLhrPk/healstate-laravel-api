@@ -78,7 +78,11 @@ class CourseController extends Controller
 
     public function store(StoreCourseRequest $request): JsonResponse
     {
-        $course = $this->courseService->createCourse($request->user(), $request->validated());
+        try {
+            $course = $this->courseService->createCourse($request->user(), $request->validated());
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json([
             'message' => 'Course created successfully',
@@ -88,7 +92,11 @@ class CourseController extends Controller
 
     public function update(UpdateCourseRequest $request, Course $course): JsonResponse
     {
-        $course = $this->courseService->updateCourse($course, $request->validated());
+        try {
+            $course = $this->courseService->updateCourse($course, $request->validated());
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json([
             'message' => 'Course updated successfully',
@@ -114,12 +122,19 @@ class CourseController extends Controller
             ], 422);
         }
 
-        $enrollment = $this->courseService->enroll($request->user(), $course);
+        try {
+            $enrollment = $this->courseService->enroll($request->user(), $course);
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json([
             'message' => 'Course enrollment successful',
             'data' => new CourseEnrollmentResource($enrollment),
         ], 201);
+
+        $enrollment = $this->courseService->enroll($request->user(), $course);
+
     }
 
     public function myEnrollments(Request $request): JsonResponse

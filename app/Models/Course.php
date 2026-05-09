@@ -13,9 +13,13 @@ class Course extends Model
     use HasFactory;
 
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_PUBLISHED = 'published';
+
     public const STATUS_REJECTED = 'rejected';
+
     public const STATUS_ARCHIVED = 'archived';
 
     protected $fillable = [
@@ -121,5 +125,20 @@ class Course extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(CourseReview::class);
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(CourseMedia::class);
     }
 }

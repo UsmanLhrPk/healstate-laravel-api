@@ -13,7 +13,11 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained('courses')->restrictOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->enum('enrollment_type', ['free', 'paid']);
+            
             $table->decimal('amount_paid', 8, 2)->nullable();
+            $table->unsignedTinyInteger('review_deletion_count')
+                  ->default(0)
+                  ->after('last_accessed_at');
             $table->string('payment_reference', 255)->nullable();
             $table->decimal('progress_percent', 5, 2)->default(0.00);
             $table->boolean('is_completed')->default(false);
@@ -32,6 +36,10 @@ return new class extends Migration
             $table->foreignId('enrollment_id')->constrained('course_enrollments')->cascadeOnDelete();
             $table->foreignId('lesson_id')->constrained('course_lessons')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->decimal('watch_percent', 5, 2)
+                  ->nullable()
+                  ->after('is_completed')
+                  ->comment('0–100, for video lessons only');
             $table->foreignId('course_id')->constrained('courses')->cascadeOnDelete();
             $table->boolean('is_completed')->default(false);
             $table->timestamp('completed_at')->nullable();

@@ -47,4 +47,9 @@ class CourseLesson extends Model
     {
         return $this->hasMany(CourseLessonProgress::class, 'lesson_id');
     }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(CourseMedia::class, 'lesson_id');
+    }
 }

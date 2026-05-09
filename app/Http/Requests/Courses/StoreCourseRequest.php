@@ -10,7 +10,14 @@ class StoreCourseRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check();
+        return $this->user()->is_practitioner === true;
+    }
+
+    protected function failedAuthorization(): void
+    {
+        throw new AuthorizationException(
+            'Only verified practitioners may create courses.'
+        );
     }
 
     public function rules(): array

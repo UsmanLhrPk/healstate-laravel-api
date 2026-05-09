@@ -1,9 +1,12 @@
 <?php
 
-use App\Http\Controllers\Courses\CourseController;
-use App\Http\Controllers\Courses\CourseLessonController;
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\CheckoutController;
+use App\Http\Controllers\Courses\CourseController;
+use App\Http\Controllers\Courses\CourseLessonController;
+use App\Http\Controllers\Courses\CourseReviewController;
+use App\Http\Controllers\Courses\CourseMediaController;
+use App\Http\Controllers\Courses\AdminCourseController;
 use App\Http\Controllers\Forums\CommentController;
 use App\Http\Controllers\Forums\ForumController;
 use App\Http\Controllers\Practitioners\PractitionerApplicationController;
@@ -37,6 +40,7 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/vendors/{vendor}/reviews', [ReviewController::class, 'index']);
 Route::get('/marketplace', [MarketplaceController::class, 'index']);
 Route::get('/courses', [CourseController::class, 'index']);
+Route::get('/courses/{course}/reviews', [CourseReviewController::class, 'index']);
 
 // Practitioner public routes
 Route::prefix('practitioners')->group(function () {
@@ -135,6 +139,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/courses/{course}/my-enrollment', [CourseController::class, 'myEnrollment']);
     Route::get('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'show']);
     Route::patch('/courses/{course}/lessons/{lesson}/progress', [CourseLessonController::class, 'updateProgress']);
+    Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store']);
+    Route::delete('/courses/{course}/reviews', [CourseReviewController::class, 'destroy']);
+    Route::get('/courses/{course}/media', [CourseMediaController::class, 'index']);
+    Route::post('/courses/{course}/media', [CourseMediaController::class, 'store']);
+    Route::post('/courses/{course}/lessons/{lesson}/media', [CourseMediaController::class, 'storeForLesson']);
+    Route::delete('/courses/media/{media}', [CourseMediaController::class, 'destroy']);
 
     // Addresses
     Route::prefix('addresses')->group(function () {
@@ -243,6 +253,24 @@ Route::prefix('admin')->group(function () {
             Route::get('/{id}', [VendorController::class, 'adminShow']);
             Route::post('/{id}/review', [VendorController::class, 'review']);
         });
+
+        Route::prefix('courses')->group(function () {
+            Route::get('/',                    [AdminCourseController::class, 'index']);
+            Route::get('/pending',             [AdminCourseController::class, 'pending']);
+
+            // ⚠️ Literal segments before {course} wildcard
+            Route::get('/{course}',            [AdminCourseController::class, 'show']);
+            Route::post('/{course}/approve',   [AdminCourseController::class, 'approve']);
+            Route::post('/{course}/reject',    [AdminCourseController::class, 'reject']);
+            Route::patch('/{course}/feature',  [AdminCourseController::class, 'toggleFeatured']);
+            Route::patch('/{course}/deactivate', [AdminCourseController::class, 'deactivate']);
+            Route::delete('/{course}',         [AdminCourseController::class, 'destroy']);
+
+            // Review moderation
+            Route::delete('/reviews/{review}', [CourseReviewController::class, 'adminDestroy']);
+        });
+
+        
     });
 });
 
