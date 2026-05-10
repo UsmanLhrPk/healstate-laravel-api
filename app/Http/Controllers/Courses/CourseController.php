@@ -169,4 +169,11 @@ class CourseController extends Controller
             'data' => new CourseEnrollmentResource($enrollment),
         ]);
     }
+
+    public function categories(): JsonResponse
+    {
+        $categories = \App\Models\CourseCategory::orderBy('name')->get(['id', 'name']);
+
+        return response()->json(['data' => $categories]);
+    }
 }

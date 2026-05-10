@@ -145,6 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/courses/{course}/media', [CourseMediaController::class, 'store']);
     Route::post('/courses/{course}/lessons/{lesson}/media', [CourseMediaController::class, 'storeForLesson']);
     Route::delete('/courses/media/{media}', [CourseMediaController::class, 'destroy']);
+    Route::get('/course-categories', [CourseController::class, 'categories']);
 
     // Addresses
     Route::prefix('addresses')->group(function () {
