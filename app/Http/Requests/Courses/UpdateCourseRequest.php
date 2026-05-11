@@ -12,13 +12,17 @@ class UpdateCourseRequest extends FormRequest
     {
         $course = $this->route('course');
 
-        return $this->user()->can('update', $course);
+        if (! $course && $this->route('courseId')) {
+            $course = Course::find($this->route('courseId'));
+        }
+
+        return $course ? $this->user()->can('update', $course) : false;
     }
 
     public function failedAuthorization(): void
     {
         throw new \Illuminate\Auth\Access\AuthorizationException(
-            'Courses that are pending review or published cannot be edited.'
+            'Published courses cannot be edited.'
         );
     }
 

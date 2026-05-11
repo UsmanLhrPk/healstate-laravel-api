@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Course;
 use App\Models\CourseEnrollment;
 use App\Models\CourseLesson;
+use App\Models\CourseMedia;
 use App\Models\CourseReview;
 use App\Models\User;
 use App\Notifications\CourseApprovedNotification;
@@ -22,6 +23,10 @@ use Illuminate\Support\Str;
 
 class CourseService
 {
+    public function __construct(
+        protected CourseMediaService $mediaService
+    ) {}
+
     // ─────────────────────────────────────────────────────────
     // PUBLIC COURSE BROWSING
     // ─────────────────────────────────────────────────────────
@@ -81,6 +86,19 @@ class CourseService
             ->paginate($perPage);
     }
 
+    public function getInstructorCourseById(User $user, int $courseId): ?Course
+    {
+        $course = Course::where('user_id', $user->id)
+            ->whereKey($courseId)
+            ->first();
+
+        if (! $course) {
+            return null;
+        }
+
+        return $this->getCourseDetails($course, $user);
+    }
+
     public function getCourseDetails(Course $course, ?User $user = null): Course
     {
         $course->load([
@@ -130,14 +148,7 @@ class CourseService
                 'subtitle' => $data['subtitle'] ?? null,
                 'category_id' => $data['category_id'],
                 'description' => $data['description'],
-                'thumbnail_path' => ! empty($data['thumbnail'])
-                    ? $this->mediaService->upload(
-                        uploader: $user,
-                        course: $course,       // ⚠ pass $course after it's created — see note
-                        file: $data['thumbnail'],
-                        mediaType: CourseMedia::TYPE_THUMBNAIL,
-                    )->file_path
-                    : null,
+                'thumbnail_path' => null,
                 'promo_video_url' => $data['promo_video_url'] ?? null,
                 'difficulty_level' => $data['difficulty_level'],
                 'language' => $data['language'] ?? 'en',
@@ -165,7 +176,7 @@ class CourseService
             }
 
             if (! empty($data['thumbnail'])) {
-                $media = $this->mediaService->upload(
+                $this->mediaService->upload(
                     uploader: $user,
                     course: $course,
                     file: $data['thumbnail'],
@@ -268,6 +279,34 @@ class CourseService
 
             return $course->delete();
         });
+    }
+
+    public function submitCourseForReview(Course $course, User $user): Course
+    {
+        if ((int) $course->user_id !== (int) $user->id) {
+            throw new \DomainException('You do not have permission to submit this course.');
+        }
+
+        if (! in_array($course->status, [Course::STATUS_DRAFT, Course::STATUS_REJECTED], true)) {
+            throw new \DomainException('Only draft or rejected courses can be submitted for review.');
+        }
+
+        $detailedCourse = $this->getCourseDetails($course->fresh(), $user);
+
+        $this->guardSubmittable($detailedCourse);
+
+        Course::query()->whereKey($course->getKey())->update([
+            'status' => Course::STATUS_PENDING,
+            'submitted_at' => now(),
+            'published_at' => null,
+            'rejection_reason' => null,
+        ]);
+
+        $fresh = $this->getCourseDetails($course->fresh(), $user);
+
+        $this->notifySubmission($fresh);
+
+        return $fresh;
     }
 
     // ─────────────────────────────────────────────────────────

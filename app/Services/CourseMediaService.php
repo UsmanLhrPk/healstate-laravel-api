@@ -155,8 +155,12 @@ class CourseMediaService
         ?int $durationSeconds
     ): void {
         match ($type) {
-            CourseMedia::TYPE_THUMBNAIL   => $course->update(['thumbnail_path' => $path]),
-            CourseMedia::TYPE_PROMO_VIDEO => $course->update(['promo_video_path' => $path]),
+            CourseMedia::TYPE_THUMBNAIL   => Course::query()
+                ->whereKey($course->getKey())
+                ->update(['thumbnail_path' => $path]),
+            CourseMedia::TYPE_PROMO_VIDEO => Course::query()
+                ->whereKey($course->getKey())
+                ->update(['promo_video_path' => $path]),
 
             CourseMedia::TYPE_LESSON_VIDEO => $lesson?->update([
                 'video_path'       => $path,
@@ -175,8 +179,12 @@ class CourseMediaService
         $lesson = $media->lesson;
 
         match ($media->media_type) {
-            CourseMedia::TYPE_THUMBNAIL => $course->update(['thumbnail_path' => null]),
-            CourseMedia::TYPE_PROMO_VIDEO => $course->update(['promo_video_path' => null]),
+            CourseMedia::TYPE_THUMBNAIL => Course::query()
+                ->whereKey($course->getKey())
+                ->update(['thumbnail_path' => null]),
+            CourseMedia::TYPE_PROMO_VIDEO => Course::query()
+                ->whereKey($course->getKey())
+                ->update(['promo_video_path' => null]),
             CourseMedia::TYPE_LESSON_VIDEO => $lesson?->update(['video_path' => null]),
             CourseMedia::TYPE_LESSON_PDF   => $lesson?->update(['pdf_path' => null]),
             default => null,

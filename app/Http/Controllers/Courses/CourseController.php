@@ -176,4 +176,110 @@ class CourseController extends Controller
 
         return response()->json(['data' => $categories]);
     }
+
+    public function instructorCourses(Request $request): JsonResponse
+{
+    $query = Course::where('user_id', $request->user()->id)
+        ->with(['category'])
+        ->withCount(['enrollments'])
+        ->latest();
+
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    $courses = $query->paginate($request->integer('per_page', 15));
+
+    return response()->json(CourseResource::collection($courses)->response()->getData(true));
+}
+
+    public function instructorCourse(Request $request, int $courseId): JsonResponse
+    {
+        $course = $this->courseService->getInstructorCourseById($request->user(), $courseId);
+
+        if (! $course) {
+            return response()->json([
+                'message' => 'Course not found.',
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => new CourseResource($course),
+        ]);
+    }
+
+    public function instructorUpdate(UpdateCourseRequest $request, int $courseId): JsonResponse
+    {
+        $course = $this->courseService->getInstructorCourseById($request->user(), $courseId);
+
+        if (! $course) {
+            return response()->json([
+                'message' => 'Course not found.',
+            ], 404);
+        }
+
+        try {
+            $course = $this->courseService->updateCourse($course, $request->validated());
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Course updated successfully',
+            'data' => new CourseResource($course),
+        ]);
+    }
+
+    public function instructorDestroy(Request $request, int $courseId): JsonResponse
+    {
+        $course = $this->courseService->getInstructorCourseById($request->user(), $courseId);
+
+        if (! $course) {
+            return response()->json([
+                'message' => 'Course not found.',
+            ], 404);
+        }
+
+        $this->courseService->deleteCourse($course);
+
+        return response()->json([
+            'message' => 'Course deleted successfully',
+        ]);
+    }
+
+    public function instructorSubmit(Request $request, int $courseId): JsonResponse
+    {
+        $course = $this->courseService->getInstructorCourseById($request->user(), $courseId);
+
+        if (! $course) {
+            return response()->json([
+                'message' => 'Course not found.',
+            ], 404);
+        }
+
+        try {
+            $course = $this->courseService->submitCourseForReview($course, $request->user());
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Course submitted for review successfully.',
+            'data' => new CourseResource($course),
+        ]);
+    }
+
+    public function submit(Request $request, Course $course): JsonResponse
+    {
+        try {
+            $course = $this->courseService->submitCourseForReview($course, $request->user());
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Course submitted for review successfully.',
+            'data' => new CourseResource($course),
+        ]);
+    }
 }

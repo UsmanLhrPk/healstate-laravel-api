@@ -2,11 +2,12 @@
 
 use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Cart\CheckoutController;
+use App\Http\Controllers\Courses\AdminCourseController;
 use App\Http\Controllers\Courses\CourseController;
 use App\Http\Controllers\Courses\CourseLessonController;
-use App\Http\Controllers\Courses\CourseReviewController;
 use App\Http\Controllers\Courses\CourseMediaController;
-use App\Http\Controllers\Courses\AdminCourseController;
+use App\Http\Controllers\Courses\CourseReviewController;
+use App\Http\Controllers\Courses\CourseSectionController;
 use App\Http\Controllers\Forums\CommentController;
 use App\Http\Controllers\Forums\ForumController;
 use App\Http\Controllers\Practitioners\PractitionerApplicationController;
@@ -146,6 +147,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/courses/{course}/lessons/{lesson}/media', [CourseMediaController::class, 'storeForLesson']);
     Route::delete('/courses/media/{media}', [CourseMediaController::class, 'destroy']);
     Route::get('/course-categories', [CourseController::class, 'categories']);
+    Route::get('/instructor/courses', [CourseController::class, 'instructorCourses']);
+    Route::get('/instructor/courses/{courseId}', [CourseController::class, 'instructorCourse']);
+    Route::put('/instructor/courses/{courseId}', [CourseController::class, 'instructorUpdate']);
+    Route::delete('/instructor/courses/{courseId}', [CourseController::class, 'instructorDestroy']);
+    Route::post('/instructor/courses/{courseId}/submit', [CourseController::class, 'instructorSubmit']);
+    Route::post('/courses/{course}/submit', [CourseController::class, 'submit']);
+
+    // Course builder — sections
+    Route::post('/courses/{course}/sections', [CourseSectionController::class, 'store']);
+    Route::put('/courses/{course}/sections/{section}', [CourseSectionController::class, 'update']);
+    Route::delete('/courses/{course}/sections/{section}', [CourseSectionController::class, 'destroy']);
+
+    // Course builder — lessons
+    Route::post('/courses/{course}/sections/{section}/lessons', [CourseLessonController::class, 'store']);
+    Route::put('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'update']);
+    Route::delete('/courses/{course}/lessons/{lesson}', [CourseLessonController::class, 'destroy']);
 
     // Addresses
     Route::prefix('addresses')->group(function () {
@@ -256,22 +273,21 @@ Route::prefix('admin')->group(function () {
         });
 
         Route::prefix('courses')->group(function () {
-            Route::get('/',                    [AdminCourseController::class, 'index']);
-            Route::get('/pending',             [AdminCourseController::class, 'pending']);
+            Route::get('/', [AdminCourseController::class, 'index']);
+            Route::get('/pending', [AdminCourseController::class, 'pending']);
 
             // ⚠️ Literal segments before {course} wildcard
-            Route::get('/{course}',            [AdminCourseController::class, 'show']);
-            Route::post('/{course}/approve',   [AdminCourseController::class, 'approve']);
-            Route::post('/{course}/reject',    [AdminCourseController::class, 'reject']);
-            Route::patch('/{course}/feature',  [AdminCourseController::class, 'toggleFeatured']);
+            Route::get('/{course}', [AdminCourseController::class, 'show']);
+            Route::post('/{course}/approve', [AdminCourseController::class, 'approve']);
+            Route::post('/{course}/reject', [AdminCourseController::class, 'reject']);
+            Route::patch('/{course}/feature', [AdminCourseController::class, 'toggleFeatured']);
             Route::patch('/{course}/deactivate', [AdminCourseController::class, 'deactivate']);
-            Route::delete('/{course}',         [AdminCourseController::class, 'destroy']);
+            Route::delete('/{course}', [AdminCourseController::class, 'destroy']);
 
             // Review moderation
             Route::delete('/reviews/{review}', [CourseReviewController::class, 'adminDestroy']);
         });
 
-        
     });
 });
 
