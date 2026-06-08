@@ -149,7 +149,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/course-categories', [CourseController::class, 'categories']);
     Route::get('/instructor/courses', [CourseController::class, 'instructorCourses']);
     Route::get('/instructor/courses/{courseId}', [CourseController::class, 'instructorCourse']);
-    Route::put('/instructor/courses/{courseId}', [CourseController::class, 'instructorUpdate']);
+    Route::put('/instructor/courses/{course:slug}', [CourseController::class, 'instructorUpdate']);
     Route::delete('/instructor/courses/{courseId}', [CourseController::class, 'instructorDestroy']);
     Route::post('/instructor/courses/{courseId}/submit', [CourseController::class, 'instructorSubmit']);
     Route::post('/courses/{course}/submit', [CourseController::class, 'submit']);

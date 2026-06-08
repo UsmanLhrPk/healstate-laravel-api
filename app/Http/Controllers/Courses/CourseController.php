@@ -208,10 +208,8 @@ class CourseController extends Controller
         ]);
     }
 
-    public function instructorUpdate(UpdateCourseRequest $request, int $courseId): JsonResponse
+    public function instructorUpdate(UpdateCourseRequest $request, Course $course): JsonResponse
     {
-        $course = $this->courseService->getInstructorCourseById($request->user(), $courseId);
-
         if (! $course) {
             return response()->json([
                 'message' => 'Course not found.',

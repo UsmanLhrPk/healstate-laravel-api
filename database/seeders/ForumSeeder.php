@@ -18,20 +18,20 @@ class ForumSeeder extends Seeder
     {
         // Create test users (more users to support the likes/flags)
         $users = User::factory(50)->create();
-        
+
         // Create a specific test user for easy login
         $testUser = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => bcrypt('password'),
         ]);
-        
+
         // Add test user to the collection
         $users->push($testUser);
 
         // Create forums with different categories
         $categories = ['Mind', 'Body', 'Spirit', 'Biohacking', 'Frequency Healing', 'Holistic Health'];
-        
+
         foreach ($categories as $category) {
             // Create 5 forums per category
             Forum::factory(5)
@@ -40,7 +40,7 @@ class ForumSeeder extends Seeder
                 ->each(function ($forum) use ($users) {
                     // Add 3-8 top-level comments to each forum
                     $commentCount = rand(3, 8);
-                    
+
                     for ($i = 0; $i < $commentCount; $i++) {
                         $topLevelComment = Comment::factory()->create([
                             'commentable_type' => Forum::class, // This will be stored as App\Models\Forum
@@ -79,7 +79,7 @@ class ForumSeeder extends Seeder
                     // Add some likes to comments
                     if ($forum->comments->count() > 0) {
                         $commentsToLike = $forum->comments->random(min(5, $forum->comments->count()));
-                        
+
                         foreach ($commentsToLike as $comment) {
                             $commentLikeCount = rand(1, min(5, $users->count()));
                             $users->random($commentLikeCount)->each(function ($user) use ($comment) {
@@ -110,7 +110,7 @@ class ForumSeeder extends Seeder
             ->each(function ($forum) use ($users) {
                 // More comments for popular forums (15-30)
                 $popularCommentCount = rand(15, 30);
-                
+
                 for ($i = 0; $i < $popularCommentCount; $i++) {
                     Comment::factory()->create([
                         'commentable_type' => Forum::class,
@@ -139,7 +139,7 @@ class ForumSeeder extends Seeder
         $this->command->info('💬 Total Comments: ' . Comment::count());
         $this->command->info('❤️ Total Likes: ' . Like::count());
         $this->command->info('🚩 Total Flags: ' . Flag::count());
-        
+
         // Show sample data for verification
         $this->command->info('
 📊 Sample data verification:');
