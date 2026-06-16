@@ -2,34 +2,33 @@
 
 namespace App\Providers;
 
+use App\Models\Address;
 use App\Models\Comment;
 use App\Models\Course;
 use App\Models\Forum;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ServiceBooking;
 use App\Models\ServiceSlot;
 use App\Models\Vendor;
-use App\Policies\ProductPolicy;
+use App\Policies\AddressPolicy;
 use App\Policies\CoursePolicy;
+use App\Policies\OrderPolicy;
+use App\Policies\ProductPolicy;
 use App\Policies\ProductVariantPolicy;
 use App\Policies\ServiceBookingPolicy;
 use App\Policies\ServiceSlotPolicy;
 use App\Policies\VendorPolicy;
-use App\Models\Address;
-use App\Policies\AddressPolicy;
-use App\Models\Order;
-use App\Policies\OrderPolicy;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Auth\Events\Login;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -54,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\App\Services\HtmlSanitizerService::class);
     }
 
     /**
@@ -68,7 +67,6 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Register event listeners
-       
 
         // Enforce morph map for polymorphic relationships
         // Relation::enforceMorphMap([

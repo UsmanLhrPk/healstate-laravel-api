@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Courses;
 
 use App\Models\Course;
+use App\Services\HtmlSanitizerService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,6 +21,35 @@ class StoreCourseRequest extends FormRequest
         );
     }
 
+    protected function prepareForValidation(): void
+    {
+        $sanitizer = app(HtmlSanitizerService::class);
+
+        $merge = [];
+
+        if ($this->has('description')) {
+            $merge['description'] = $sanitizer->sanitize($this->input('description'));
+        }
+
+        // Sanitize lesson text_content fields if present
+        if ($this->has('modules')) {
+            $modules = $this->input('modules', []);
+
+            foreach ($modules as $mi => $module) {
+                foreach ($module['lessons'] ?? [] as $li => $lesson) {
+                    if (isset($lesson['text_content'])) {
+                        $modules[$mi]['lessons'][$li]['text_content'] =
+                            $sanitizer->sanitize($lesson['text_content']);
+                    }
+                }
+            }
+
+            $merge['modules'] = $modules;
+        }
+
+        $this->merge($merge);
+    }
+
     public function rules(): array
     {
         return [
@@ -28,7 +58,7 @@ class StoreCourseRequest extends FormRequest
             'category_id' => 'required|exists:service_categories,id',
             'description' => 'required|string|max:20000',
             'thumbnail' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
-            'promo_video_url' => 'nullable|url|max:500',
+            'promo_video_url' => 'nullable|url:http,https|max:500',
             'difficulty_level' => ['required', 'string', Rule::in(['beginner', 'intermediate', 'advanced', 'all_levels'])],
             'language' => 'nullable|string|max:10',
             'pricing_type' => ['nullable', 'string', Rule::in(['free', 'paid'])],
@@ -54,8 +84,8 @@ class StoreCourseRequest extends FormRequest
             'modules.*.lessons' => 'nullable|array|max:200',
             'modules.*.lessons.*.title' => 'required|string|max:255',
             'modules.*.lessons.*.lesson_type' => ['required', 'string', Rule::in(['video', 'text', 'pdf'])],
-            'modules.*.lessons.*.video_url' => 'nullable|url|max:2000',
-            'modules.*.lessons.*.text_content' => 'nullable|string|max:50000',
+            'modules.*.lessons.*.video_url' => 'nullable|url:http,https|max:2000',
+            'modules.*.lessons.*.text_content' => 'nullable|string|max:50000',  
             'modules.*.lessons.*.pdf_path' => 'nullable|string|max:500',
             'modules.*.lessons.*.duration_minutes' => 'nullable|integer|min:1',
             'modules.*.lessons.*.is_preview' => 'sometimes|boolean',

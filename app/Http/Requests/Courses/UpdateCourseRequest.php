@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Courses;
 
 use App\Models\Course;
+use App\Services\HtmlSanitizerService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,6 +26,34 @@ class UpdateCourseRequest extends FormRequest
             'Published courses cannot be edited.'
         );
     }
+
+    protected function prepareForValidation(): void
+{
+    $sanitizer = app(HtmlSanitizerService::class);
+
+    $merge = [];
+
+    if ($this->has('description')) {
+        $merge['description'] = $sanitizer->sanitize($this->input('description'));
+    }
+
+    if ($this->has('modules')) {
+        $modules = $this->input('modules', []);
+
+        foreach ($modules as $mi => $module) {
+            foreach ($module['lessons'] ?? [] as $li => $lesson) {
+                if (isset($lesson['text_content'])) {
+                    $modules[$mi]['lessons'][$li]['text_content'] =
+                        $sanitizer->sanitize($lesson['text_content']);
+                }
+            }
+        }
+
+        $merge['modules'] = $modules;
+    }
+
+    $this->merge($merge);
+}
 
     public function rules(): array
     {
