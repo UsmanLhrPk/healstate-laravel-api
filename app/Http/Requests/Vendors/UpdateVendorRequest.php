@@ -17,10 +17,10 @@ class UpdateVendorRequest extends FormRequest
     {
         return [
             'business_name' => 'sometimes|required|string|max:255',
-            'brief' => 'sometimes|required|string',
+            'brief' => 'required|string|max:5000',
             'category' => 'sometimes|required|array',
             'category.*' => 'string',
-            'website' => 'sometimes|nullable|url|max:255',
+            'website' => 'nullable|url:http,https|max:255',
             'street_address' => 'sometimes|nullable|string|max:255',
             'city' => 'sometimes|required_with:street_address|string|max:255',
             'state_province' => 'sometimes|required_with:street_address|string|max:255',
@@ -51,17 +51,20 @@ class UpdateVendorRequest extends FormRequest
         $invalidFields = array_diff($requestKeys, $allowedFields);
 
         // If there are invalid fields, add validation error
-        if (!empty($invalidFields)) {
+        if (! empty($invalidFields)) {
             $this->merge([
-                '_invalid_fields' => $invalidFields
+                '_invalid_fields' => $invalidFields,
             ]);
         }
+
+        $sanitizer = app(\App\Services\HtmlSanitizerService::class);
+        $merge['brief'] = $sanitizer->sanitize($this->input('brief'));
     }
 
     public function messages(): array
     {
         return [
-            '_invalid_fields' => 'The following fields are not allowed: ' . implode(', ', $this->input('_invalid_fields', [])),
+            '_invalid_fields' => 'The following fields are not allowed: '.implode(', ', $this->input('_invalid_fields', [])),
             'currency.in' => 'The selected currency is invalid. Please choose USD, EUR, or GBP.',
         ];
     }

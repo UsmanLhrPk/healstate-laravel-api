@@ -3,12 +3,32 @@
 namespace App\Http\Requests\Cart;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CheckoutRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('address')) {
+        $address = $this->input('address');
+        $textFields = ['name', 'street_address', 'city', 'state_province', 'postal_code'];
+        foreach ($textFields as $field) {
+            if (isset($address[$field])) {
+                $address[$field] = strip_tags($address[$field]);
+            }
+        }
+        $this->merge(['address' => $address]);
+    }
+        if ($this->filled('order_notes')) {
+            $this->merge([
+                'order_notes' => strip_tags($this->input('order_notes')),
+            ]);
+        }
     }
 
     public function rules(): array
@@ -18,7 +38,7 @@ class CheckoutRequest extends FormRequest
             'payment_method_id' => ['required_without:payment_intents', 'string'],
             'payment_intents' => ['required_without:payment_method_id', 'array', 'min:1'],
             'payment_intents.*.payment_method_id' => ['required', 'string'],
-            'payment_intents.*.currency' => ['required', 'string', 'size:3'],
+            'payment_intents.*.currency' => ['required', 'string', Rule::in(array_keys(\App\Models\Vendor::CURRENCIES))],
             'order_notes' => ['nullable', 'string', 'max:1000'],
         ];
 

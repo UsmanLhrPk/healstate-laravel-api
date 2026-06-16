@@ -20,8 +20,8 @@ class VendorOrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $vendor = auth()->user()->vendor;
-        
-        if (!$vendor) {
+
+        if (! $vendor) {
             return response()->json(['message' => 'Vendor not found'], 404);
         }
 
@@ -38,14 +38,19 @@ class VendorOrderController extends Controller
      */
     public function updateStatus(Order $order, Request $request): JsonResponse
     {
+
         $vendor = auth()->user()->vendor;
-        
+
+        if (! $vendor || $order->vendor_id !== $vendor->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'status' => 'required|string|in:processing,shipped,delivered',
         ]);
 
         $order = $this->orderService->updateOrderStatus(
-            $order, 
+            $order,
             $validated['status'],
             $vendor->id
         );
@@ -62,8 +67,8 @@ class VendorOrderController extends Controller
     public function cancelOrder(Order $order, Request $request): JsonResponse
     {
         $vendor = auth()->user()->vendor;
-        
-        if (!$vendor) {
+
+        if (! $vendor) {
             return response()->json(['message' => 'Vendor not found'], 404);
         }
 
@@ -71,9 +76,11 @@ class VendorOrderController extends Controller
             'reason' => 'required|string|max:500',
         ]);
 
+        $validated['reason'] = strip_tags($validated['reason']);
+
         try {
             $order = $this->orderService->vendorCancelOrder(
-                $order, 
+                $order,
                 $vendor->id,
                 $validated['reason']
             );
@@ -84,7 +91,7 @@ class VendorOrderController extends Controller
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 403);
         }
     }
@@ -95,8 +102,11 @@ class VendorOrderController extends Controller
     public function approveCancellation(Order $order): JsonResponse
     {
         $vendor = auth()->user()->vendor;
-        
+
         $order = $this->orderService->approveCancellation($order, $vendor->id);
+        if (! $vendor || $order->vendor_id !== $vendor->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
         return response()->json([
             'message' => 'Cancellation approved successfully',
@@ -109,14 +119,23 @@ class VendorOrderController extends Controller
      */
     public function denyCancellation(Order $order, Request $request): JsonResponse
     {
+
         $vendor = auth()->user()->vendor;
-        
+
+        if (! $vendor || $order->vendor_id !== $vendor->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'reason' => 'nullable|string|max:500',
         ]);
 
+        if (! empty($validated['reason'])) {
+            $validated['reason'] = strip_tags($validated['reason']);
+        }
+
         $order = $this->orderService->denyCancellation(
-            $order, 
+            $order,
             $vendor->id,
             $validated['reason'] ?? null
         );

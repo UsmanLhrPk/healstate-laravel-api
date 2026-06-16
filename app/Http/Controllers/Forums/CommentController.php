@@ -97,13 +97,6 @@ class CommentController extends Controller
         $commentableId = $request->input('commentable_id');
         $parentId = $request->input('parent_id');
 
-        // DEBUG: Log what the client sent
-        \Log::info('Comment Index Request', [
-            'commentable_type_raw' => $commentableType,
-            'commentable_type_length' => strlen($commentableType),
-            'commentable_type_hex' => bin2hex($commentableType),
-            'commentable_id' => $commentableId,
-        ]);
 
         // DEBUG: Check what's actually in the database for this ID
         $dbCheck = \DB::table('comments')
@@ -113,10 +106,6 @@ class CommentController extends Controller
             ->distinct()
             ->get();
 
-        \Log::info('Database has these types for ID '.$commentableId, [
-            'types' => $dbCheck->pluck('commentable_type')->toArray(),
-        ]);
-
         if ($parentId) {
             $replies = $this->commentService->getReplies($parentId);
 
@@ -125,10 +114,6 @@ class CommentController extends Controller
 
         $comments = $this->commentService->getTopLevelComments($commentableType, $commentableId);
 
-        // DEBUG: Log what we got back
-        \Log::info('Comments returned', [
-            'count' => $comments->total(),
-        ]);
 
         return response()->json($comments);
     }
@@ -182,7 +167,7 @@ class CommentController extends Controller
             $request->validated(),
             auth()->id()
         );
-
+        
         return response()->json([
             'message' => 'Comment created successfully',
             'comment' => $comment->load(['author', 'likes', 'flags']),

@@ -162,6 +162,10 @@ class OrderController extends Controller
             'reason' => 'nullable|string|max:500',
         ]);
 
+        if (! empty($validated['reason'])) {
+            $validated['reason'] = strip_tags($validated['reason']);
+        }
+
         try {
             $order = $this->orderService->cancelOrder($order, $validated['reason'] ?? null);
 

@@ -13,14 +13,22 @@ class StoreVendorRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $sanitizer = app(\App\Services\HtmlSanitizerService::class);
+        $this->merge([
+            'brief' => $sanitizer->sanitize($this->input('brief')),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
             'business_name' => 'required|string|max:255',
-            'brief' => 'required|string',
+            'brief' => 'required|string|max:5000',
             'category' => 'required|array',
             'category.*' => 'required|string',
-            'website' => 'nullable|url|max:255',
+            'website' => 'nullable|url:http,https|max:255',
             'street_address' => 'nullable|string|max:255',
             'city' => 'required_with:street_address|string|max:255',
             'state_province' => 'required_with:street_address|string|max:255',

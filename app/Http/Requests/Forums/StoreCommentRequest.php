@@ -11,12 +11,21 @@ class StoreCommentRequest extends FormRequest
         return true; // Authorization handled by middleware
     }
 
+    protected function prepareForValidation(): void
+    {
+        $sanitizer = app(\App\Services\HtmlSanitizerService::class);
+
+        $this->merge([
+            'comment' => $sanitizer->sanitize($this->input('comment')),
+        ]);
+    }
+
     public function rules(): array
     {
         return [
-            'comment' => 'required|string',
-            'commentable_type' => 'required|string',
-            'commentable_id' => 'required|integer',
+            'comment' => 'required|string|max:5000',
+            'commentable_type' => 'required|string|in:App\Models\Forum',
+            'commentable_id' => 'required|integer|exists:forums,id',
             'parent_id' => 'nullable|exists:comments,id',
         ];
     }

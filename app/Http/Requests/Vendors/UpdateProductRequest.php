@@ -9,21 +9,31 @@ class UpdateProductRequest extends FormRequest
     public function authorize(): bool
     {
         $product = $this->route('product');
+
         return $product && $product->vendor->user_id === auth()->id();
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $sanitizer = app(\App\Services\HtmlSanitizerService::class);
+        $this->merge([
+            'brief' => $sanitizer->sanitize($this->input('brief')),
+            'description' => $sanitizer->sanitize($this->input('description')),
+        ]);
     }
 
     public function rules(): array
     {
         return [
-            'title'            => 'sometimes|required|string|max:255',
-            'brief'            => 'sometimes|required|string|max:255',
-            'description'      => 'sometimes|required|string|max:10000',
-            'active'           => 'sometimes|boolean',
-            'images'           => 'sometimes|array|max:5',
-            'images.*'         => 'image|mimes:jpeg,jpg,png,gif,webp|max:5120',
-            'variants'         => 'sometimes|array',
-            'variants.*.id'    => 'sometimes|exists:product_variants,id',
-            'variants.*.name'  => 'required|string|max:255',
+            'title' => 'sometimes|required|string|max:255',
+            'brief' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string|max:10000',
+            'active' => 'sometimes|boolean',
+            'images' => 'sometimes|array|max:5',
+            'images.*' => 'image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'variants' => 'sometimes|array',
+            'variants.*.id' => 'sometimes|exists:product_variants,id',
+            'variants.*.name' => 'required|string|max:255',
             'variants.*.price' => 'required|numeric|min:0',
             'variants.*.stock' => 'sometimes|integer|min:0',
         ];
