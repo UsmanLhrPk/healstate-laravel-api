@@ -6,7 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StorePractitionerOfferingBookingRequest extends FormRequest
 {
-    public function authorize(): bool { return true; }
+    public function authorize(): bool
+    {
+        // Require active user session
+        return auth()->check();
+    }
 
     public function rules(): array
     {
