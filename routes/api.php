@@ -276,15 +276,13 @@ Route::prefix('admin')->group(function () {
             Route::get('/', [AdminCourseController::class, 'index']);
             Route::get('/pending', [AdminCourseController::class, 'pending']);
 
-            // ⚠️ Literal segments before {course} wildcard
-            Route::get('/{course}', [AdminCourseController::class, 'show']);
-            Route::post('/{course}/approve', [AdminCourseController::class, 'approve']);
-            Route::post('/{course}/reject', [AdminCourseController::class, 'reject']);
-            Route::patch('/{course}/feature', [AdminCourseController::class, 'toggleFeatured']);
-            Route::patch('/{course}/deactivate', [AdminCourseController::class, 'deactivate']);
-            Route::delete('/{course}', [AdminCourseController::class, 'destroy']);
+            Route::get('/{course:id}', [AdminCourseController::class, 'show']);
+            Route::post('/{course:id}/approve', [AdminCourseController::class, 'approve']);
+            Route::post('/{course:id}/reject', [AdminCourseController::class, 'reject']);
+            Route::patch('/{course:id}/feature', [AdminCourseController::class, 'toggleFeatured']);
+            Route::patch('/{course:id}/deactivate', [AdminCourseController::class, 'deactivate']);
+            Route::delete('/{course:id}', [AdminCourseController::class, 'destroy']);
 
-            // Review moderation
             Route::delete('/reviews/{review}', [CourseReviewController::class, 'adminDestroy']);
         });
 

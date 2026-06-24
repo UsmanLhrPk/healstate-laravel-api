@@ -348,7 +348,7 @@ class CourseService
             ->paginate($perPage);
     }
 
-    public function approveCourse(Course $course, User $reviewer): Course
+    public function approveCourse(Course $course, User|Admin $reviewer): Course
     {
         if ($course->status !== Course::STATUS_PENDING) {
             throw new \DomainException('Only pending courses can be approved.');
@@ -369,7 +369,7 @@ class CourseService
         return $fresh;
     }
 
-    public function rejectCourse(Course $course, User $reviewer, string $reason): Course
+    public function rejectCourse(Course $course, User|Admin $reviewer, ?string $reason = null): Course
     {
         if ($course->status !== Course::STATUS_PENDING) {
             throw new \DomainException('Only pending courses can be rejected.');
