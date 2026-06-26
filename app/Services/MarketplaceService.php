@@ -29,13 +29,13 @@ class MarketplaceService
             });
         }
 
-        // Search in title and brief
+        // Search in title, brief, and description (table-qualified to avoid ambiguity)
         if (! empty($filters['search'])) {
             $searchTerm = $filters['search'];
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'like', "%{$searchTerm}%")
-                    ->orWhere('brief', 'like', "%{$searchTerm}%")
-                    ->orWhere('description', 'like', "%{$searchTerm}%");
+                $q->where('products.title', 'like', "%{$searchTerm}%")
+                    ->orWhere('products.brief', 'like', "%{$searchTerm}%")
+                    ->orWhere('products.description', 'like', "%{$searchTerm}%");
             });
         }
 
