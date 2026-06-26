@@ -141,4 +141,16 @@ class Course extends Model
     {
         return $this->hasMany(CourseMedia::class);
     }
+
+    /**
+     * Get the total number of lessons – computed, not stored.
+     */
+    public function getLessonsCountAttribute(): ?int
+    {
+        if (! $this->relationLoaded('modules')) {
+            return null;
+        }
+
+        return $this->modules->sum(fn ($module) => $module->lessons->count());
+    }
 }

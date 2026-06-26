@@ -290,4 +290,6 @@ Route::prefix('admin')->group(function () {
     });
 });
 
-Route::get('/courses/{course}', [CourseController::class, 'show']);
+Route::middleware('optional-auth:sanctum')->group(function () {
+    Route::get('/courses/{course}', [CourseController::class, 'show']);
+});

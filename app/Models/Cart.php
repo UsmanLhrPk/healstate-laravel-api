@@ -25,15 +25,16 @@ class Cart extends Model
         'start_time',
         'end_time',
         'quantity',
+         'course_id',
     ];
 
     protected $casts = [
-        'quantity'     => 'integer',
+        'quantity' => 'integer',
         'booking_date' => 'date',
         // Store as plain strings so "10:00" round-trips correctly
         // (casting to datetime:H:i:s would prepend today's date)
-        'start_time'   => 'string',
-        'end_time'     => 'string',
+        'start_time' => 'string',
+        'end_time' => 'string',
     ];
 
     // ── Relations ────────────────────────────────────────────────────────────
@@ -83,5 +84,16 @@ class Cart extends Model
     public function isProduct(): bool
     {
         return ! is_null($this->product_id);
+    }
+
+    public function course(): BelongsTo
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    /** True when this cart row represents a course */
+    public function isCourse(): bool
+    {
+        return ! is_null($this->course_id);
     }
 }

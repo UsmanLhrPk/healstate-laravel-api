@@ -21,9 +21,10 @@ class OrderItem extends Model
         'quantity',
         'unit_price',
         'subtotal',
-        'booking_date',
+        'booking_date', 
         'start_time',
         'end_time',
+        'course_id',
     ];
 
     protected $casts = [

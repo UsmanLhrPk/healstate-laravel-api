@@ -117,7 +117,7 @@ class CourseService
             'enrollments',
         ]);
 
-        $course->lessons_count = $course->modules->sum(fn ($module) => $module->lessons->count());
+        // $course->lessons_count = $course->modules->sum(fn ($module) => $module->lessons->count());   
 
         $enrollment = null;
 

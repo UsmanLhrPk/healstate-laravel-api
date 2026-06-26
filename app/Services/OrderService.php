@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Address;
+use App\Models\Course;
+use App\Models\CourseEnrollment;
 use App\Models\Order;
 use App\Models\PractitionerOfferingBooking;
 use App\Models\ServiceBooking;
@@ -18,6 +20,10 @@ class OrderService
         protected PaymentService $paymentService
     ) {}
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // ORDER CREATION (multi‑currency)
+    // ─────────────────────────────────────────────────────────────────────────
+
     public function createOrderForCurrency(?int $userId, ?string $sessionId, string $currency, array $data, Address $address): Order
     {
         return DB::transaction(function () use ($userId, $sessionId, $currency, $data, $address) {
@@ -28,9 +34,12 @@ class OrderService
                     $itemCurrency = $item->serviceSlot->product->currency ?? $item->serviceSlot->product->vendor->currency ?? 'USD';
                 } elseif ($item->practitioner_offering_slot_id) {
                     $itemCurrency = 'USD';
+                } elseif ($item->course_id && $item->course) {
+                    $itemCurrency = $item->course->currency ?? 'USD';
                 } else {
                     $itemCurrency = 'USD';
                 }
+
                 return $itemCurrency === $currency;
             });
 
@@ -64,6 +73,7 @@ class OrderService
                     'product_id' => $cartItem->product_id,
                     'service_slot_id' => $cartItem->service_slot_id,
                     'practitioner_offering_slot_id' => $cartItem->practitioner_offering_slot_id,
+                    'course_id' => $cartItem->course_id,
                 ]);
 
                 if ($cartItem->product_id) {
@@ -156,6 +166,25 @@ class OrderService
                         'start_time' => $cartItem->start_time,
                         'end_time' => $cartItem->end_time,
                     ]);
+
+                    // ── Course ──────────────────────────────────────────────
+                } elseif ($cartItem->course_id) {
+                    if (! $cartItem->course) {
+                        throw new \Exception("Course not found for cart item {$cartItem->id}");
+                    }
+                    $originalPrice = (float) ($cartItem->course->price ?? 0);
+                    $discountAmt = (float) ($cartItem->course->discount_price ?? 0);
+                    $price = max(0, $originalPrice - $discountAmt);  // final amount user pays
+                    $courseName = $cartItem->course->title;
+                    $order->items()->create([
+                        'course_id' => $cartItem->course_id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $price,
+                        'subtotal' => $price * $cartItem->quantity,
+                        'product_name' => $courseName,
+                        'type' => 'course',
+                    ]);
+
                 } else {
                     throw new \Exception("Invalid cart item {$cartItem->id}");
                 }
@@ -164,6 +193,8 @@ class OrderService
             return $order->load(['items.product', 'items.variant', 'items.serviceSlot', 'address']);
         });
     }
+
+    // ── SINGLE‑ORDER (legacy) ────────────────────────────────────────────
 
     public function createOrder(?int $userId, ?string $sessionId, array $data, Address $address): Order
     {
@@ -200,6 +231,7 @@ class OrderService
                     'product_id' => $cartItem->product_id,
                     'service_slot_id' => $cartItem->service_slot_id,
                     'practitioner_offering_slot_id' => $cartItem->practitioner_offering_slot_id,
+                    'course_id' => $cartItem->course_id,
                 ]);
 
                 if ($cartItem->product_id) {
@@ -292,6 +324,25 @@ class OrderService
                         'start_time' => $cartItem->start_time,
                         'end_time' => $cartItem->end_time,
                     ]);
+
+                    // ── Course ──────────────────────────────────────────────
+                } elseif ($cartItem->course_id) {
+                    if (! $cartItem->course) {
+                        throw new \Exception("Course not found for cart item {$cartItem->id}");
+                    }
+                    $originalPrice = (float) ($cartItem->course->price ?? 0);
+                    $discountAmt = (float) ($cartItem->course->discount_price ?? 0);
+                    $price = max(0, $originalPrice - $discountAmt);  // final amount user pays
+                    $courseName = $cartItem->course->title;
+                    $order->items()->create([
+                        'course_id' => $cartItem->course_id,
+                        'quantity' => $cartItem->quantity,
+                        'unit_price' => $price,
+                        'subtotal' => $price * $cartItem->quantity,
+                        'product_name' => $courseName,
+                        'type' => 'course',
+                    ]);
+
                 } else {
                     throw new \Exception("Invalid cart item {$cartItem->id}");
                 }
@@ -301,6 +352,10 @@ class OrderService
         });
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // MARK ORDER AS PAID + ENROL IN COURSES
+    // ─────────────────────────────────────────────────────────────────────────
+
     public function markOrderAsPaid(Order $order, string $paymentIntentId): Order
     {
         $order->update([
@@ -309,38 +364,42 @@ class OrderService
             'paid_at' => now(),
         ]);
 
+        // Confirm service bookings
         $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
             if ($item->serviceBooking) {
                 $item->serviceBooking->update(['status' => 'confirmed']);
             }
         });
 
+        // Confirm practitioner bookings
         $order->items()->whereNotNull('practitioner_offering_booking_id')->each(function ($item) {
             if ($item->practitionerOfferingBooking) {
                 $item->practitionerOfferingBooking->update(['status' => 'confirmed']);
             }
         });
 
+        // ── Enrol user in each course from this order ────────────────
+        $order->items()->whereNotNull('course_id')->each(function ($item) use ($order) {
+            $course = Course::find($item->course_id);
+            if ($course && $order->user_id) {
+                $alreadyEnrolled = $course->enrollments()
+                    ->where('user_id', $order->user_id)
+                    ->exists();
+                if (! $alreadyEnrolled) {
+                    $course->enrollments()->create([
+                        'user_id' => $order->user_id,
+                        'status' => 'active',
+                    ]);
+                }
+            }
+        });
+
         return $order->fresh();
     }
 
-    public function getUserOrders(int $userId, int $perPage = 15): LengthAwarePaginator
-    {
-        return Order::where('user_id', $userId)
-            ->with(['items.product', 'items.variant', 'items.serviceSlot', 'address'])
-            ->latest()
-            ->paginate($perPage);
-    }
-
-    public function getOrderDetails(Order $order): Order
-    {
-        return $order->load([
-            'items.product.vendor',
-            'items.variant',
-            'items.serviceSlot',
-            'address',
-        ]);
-    }
+    // ─────────────────────────────────────────────────────────────────────────
+    // CANCELLATION / REFUND
+    // ─────────────────────────────────────────────────────────────────────────
 
     public function cancelOrder(Order $order, ?string $reason = null): Order
     {
@@ -367,19 +426,29 @@ class OrderService
             'cancellation_requested_at' => now(),
         ]);
 
+        // Cancel service bookings
         $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
             if ($item->serviceBooking) {
                 $item->serviceBooking->update(['status' => 'cancelled']);
             }
         });
 
+        // Cancel practitioner bookings
         $order->items()->whereNotNull('practitioner_offering_booking_id')->each(function ($item) {
             if ($item->practitionerOfferingBooking) {
                 $item->practitionerOfferingBooking->update(['status' => 'cancelled']);
             }
         });
 
+        // Unenrol from courses
+        $order->items()->whereNotNull('course_id')->each(function ($item) use ($order) {
+            CourseEnrollment::where('course_id', $item->course_id)
+                ->where('user_id', $order->user_id)
+                ->delete();
+        });
+
         $this->restoreProductStock($order);
+        $this->notifyVendorsOfCancellation($order);
 
         return $order->fresh();
     }
@@ -392,6 +461,8 @@ class OrderService
             'cancellation_reason' => $reason,
             'cancellation_requested_at' => now(),
         ]);
+
+        $this->notifyVendorsOfCancellationRequest($order);
 
         return $order->fresh();
     }
@@ -410,6 +481,7 @@ class OrderService
                 'cancelled_by' => 'vendor',
             ]);
 
+            // Cancel bookings
             $order->items()->whereNotNull('service_booking_id')->each(function ($item) {
                 if ($item->serviceBooking) {
                     $item->serviceBooking->update(['status' => 'cancelled']);
@@ -422,7 +494,15 @@ class OrderService
                 }
             });
 
+            // Unenrol from courses
+            $order->items()->whereNotNull('course_id')->each(function ($item) use ($order) {
+                CourseEnrollment::where('course_id', $item->course_id)
+                    ->where('user_id', $order->user_id)
+                    ->delete();
+            });
+
             $this->restoreProductStock($order);
+            $this->notifyVendorsOfCancellation($order);
 
             return $order->fresh();
         });
@@ -451,9 +531,9 @@ class OrderService
                 $q->whereHas('product', function ($query) use ($vendorId) {
                     $query->where('vendor_id', $vendorId);
                 })
-                ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
-                    $query->where('vendor_id', $vendorId);
-                });
+                    ->orWhereHas('serviceSlot.product', function ($query) use ($vendorId) {
+                        $query->where('vendor_id', $vendorId);
+                    });
             })
             ->exists();
 
@@ -484,16 +564,29 @@ class OrderService
                 }
             });
 
+            // Unenrol from courses
+            $order->items()->whereNotNull('course_id')->each(function ($item) use ($order) {
+                CourseEnrollment::where('course_id', $item->course_id)
+                    ->where('user_id', $order->user_id)
+                    ->delete();
+            });
+
             $this->restoreProductStock($order);
+            $this->notifyVendorsOfCancellation($order);
 
             return $order->fresh();
         });
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // REFUND & STOCK HELPERS
+    // ─────────────────────────────────────────────────────────────────────────
+
     protected function processRefund(Order $order): void
     {
         if (! $order->payment_intent_id) {
             Log::warning("Order {$order->id} has no payment intent ID, skipping refund");
+
             return;
         }
 
@@ -532,6 +625,10 @@ class OrderService
         });
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // NOTIFICATION HELPERS
+    // ─────────────────────────────────────────────────────────────────────────
+
     protected function notifyVendorsOfCancellation(Order $order): void
     {
         $vendorIds = $order->getVendorIds();
@@ -552,6 +649,28 @@ class OrderService
                 // $vendor->user->notify(new OrderCancellationRequestNotification($order));
             }
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // OTHER PUBLIC METHODS (unchanged)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    public function getUserOrders(int $userId, int $perPage = 15): LengthAwarePaginator
+    {
+        return Order::where('user_id', $userId)
+            ->with(['items.product', 'items.variant', 'items.serviceSlot', 'address'])
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    public function getOrderDetails(Order $order): Order
+    {
+        return $order->load([
+            'items.product.vendor',
+            'items.variant',
+            'items.serviceSlot',
+            'address',
+        ]);
     }
 
     public function updateOrderStatus(Order $order, string $status, ?int $vendorId = null): Order
@@ -577,19 +696,19 @@ class OrderService
             $q->whereHas('items.product', function ($productQuery) use ($vendorId) {
                 $productQuery->where('vendor_id', $vendorId);
             })
-            ->orWhereHas('items.serviceSlot', function ($serviceQuery) use ($vendorId) {
-                $serviceQuery->whereHas('product', function ($productQuery) use ($vendorId) {
-                    $productQuery->where('vendor_id', $vendorId);
+                ->orWhereHas('items.serviceSlot', function ($serviceQuery) use ($vendorId) {
+                    $serviceQuery->whereHas('product', function ($productQuery) use ($vendorId) {
+                        $productQuery->where('vendor_id', $vendorId);
+                    });
                 });
-            });
         })
-        ->with([
-            'items.product',
-            'items.variant',
-            'items.serviceSlot.product',
-            'address',
-            'user',
-        ]);
+            ->with([
+                'items.product',
+                'items.variant',
+                'items.serviceSlot.product',
+                'address',
+                'user',
+            ]);
 
         if ($status) {
             $query->where('status', $status);

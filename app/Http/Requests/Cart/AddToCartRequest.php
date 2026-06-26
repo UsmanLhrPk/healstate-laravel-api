@@ -14,17 +14,18 @@ class AddToCartRequest extends FormRequest
 
     public function rules(): array
     {
-        $isPractitionerBooking = $this->filled('practitioner_offering_slot_id');
-        $isLegacyService       = $this->filled('service_slot_id');
-        $isBooking             = $isPractitionerBooking || $isLegacyService;
+        $isBooking = $this->filled('practitioner_offering_slot_id') || $this->filled('service_slot_id');
+        $isCourse  = $this->filled('course_id');
+        $isProduct = !$isBooking && !$isCourse; // fallback to physical product
 
         return [
-            // ── Physical product fields ───────────────────────────────────
+            // ── Physical product ──────────────────────────────────────────
             'product_id' => [
-                Rule::requiredIf(! $isBooking),
+                Rule::requiredIf($isProduct),    // ← required only when no course/slot given
                 'nullable',
                 'integer',
                 'exists:products,id',
+                Rule::prohibitedIf($isBooking || $isCourse), // cannot mix with other types
             ],
             'variant_id' => [
                 'nullable',
@@ -32,21 +33,27 @@ class AddToCartRequest extends FormRequest
                 'exists:product_variants,id',
             ],
 
-            // ── Healer / practitioner slot (new) ──────────────────────────
+            // ── Course ────────────────────────────────────────────────────
+            'course_id' => [
+                Rule::requiredIf($isCourse),
+                'nullable',
+                'integer',
+                'exists:courses,id',
+                Rule::prohibitedIf($isBooking || $isProduct), // unique type
+            ],
+
+            // ── Practitioner / service slots ─────────────────────────────
             'practitioner_offering_slot_id' => [
                 'nullable',
                 'integer',
                 'exists:practitioner_offering_slots,id',
-                // Must not be sent alongside the legacy service_slot_id
-                Rule::prohibitedIf($isLegacyService),
+                Rule::prohibitedIf($this->filled('service_slot_id') || $isProduct || $isCourse),
             ],
-
-            // ── Legacy vendor service slot (kept for backward compat) ─────
             'service_slot_id' => [
                 'nullable',
                 'integer',
                 'exists:service_slots,id',
-                Rule::prohibitedIf($isPractitionerBooking),
+                Rule::prohibitedIf($this->filled('practitioner_offering_slot_id') || $isProduct || $isCourse),
             ],
 
             // ── Shared booking fields ─────────────────────────────────────
@@ -59,7 +66,6 @@ class AddToCartRequest extends FormRequest
             'start_time' => [
                 Rule::requiredIf($isBooking),
                 'nullable',
-                // Accept both "H:i" (frontend) and "H:i:s" (legacy) formats
                 'regex:/^\d{1,2}:\d{2}(:\d{2})?$/',
             ],
             'end_time' => [
@@ -86,30 +92,31 @@ class AddToCartRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'product_id.required'                          => 'A product_id or slot ID is required.',
-            'practitioner_offering_slot_id.prohibited'     => 'Cannot send both practitioner_offering_slot_id and service_slot_id.',
-            'service_slot_id.prohibited'                   => 'Cannot send both practitioner_offering_slot_id and service_slot_id.',
+            'product_id.required'                           => 'A product, course, or slot ID is required.',
+            'course_id.required'                            => 'A course_id is required.',
+            'course_id.exists'                              => 'The selected course does not exist.',
+            'product_id.prohibited'                         => 'Cannot mix product_id with a course or booking.',
+            'course_id.prohibited'                          => 'Cannot mix course_id with a product or booking.',
+            'practitioner_offering_slot_id.prohibited'     => 'Cannot send both slot types or mix with a product/course.',
+            'service_slot_id.prohibited'                   => 'Cannot send both slot types or mix with a product/course.',
             'booking_date.required'                        => 'Booking date is required for service bookings.',
             'start_time.required'                          => 'Start time is required for service bookings.',
-            'start_time.regex'                             => 'Start time must be in H:i or H:i:s format (e.g. 10:00 or 10:00:00).',
+            'start_time.regex'                             => 'Start time must be in H:i or H:i:s format.',
             'end_time.required'                            => 'End time is required for service bookings.',
-            'end_time.regex'                               => 'End time must be in H:i or H:i:s format (e.g. 11:00 or 11:00:00).',
+            'end_time.regex'                               => 'End time must be in H:i or H:i:s format.',
         ];
     }
 
     /**
-     * Normalise times to H:i:s before validation so the DB time column
-     * always receives a consistent format, and force quantity = 1 for bookings.
+     * Normalise times and force quantity for bookings.
      */
     protected function prepareForValidation(): void
     {
         $patch = [];
 
-        // Normalise "10:00" → "10:00:00" for DB storage
         foreach (['start_time', 'end_time'] as $field) {
             if ($this->filled($field)) {
                 $time = $this->input($field);
-                // If only H:i, append seconds
                 if (preg_match('/^\d{1,2}:\d{2}$/', $time)) {
                     $patch[$field] = $time . ':00';
                 }

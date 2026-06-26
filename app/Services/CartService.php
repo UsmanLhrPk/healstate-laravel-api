@@ -60,25 +60,51 @@ class CartService
                 ])->load('serviceSlot');
             }
 
-            // ── Physical product ──────────────────────────────────────────
-            $existing = $this->findCartRow($userId, $sessionId)
-                ->where('product_id', $data['product_id'])
-                ->where('variant_id', $data['variant_id'] ?? null)
-                ->first();
+            // ── Course ───────────────────────────────────────────────────
+            if (isset($data['course_id'])) {
+                // Prevent duplicate courses (optional – remove if you want to allow multiple)
+                $existing = $this->findCartRow($userId, $sessionId)
+                    ->where('course_id', $data['course_id'])
+                    ->first();
 
-            if ($existing) {
-                $existing->increment('quantity', $data['quantity']);
+                if ($existing) {
+                    $existing->increment('quantity', $data['quantity']);
 
-                return $existing->fresh(['product', 'variant']);
+                    return $existing->fresh('course');
+                }
+
+                return Cart::create([
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'course_id' => $data['course_id'],
+                    'quantity' => $data['quantity'],
+                ])->load('course');
             }
 
-            return Cart::create([
-                'user_id' => $userId,
-                'session_id' => $sessionId,
-                'product_id' => $data['product_id'],
-                'variant_id' => $data['variant_id'] ?? null,
-                'quantity' => $data['quantity'],
-            ])->load(['product', 'variant']);
+            // ── Physical product ──────────────────────────────────────────
+            if (isset($data['product_id'])) {   // <-- note: only run if product_id is present
+                $existing = $this->findCartRow($userId, $sessionId)
+                    ->where('product_id', $data['product_id'])
+                    ->where('variant_id', $data['variant_id'] ?? null)
+                    ->first();
+
+                if ($existing) {
+                    $existing->increment('quantity', $data['quantity']);
+
+                    return $existing->fresh(['product', 'variant']);
+                }
+
+                return Cart::create([
+                    'user_id' => $userId,
+                    'session_id' => $sessionId,
+                    'product_id' => $data['product_id'],
+                    'variant_id' => $data['variant_id'] ?? null,
+                    'quantity' => $data['quantity'],
+                ])->load(['product', 'variant']);
+            }
+
+            // If nothing matched, something went wrong (should be caught by validation)
+            throw new \Exception('Invalid cart item data');
         });
     }
 
@@ -89,10 +115,9 @@ class CartService
         return Cart::with([
             'product.vendor',
             'variant',
-            // Legacy vendor service
             'serviceSlot.product.vendor',
-            // Healer offering
             'practitionerOfferingSlot.offering.practitioner.user',
+            'course',                                   // ← new
         ])
             ->where(function ($q) use ($userId, $sessionId) {
                 $this->scopeToOwner($q, $userId, $sessionId);
@@ -100,7 +125,8 @@ class CartService
             ->where(function ($q) {
                 $q->whereNotNull('product_id')
                     ->orWhereNotNull('service_slot_id')
-                    ->orWhereNotNull('practitioner_offering_slot_id');
+                    ->orWhereNotNull('practitioner_offering_slot_id')
+                    ->orWhereNotNull('course_id');        // ← new
             })
             ->get();
     }
@@ -141,7 +167,8 @@ class CartService
             ->where(function ($q) {
                 $q->whereNotNull('product_id')
                     ->orWhereNotNull('service_slot_id')
-                    ->orWhereNotNull('practitioner_offering_slot_id');
+                    ->orWhereNotNull('practitioner_offering_slot_id')
+                    ->orWhereNotNull('course_id');        // ← new
             })
             ->sum('quantity');
     }
@@ -214,15 +241,25 @@ class CartService
                 $symbol = $this->itemCurrencySymbol($groupItems->first());
                 $subtotal = $groupItems->sum(fn ($item) => $this->itemPrice($item) * $item->quantity);
 
+                // Calculate total discount for course items in this currency group
+                $discount = $groupItems->sum(function ($item) {
+                    if ($item->isCourse() && $item->course && (float) $item->course->discount_price > 0) {
+                        return (float) $item->course->discount_price * $item->quantity;
+                    }
+
+                    return 0;
+                });
+
                 $commissionFee = round(0.029 * $subtotal + 0.30, 2);
                 $shipping = 0;
-                $total = round($subtotal + $commissionFee + $shipping, 2);
+                $total = round($subtotal - $discount + $commissionFee + $shipping, 2);
 
                 return [
                     'currency' => $currency,
                     'currency_symbol' => $symbol,
                     'items' => $groupItems,
                     'subtotal' => round($subtotal, 2),
+                    'discount' => round($discount, 2),   // new field
                     'shipping' => $shipping,
                     'commission_fee' => $commissionFee,
                     'total' => $total,
@@ -259,6 +296,10 @@ class CartService
                     $exists
                         ? $item->delete()
                         : $item->update(['user_id' => $userId, 'session_id' => null]);
+
+                } elseif ($item->isCourse()) {
+                    // Transfer course to the authenticated user
+                    $item->update(['user_id' => $userId, 'session_id' => null]);
 
                 } elseif ($item->isProduct()) {
                     $existing = Cart::where('user_id', $userId)
@@ -306,14 +347,17 @@ class CartService
             return (float) ($item->serviceSlot?->price ?? 0);
         }
 
-        // Physical product — variant price takes precedence
+        if ($item->isCourse()) {                        // ← new
+            return (float) ($item->course->price ?? 0);
+        }
+
+        // Physical product
         return (float) ($item->variant?->price ?? $item->product?->price ?? 0);
     }
 
     private function itemCurrency(Cart $item): string
     {
         if ($item->isPractitionerBooking()) {
-            // Healer offerings are always USD (no per-vendor currency)
             return 'USD';
         }
 
@@ -321,6 +365,10 @@ class CartService
             return $item->serviceSlot?->product?->currency
                 ?? $item->serviceSlot?->product?->vendor?->currency
                 ?? 'USD';
+        }
+
+        if ($item->isCourse()) {                        // ← new
+            return $item->course->currency ?? 'USD';
         }
 
         return $item->product?->currency
@@ -340,6 +388,10 @@ class CartService
                 ?? '$';
         }
 
+        if ($item->isCourse()) {                        // ← new
+            return $item->course->currency_symbol ?? '$';
+        }
+
         return $item->product?->currency_symbol
             ?? $item->product?->vendor?->currency_symbol
             ?? '$';
@@ -353,6 +405,10 @@ class CartService
 
         if ($item->isServiceBooking()) {
             return ['serviceSlot'];
+        }
+
+        if ($item->isCourse()) {                        // ← new
+            return ['course'];
         }
 
         return ['product', 'variant'];
