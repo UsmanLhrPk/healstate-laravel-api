@@ -23,19 +23,19 @@ class MarketplaceService
             ->where('active', true);
 
         // Filter by category (vendor category)
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $query->whereHas('vendor', function ($q) use ($filters) {
                 $q->whereJsonContains('category', $filters['category']);
             });
         }
 
         // Search in title and brief
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $searchTerm = $filters['search'];
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
-                  ->orWhere('brief', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%");
+                    ->orWhere('brief', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -45,7 +45,7 @@ class MarketplaceService
                 $query->addSelect([
                     'min_price' => function ($query) {
                         $query->selectRaw('COALESCE((SELECT MIN(price) FROM product_variants WHERE product_id = products.id), 999999)');
-                    }
+                    },
                 ])->orderBy('min_price', 'asc');
                 break;
 
@@ -53,7 +53,7 @@ class MarketplaceService
                 $query->addSelect([
                     'max_price' => function ($query) {
                         $query->selectRaw('COALESCE((SELECT MAX(price) FROM product_variants WHERE product_id = products.id), 0)');
-                    }
+                    },
                 ])->orderBy('max_price', 'desc');
                 break;
 
@@ -62,7 +62,7 @@ class MarketplaceService
                     ->leftJoin('vendor_reviews', 'vendors.id', '=', 'vendor_reviews.vendor_id')
                     ->select('products.*')
                     ->groupBy('products.id')
-                    ->orderByRaw('AVG(vendor_reviews.rating) DESC NULLS LAST');
+                    ->orderByRaw('ISNULL(AVG(vendor_reviews.rating)) ASC, AVG(vendor_reviews.rating) DESC');
                 break;
 
             case 'latest':
