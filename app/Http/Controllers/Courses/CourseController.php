@@ -27,7 +27,7 @@ class CourseController extends Controller
             'search' => $request->get('search'),
             'category_id' => $request->get('category_id'),
             'difficulty_level' => $request->get('difficulty_level'),
-            'pricing_type' => $request->get('pricing_type'), 
+            'pricing_type' => $request->get('pricing_type'),
             'is_featured' => $request->has('is_featured') ? $request->boolean('is_featured') : null,
             'sort' => $request->get('sort', 'latest'),
             'per_page' => min((int) $request->get('per_page', 15), 100),
@@ -264,6 +264,26 @@ class CourseController extends Controller
 
         return response()->json([
             'message' => 'Course submitted for review successfully.',
+            'data' => new CourseResource($course),
+        ]);
+    }
+
+    public function instructorArchive(Request $request, int $courseId): JsonResponse
+    {
+        $course = $this->courseService->getInstructorCourseById($request->user(), $courseId);
+
+        if (! $course) {
+            return response()->json(['message' => 'Course not found.'], 404);
+        }
+
+        try {
+            $course = $this->courseService->deactivateCourse($course);
+        } catch (\DomainException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'message' => 'Course archived successfully.',
             'data' => new CourseResource($course),
         ]);
     }

@@ -152,6 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/instructor/courses/{course:slug}', [CourseController::class, 'instructorUpdate']);
     Route::delete('/instructor/courses/{courseId}', [CourseController::class, 'instructorDestroy']);
     Route::post('/instructor/courses/{courseId}/submit', [CourseController::class, 'instructorSubmit']);
+    Route::post('/instructor/courses/{courseId}/archive', [CourseController::class, 'instructorArchive']);
     Route::post('/courses/{course}/submit', [CourseController::class, 'submit']);
 
     // Course builder — sections
