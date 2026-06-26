@@ -27,6 +27,7 @@ class CourseController extends Controller
             'search' => $request->get('search'),
             'category_id' => $request->get('category_id'),
             'difficulty_level' => $request->get('difficulty_level'),
+            'pricing_type' => $request->get('pricing_type'), 
             'is_featured' => $request->has('is_featured') ? $request->boolean('is_featured') : null,
             'sort' => $request->get('sort', 'latest'),
             'per_page' => min((int) $request->get('per_page', 15), 100),
@@ -178,20 +179,20 @@ class CourseController extends Controller
     }
 
     public function instructorCourses(Request $request): JsonResponse
-{
-    $query = Course::where('user_id', $request->user()->id)
-        ->with(['category'])
-        ->withCount(['enrollments'])
-        ->latest();
+    {
+        $query = Course::where('user_id', $request->user()->id)
+            ->with(['category'])
+            ->withCount(['enrollments'])
+            ->latest();
 
-    if ($request->filled('status')) {
-        $query->where('status', $request->status);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $courses = $query->paginate($request->integer('per_page', 15));
+
+        return response()->json(CourseResource::collection($courses)->response()->getData(true));
     }
-
-    $courses = $query->paginate($request->integer('per_page', 15));
-
-    return response()->json(CourseResource::collection($courses)->response()->getData(true));
-}
 
     public function instructorCourse(Request $request, int $courseId): JsonResponse
     {

@@ -58,9 +58,13 @@ class CourseService
             $query->where('is_featured', (bool) $filters['is_featured']);
         }
 
+        if (! empty($filters['pricing_type'])) {
+            $query->where('pricing_type', $filters['pricing_type']);
+        }
+
         match ($filters['sort'] ?? 'latest') {
-            'price_low' => $query->orderBy('price'),
-            'price_high' => $query->orderByDesc('price'),
+            'price_low', 'price_asc' => $query->orderBy('price'),
+            'price_high', 'price_desc' => $query->orderByDesc('price'),
             'popular' => $query->orderByDesc('total_enrollments'),
             'rating' => $query->orderByDesc('average_rating'),
             default => $query->latest('published_at'),

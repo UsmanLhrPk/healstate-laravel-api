@@ -11,7 +11,7 @@ trait LogsEmailNotification
         EmailNotification::create([
             'user_id'          => $userId,
             'email_type'       => $type,
-            'related_course_id'=> $courseId,
+            'related_course_id'=> $courseId,    
             'sent_at'          => now(),
         ]);
     }
